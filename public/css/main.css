@@ -1,0 +1,75 @@
+#head-link {
+	font-family: 'Lily Script One', cursive;
+	color: #00bf8f;
+	font-size: 11em;
+	margin-bottom: 0px;
+	cursor: pointer;
+}
+
+#head-motto {
+	margin-top: 0px;
+	color: #7c7c7c;
+}
+
+.jumbotron.vertical-center {
+	margin-bottom: 0 !important;
+}
+
+.navbar.bottom-nav {
+	margin-bottom: 0 !important;
+	min-height: 9%;
+	max-height: 9%;
+	min-height: 9vh;
+	max-height: 9vh;
+	background-color: white;
+	display: flex;
+	align-items: center;
+	border-bottom: none;
+	border-left: none;
+	border-right: none;
+}
+
+.navbar-brand {
+	position: absolute;
+	width: 100%;
+	left: 0;
+	text-align: center;
+	margin: auto;
+	font-family: 'Lily Script One', cursive;
+	color: #00bf8f !important;
+	font-size: 200%;
+}
+
+.navbar.bottom-nav .navbar-text {
+	margin-top: 17px;
+	margin-bottom: 17px;
+}
+.vertical-center {
+	min-height: 91%;
+	min-height: 91vh;
+	display: -webkit-box;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: flex;
+	-webkit-box-align: center;
+	-webkit-align-items: center;
+	-moz-box-align: center;
+	-ms-flex-align: center;
+	align-items: center;
+	width: 100%;
+	-webkit-box-pack : center;
+	-moz-box-pack : center;
+	-ms-flex-pack : center;
+	-webkit-justify-content : center;
+	justify-content : center;
+}
+
+#head-search-cont {
+	justify-content: center;
+	padding: 0 20%;
+}
+
+.jumbotron {
+	background-color: #f6f5f6;
+}
