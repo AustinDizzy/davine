@@ -3,6 +3,7 @@ package main
 import (
     "appengine"
     "appengine/urlfetch"
+    "net/http"
     "io/ioutil"
     "errors"
     "encoding/json"
@@ -23,7 +24,9 @@ func (v *VineRequest) get(url string) (map[string]interface{}, error) {
 	} else {
 		c := v.AESession
 		client := urlfetch.Client(c)
-		resp, err := client.Get(VINE_API + url)
+		req, _ := http.NewRequest("GET", VINE_API + url, nil)
+		req.Header.Set("x-vine-client", "vinewww/1.0")
+		resp, err := client.Do(req)
 		if err == nil {
 			jsonData, _ := ioutil.ReadAll(resp.Body)
 			var data interface{}
