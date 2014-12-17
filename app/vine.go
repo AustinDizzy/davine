@@ -16,7 +16,7 @@ const (
     VINE_API = "https://api.vineapp.com"
 )
 
-func (v *VineRequest) get(url string) (interface{}, error) {
+func (v *VineRequest) get(url string) (map[string]interface{}, error) {
 	if v.AESession == nil {
 		return nil, errors.New("Google AppEngine Context Required")
 	} else {
@@ -28,7 +28,7 @@ func (v *VineRequest) get(url string) (interface{}, error) {
 			var data interface{}
 			err = json.Unmarshal(jsonData, &data)
 			d := data.(map[string]interface{})
-			return d["data"], nil
+			return d["data"].(map[string]interface{}), nil
 		} else {
 			return nil, err
 		}
