@@ -3,8 +3,9 @@ package main
 import (
     "appengine"
     "appengine/urlfetch"
-    "io"
+    "io/ioutil"
     "errors"
+    "encoding/json"
 )
 
 type VineRequest struct {
@@ -15,7 +16,7 @@ const (
     VINE_API = "https://api.vineapp.com"
 )
 
-func (v *VineRequest) get(url string) (io.ReadCloser, error) {
+func (v *VineRequest) get(url string) (interface{}, error) {
 	if v.AESession == nil {
 		return nil, errors.New("Google AppEngine Context Required")
 	} else {
@@ -23,7 +24,11 @@ func (v *VineRequest) get(url string) (io.ReadCloser, error) {
 		client := urlfetch.Client(c)
 		resp, err := client.Get(VINE_API + url)
 		if err == nil {
-			return resp.Body, nil
+			jsonData, _ := ioutil.ReadAll(resp.Body)
+			var data interface{}
+			err = json.Unmarshal(jsonData, &data)
+			d := data.(map[string]interface{})
+			return d["data"], nil
 		} else {
 			return nil, err
 		}
