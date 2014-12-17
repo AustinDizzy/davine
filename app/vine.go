@@ -6,6 +6,7 @@ import (
     "io/ioutil"
     "errors"
     "encoding/json"
+    "regexp"
 )
 
 type VineRequest struct {
@@ -33,4 +34,22 @@ func (v *VineRequest) get(url string) (map[string]interface{}, error) {
 			return nil, err
 		}
 	}
+}
+
+func (v *VineRequest) GetUser(userId string) (map[string]interface{}, error) {
+    url := "/users/profiles/"
+    match, _ := regexp.MatchString("[0-9]+", userId)
+    
+    if match {
+        url += userId   
+    } else {
+        url += "vanity/" + userId   
+    }
+    
+    data, err := v.get(url)
+    if err != nil {
+        return nil, err   
+    } else {
+        return data, nil  
+    }
 }
