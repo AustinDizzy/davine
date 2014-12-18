@@ -11,7 +11,7 @@ import (
 )
 
 type VineRequest struct {
-	AESession appengine.Context
+	Context appengine.Context
 }
 
 const (
@@ -19,10 +19,10 @@ const (
 )
 
 func (v *VineRequest) get(url string) (map[string]interface{}, error) {
-	if v.AESession == nil {
+	if v.Context == nil {
 		return nil, errors.New("Google AppEngine Context Required")
 	} else {
-		c := v.AESession
+		c := v.Context
 		client := urlfetch.Client(c)
 		req, _ := http.NewRequest("GET", VINE_API + url, nil)
 		req.Header.Set("x-vine-client", "vinewww/1.0")
