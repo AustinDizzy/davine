@@ -14,6 +14,10 @@ type VineRequest struct {
 	Context appengine.Context
 }
 
+var (
+    ErrUserDoesntExist = errors.New("That record doesn't exist.")
+)
+
 const (
     VINE_API = "https://api.vineapp.com"
 )
@@ -32,7 +36,11 @@ func (v *VineRequest) get(url string) (map[string]interface{}, error) {
 			var data interface{}
 			err = json.Unmarshal(jsonData, &data)
 			d := data.(map[string]interface{})
-			return d["data"].(map[string]interface{}), nil
+			 if d["success"].(bool) {
+			    return d["data"].(map[string]interface{}), nil
+			 } else {
+			    return nil, errors.New(d["error"].(string))
+			 }
 		} else {
 			return nil, err
 		}
@@ -42,7 +50,7 @@ func (v *VineRequest) get(url string) (map[string]interface{}, error) {
 func (v *VineRequest) GetUser(userId string) (map[string]interface{}, error) {
     url := "/users/profiles/"
     match, _ := regexp.MatchString("[0-9]+", userId)
-    
+
     if match {
         url += userId   
     } else {
