@@ -28,12 +28,12 @@ type StoredUserMeta struct {
 
 type StoredUserData struct {
     LastUpdated time.Time
-    Followers []int64
-    Following []int64
-    Loops []int64
-    AuthoredPostCount []int64
-    PostCount []int64
-    Likes []int64
+    Followers []float64
+    Following []float64
+    Loops []float64
+    AuthoredPosts []float64
+    Reposts []float64
+    Likes []float64
     Updated []time.Time
 }
 
@@ -48,20 +48,20 @@ type StoredUserDelta struct {
 
 type PreviousUsername struct {
     Username string
-    Discovered   time.Time
+    Modified   time.Time
 }
 
 type PreviousLocation struct {
     Location string
-    Discovered  time.Time
+    Modified  time.Time
 }
 
 type PreviousDescription struct {
     Description string
-    Discovered  time.Time
+    Modified  time.Time
 }
 
 type PreviousBackground  struct {
     Background string
-    Discovered time.Time
+    Modified time.Time
 }
