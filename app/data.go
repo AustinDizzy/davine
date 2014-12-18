@@ -15,6 +15,10 @@ func (db *DB) FetchUser(user string) {
     vineApi := VineRequest{db.Context}
     data, err := vineApi.GetUser(user)
 
+    if data["private"].(float64) == 1.0 {
+        return
+    }
+
     var userMeta StoredUserMeta
     var userData StoredUserData
 
