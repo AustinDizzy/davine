@@ -10,5 +10,7 @@ func init() {
     router.HandleFunc("/user", UserStoreHandler).Methods("POST").Queries("id", "")
     router.HandleFunc("/u/{user}", UserFetchHandler).Methods("GET")
     
+    router.HandleFunc("/cron/fetch", CronFetchHandler).Methods("GET")
+
     http.Handle("/", router)
 }

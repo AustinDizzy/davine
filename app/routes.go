@@ -38,3 +38,17 @@ func UserStoreHandler(w http.ResponseWriter, r *http.Request) {
     
     json.NewEncoder(w).Encode(data)
 }
+
+func CronFetchHandler(w http.ResponseWriter, r *http.Request) {
+    c := appengine.NewContext(r)
+
+	q := datastore.NewQuery("Queue").KeysOnly()
+	keys, _ := q.GetAll(c, nil)
+	db := DB{c}
+
+	for _, v := range keys {
+	    go db.FetchUser(v.StringID())
+	}
+
+	fmt.Fprint(w, "fetching users")
+}
