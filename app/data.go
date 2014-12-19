@@ -3,7 +3,6 @@ package main
 import (
     "appengine"
     "appengine/datastore"
-    "strconv"
     "time"
 )
 
@@ -22,7 +21,7 @@ func (db *DB) FetchUser(user string) {
     var userMeta StoredUserMeta
     var userData StoredUserData
 
-    userId := strconv.FormatFloat(data["userId"].(float64), 'f', -1, 64)
+    userId := data["userIdStr"].(string)
 
     userMetaTemp, err := db.GetUserMeta(userId)
 
