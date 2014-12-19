@@ -76,9 +76,11 @@ func (db *DB) FetchUser(user string) {
             userMeta.Description = data["description"].(string)
         }
 
-        if userMeta.Background != data["background"].(string) {
-            userMeta.Previous.Background = append(userMeta.Previous.Background, PreviousBackground{userMeta.Background, time.Now()})
-            userMeta.Background = data["background"].(string)
+        if data["profileBackground"] != nil {
+            if userMeta.Background != data["profileBackground"].(string) {
+                userMeta.Previous.Background = append(userMeta.Previous.Background, PreviousBackground{userMeta.Background, time.Now()})
+                userMeta.Background = data["profileBackground"].(string)
+            }
         }
 
         userDataTemp, err := db.GetUserData(userId)
