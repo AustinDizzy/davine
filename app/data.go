@@ -38,8 +38,8 @@ func (db *DB) FetchUser(user string) {
             userMeta.VanityUrl = data["vanityUrls"].([]interface{})[0].(string)
         }
 
-        if data["background"] != nil {
-            userMeta.Background = data["background"].(string)
+        if data["profileBackground"] != nil {
+            userMeta.Background = data["profileBackground"].(string)
         }
 
         if userMeta.Verified {
