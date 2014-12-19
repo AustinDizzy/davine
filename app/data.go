@@ -105,9 +105,9 @@ func (db *DB) FetchUser(user string) {
 
 func (db *DB) GetUserData(user string) (interface{}, error) {
 
-    var data *StoredUserData
+    data := StoredUserData{}
 
-    key := datastore.NewKey(db.Context, "UserMeta", user, 0, nil)
+    key := datastore.NewKey(db.Context, "UserData", user, 0, nil)
     err := datastore.Get(db.Context, key, &data)
 
     if err != nil {
@@ -119,9 +119,9 @@ func (db *DB) GetUserData(user string) (interface{}, error) {
 
 func (db *DB) GetUserMeta(user string) (interface{}, error) {
 
-    var meta *StoredUserMeta
+    meta := StoredUserMeta{}
 
-	key := datastore.NewKey(db.Context, "UserData", user, 0, nil)
+	key := datastore.NewKey(db.Context, "UserMeta", user, 0, nil)
     err := datastore.Get(db.Context, key, &meta)
 
     if err != nil {
