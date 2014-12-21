@@ -21,21 +21,33 @@ func UserFetchHandler(w http.ResponseWriter, r *http.Request) {
 
 func UserStoreHandler(w http.ResponseWriter, r *http.Request) {
     c := appengine.NewContext(r)
+    vineApi := VineRequest{c}
+
     key := datastore.NewKey(c, "Queue", r.FormValue("id"), 0, nil)
     data := make(map[string]bool)
-    
+
     if err := datastore.Get(c, key, nil); err != nil && err == datastore.ErrNoSuchEntity {
-        
+
         go QueueUser(r.FormValue("id"), c)
-        
-        data["exists"] = false
+
+        _, err := vineApi.GetUser(r.FormValue("id"))
+
+        if err == ErrUserDoesntExist {
+            data["exists"] = false
+        } else {
+            data["exists"] = true
+        }
+
+        data["stored"] = false
         data["queued"] = true
-        
+
     } else {
         data["exists"] = true
+        data["stored"] = true
         data["queued"] = false
     }
-    
+
+    w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(data)
 }
 
