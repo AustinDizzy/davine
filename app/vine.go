@@ -22,7 +22,7 @@ const (
     VINE_API = "https://api.vineapp.com"
 )
 
-func (v *VineRequest) get(url string) (map[string]interface{}, error) {
+func (v *VineRequest) get(url string) (*VineUser, error) {
 	if v.Context == nil {
 		return nil, errors.New("Google AppEngine Context Required")
 	} else {
@@ -33,13 +33,12 @@ func (v *VineRequest) get(url string) (map[string]interface{}, error) {
 		resp, err := client.Do(req)
 		if err == nil {
 			jsonData, _ := ioutil.ReadAll(resp.Body)
-			var data interface{}
+			data := new(VineUserWrapper)
 			err = json.Unmarshal(jsonData, &data)
-			d := data.(map[string]interface{})
-			 if d["success"].(bool) {
-			    return d["data"].(map[string]interface{}), nil
+			 if data.Success {
+			    return data.Data, nil
 			 } else {
-			    return nil, errors.New(d["error"].(string))
+			    return nil, errors.New(data.Error)
 			 }
 		} else {
 			return nil, err
@@ -47,7 +46,7 @@ func (v *VineRequest) get(url string) (map[string]interface{}, error) {
 	}
 }
 
-func (v *VineRequest) GetUser(userId string) (map[string]interface{}, error) {
+func (v *VineRequest) GetUser(userId string) (*VineUser, error) {
     url := "/users/profiles/"
     match, _ := regexp.MatchString("[0-9]+", userId)
 
