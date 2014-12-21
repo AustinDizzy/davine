@@ -1,0 +1,36 @@
+indexes:
+
+- kind: Queue
+  ancestor: no
+  properties:
+  - name: UserId
+  - name: Discovered
+    direction: asc
+
+- kind: UserMeta
+  ancestor:  no
+  properties:
+  - name: Username
+    direction: desc
+  - name: VanityUrl
+    direction: desc
+  - name: Verified
+    direction: desc
+  - name: Current.Followers
+    direction: desc
+  - name: Current.Loops
+    direction: desc
+  - name: Current.AuthoredPostCount
+    direction: desc
+  - name: Current.PostCount
+    direction: desc
+  - name: Current.Likes
+    direction: desc
+  - name: Current.Following
+    direction: desc
+    
+- kind: UserData
+  ancestor: no
+  properties:
+  - name: LastUpdate
+    direction: desc

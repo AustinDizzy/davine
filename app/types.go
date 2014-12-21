@@ -37,57 +37,65 @@ type VineUser struct {
 
 type StoredUserMeta struct {
     Username    string
-    Location string
-    Description string
-    Background string
-    Previous struct{
-        Username []PreviousUsername
-        Location []PreviousLocation
-        Description []PreviousDescription
-        Background []PreviousBackground
+    Location string `datastore:",noindex"`
+    Description string `datastore:",noindex"`
+    Background string `datastore:",noindex"`
+    Current struct {
+        Followers []int64
+        Following []int64
+        Loops []int64
+        AuthoredPostCount []int64
+        PostCount []int64
+        Likes []int64
     }
+    Previous struct{
+        Username []PreviousUsername `datastore:",noindex"`
+        Location []PreviousLocation `datastore:",noindex"`
+        Description []PreviousDescription `datastore:",noindex"`
+        Background []PreviousBackground `datastore:",noindex"`
+    } `datastore:",noindex"`
     VanityUrl   string
     Verified    bool
-    VerifiedDate    time.Time
-    AvatarUrl   string
+    VerifiedDate    time.Time `datastore:",noindex"`
+    AvatarUrl   string `datastore:",noindex"`
 }
 
 type StoredUserData struct {
     LastUpdated time.Time
-    Followers []int64
-    Following []int64
-    Loops []int64
-    AuthoredPosts []int64
-    Reposts []int64
-    Likes []int64
-    Updated []time.Time
+    Followers []int64 `datastore:",noindex"`
+    Following []int64 `datastore:",noindex"`
+    Loops []int64 `datastore:",noindex"`
+    AuthoredPosts []int64 `datastore:",noindex"`
+    Reposts []int64 `datastore:",noindex"`
+    Likes []int64 `datastore:",noindex"`
+    Updated []time.Time `datastore:",noindex"`
 }
 
 type StoredUserDelta struct {
-    Followers []int64
-    Following []int64
-    Loops []int64
-    AuthoredPostCount []int64
-    PostCount []int64
-    Likes []int64
+    Followers []int64 `datastore:",noindex"`
+    Following []int64 `datastore:",noindex"`
+    Loops []int64 `datastore:",noindex"`
+    AuthoredPostCount []int64 `datastore:",noindex"`
+    PostCount []int64 `datastore:",noindex"`
+    Likes []int64 `datastore:",noindex"`
 }
 
 type PreviousUsername struct {
-    Username string
-    Modified   time.Time
+    Username string  `datastore:",noindex"`
+    Modified   time.Time `datastore:",noindex"`
 }
 
 type PreviousLocation struct {
-    Location string
-    Modified  time.Time
+    Location string`datastore:",noindex"`
+    Modified  time.Time`datastore:",noindex"`
 }
 
 type PreviousDescription struct {
-    Description string
-    Modified  time.Time
+    Description string `datastore:",noindex"`
+    Modified  time.Time `datastore:",noindex"`
 }
 
 type PreviousBackground  struct {
-    Background string
-    Modified time.Time
+    Background string `datastore:",noindex"`
+    Modified time.Time `datastore:",noindex"`
 }
