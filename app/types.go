@@ -40,14 +40,7 @@ type StoredUserMeta struct {
     Location string `datastore:",noindex"`
     Description string `datastore:",noindex"`
     Background string `datastore:",noindex"`
-    Current struct {
-        Followers []int64
-        Following []int64
-        Loops []int64
-        AuthoredPostCount []int64
-        PostCount []int64
-        Likes []int64
-    }
+    Current StoredUserMetaCurrent
     Previous struct{
         Username []PreviousUsername `datastore:",noindex"`
         Location []PreviousLocation `datastore:",noindex"`
@@ -60,13 +53,22 @@ type StoredUserMeta struct {
     AvatarUrl   string `datastore:",noindex"`
 }
 
+type StoredUserMetaCurrent struct {
+    Followers int64
+    Following int64
+    Loops int64
+    AuthoredPosts int64
+    Revines int64
+    Likes int64
+}
+
 type StoredUserData struct {
     LastUpdated time.Time
     Followers []int64 `datastore:",noindex"`
     Following []int64 `datastore:",noindex"`
     Loops []int64 `datastore:",noindex"`
     AuthoredPosts []int64 `datastore:",noindex"`
-    Reposts []int64 `datastore:",noindex"`
+    Revines []int64 `datastore:",noindex"`
     Likes []int64 `datastore:",noindex"`
     Updated []time.Time `datastore:",noindex"`
 }

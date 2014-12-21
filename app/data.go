@@ -42,13 +42,22 @@ func (db *DB) FetchUser(user string) {
             userMeta.VerifiedDate = time.Now()
         }
 
+        userMeta.Current = StoredUserMetaCurrent{
+            Followers: data.FollowerCount,
+            Following: data.FollowingCount,
+            Loops: data.LoopCount,
+            AuthoredPosts: data.AuthoredPostCount,
+            Revines: data.PostCount - data.AuthoredPostCount,
+            Likes: data.LikeCount,
+        }
+
         userData = StoredUserData{
             LastUpdated: time.Now(),
             Followers: []int64{data.FollowerCount,},
             Following: []int64{data.FollowingCount,},
             Loops: []int64{data.LoopCount,},
             AuthoredPosts: []int64{data.AuthoredPostCount,},
-            Reposts: []int64{data.PostCount - data.AuthoredPostCount,},
+            Revines: []int64{data.PostCount - data.AuthoredPostCount,},
             Likes: []int64{data.LikeCount,},
             Updated: []time.Time{time.Now(),},
         }
@@ -86,7 +95,7 @@ func (db *DB) FetchUser(user string) {
             userData.Following = append(userData.Following, data.FollowingCount)
             userData.Loops = append(userData.Loops, data.LoopCount)
             userData.AuthoredPosts = append(userData.AuthoredPosts, data.AuthoredPostCount)
-            userData.Reposts = append(userData.Reposts, data.PostCount - data.AuthoredPostCount)
+            userData.Revines = append(userData.Revines, data.PostCount - data.AuthoredPostCount)
             userData.Likes = append(userData.Followers, data.LikeCount)
             userData.Updated = append(userData.Updated, time.Now())
         }
