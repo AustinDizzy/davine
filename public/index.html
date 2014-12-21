@@ -1,34 +1,88 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Davine - Vine Analytics</title>
+    <title>Davine - Vine Analytics</title>
 
-	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-	<link href="http://fonts.googleapis.com/css?family=Lily+Script+One" rel="stylesheet" type="text/css">
-	<link href="/css/main.css" rel="stylesheet" type="text/css">
-	<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link href="http://fonts.googleapis.com/css?family=Lily+Script+One" rel="stylesheet" type="text/css">
+    <link href="/css/main.css" rel="stylesheet" type="text/css">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
 </head>
 <body>
-	<div class="jumbotron vertical-center">
-	<div class="container text-center">
-		<h1 id="head-link">Davine</h1>
-		<h4 id="head-motto">Plant your vines, we'll watch them grow.</h4>
-		<div id="head-search-cont" class="input-group">
-			<input type="text" class="form-control" placeholder="Vine Profile Link (e.g. https://vine.co/AustinDizzy or https://vine.co/907787504051171328)">
-			<span class="input-group-btn">
-				<button class="btn btn-default" type="button"><i class="fa fa-search"></i></button>
-			</span>
-		</div>
-	</div>
-	</div>
+    <div class="jumbotron vertical-center">
+    <div class="container text-center">
+        <h1 id="head-link">Davine</h1>
+        <h4 id="head-motto">Plant your vines, we'll watch them grow.</h4>
+        <form id="userSearch">
+            <div id="head-search-cont" class="input-group">
+                <input type="text" class="form-control userId" placeholder="Vine Profile Link (e.g. https://vine.co/AustinDizzy or https://vine.co/907787504051171328)">
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="submit"><i class="fa fa-search"></i></button>
+                </span>
+            </div>
+        </form>
+        <div class="alert alert-danger user-alert alert-dismissible" role="alert" style="display:none;margin:1em 20%">
+            <button type="button" class="close">
+                <span aria-hidden="true">&times;</span>
+                <span class="sr-only">Close</span>
+            </button>
+            <span class="user-message">
+                <strong>Warning!</strong> There's been an error. Please try again.
+            </span>
+        </div>
+    </div>
+    </div>
 
-	<nav class="navbar navbar-default bottom-nav" role="navigation">
-		<div class="container-fluid" style="width:100%">
-			<p class="navbar-text navbar-left"><a href="#" class="navbar-link">Top 10</a> | <a href="#" class="navbar-link">Explore</a></p>
-			<p class="navbar-text navbar-right"><a href="#" class="navbar-link">About</a> | <a href="#" class="navbar-link">FAQ</a></p>
-		</div>
-	</nav>
-	 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-	 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <nav class="navbar navbar-default bottom-nav" role="navigation">
+        <div class="container-fluid" style="width:100%">
+            <p class="navbar-text navbar-left"><a href="#" class="navbar-link">Top 10</a> | <a href="#" class="navbar-link">Explore</a></p>
+            <p class="navbar-text navbar-right"><a href="#" class="navbar-link">About</a> | <a href="#" class="navbar-link">FAQ</a></p>
+        </div>
+    </nav>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" charset="utf-8">
+    $(function(){
+        $('#userSearch').submit(function(e){
+            console.log("got input:" + $('.userId').val());
+            e.preventDefault();
+
+            var user = $(".userId").val();
+            var match = user.match(/^(?!\s*$)(?:https?\:\/\/vine.co\/)?([a-zA-Z0-9\.]*$)/);
+            if (match) {
+                $.post(document.URL + "user?id=" + match[1], function(data){
+                    console.log(data);
+                    if (data.stored) {
+                        document.location = document.URL + "u/" + user;
+                    } else if (data.queued) {
+                         var msg = "<strong>Success!</strong> We haven't seen that user yet,";
+                        msg += " so we've added the to our list. Come back in a bit and check";
+                        msg += " out their metrics";
+                        showMessage("success", msg);
+                    } else if (!data.exists) {
+                        var msg = "<strong>Warning:</strong> The user you've submitted doesn't seem to";
+                        msg += " be a user that exists on Vine. Please make sure you've entered their profile";
+                        msg += " corrently and that there are no trailing whitespaces or misspellings.";
+                        showMessage("warning", msg);
+                    }
+                });
+            } else {
+                var msg = "<strong>Error</strong>: The text you've entered is in the incorrect format.<br>";
+                msg += " Please enter it in the correct format: <strong>https://vine.co/AustinDizzy</strong>,";
+                msg += " <strong>https://vine.co/u/907787504051171328</strong>, or <Strong>AustinDizzy</strong>.";
+                showMessage("danger", msg);
+            }
+        });
+
+        $('.close').click(function(){
+           $(this).parent().hide();
+        });
+
+        function showMessage(type, msg) {
+            $('.user-message').html(msg);
+            $('.user-alert').removeClass('alert-danger alert-warning alert-success').addClass('alert-' + type).slideDown();
+        }
+    });
+    </script>
 </body>
 </html>
