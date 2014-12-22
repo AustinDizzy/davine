@@ -10,12 +10,64 @@ import (
     "path"
     "os"
     "encoding/json"
+    "strings"
+    "strconv"
+    "regexp"
 )
 
 func UserFetchHandler(w http.ResponseWriter, r *http.Request) {
-    template := path.Join(path.Join(os.Getenv("PWD"), "templates"), "message.html.mustache")
+    dir := path.Join(os.Getenv("PWD"), "templates")
+    profile := path.Join(dir, "profile.html.mustache")
+    layout := path.Join(dir, "profileLayout.html.mustache")
     vars := mux.Vars(r)
-    data := mustache.RenderFile(template, map[string]string{"message": "Hello, " + vars["user"]})
+    c := appengine.NewContext(r)
+
+    db := DB{c}
+    match, _ := regexp.MatchString("[0-9]+$", vars["user"])
+    var err error
+    var userMetaTemp interface{}
+
+    if match {
+        userId, _ := strconv.ParseInt(vars["user"], 10, 64)
+        userMetaTemp, err = db.GetUserMeta(userId)
+    } else {
+        temp := []StoredUserMeta{}
+        q := datastore.NewQuery("UserMeta").Filter("VanityUrl =", strings.ToLower(vars["user"])).Limit(1)
+        q.GetAll(c, &temp)
+        userMetaTemp = temp[0]
+    }
+
+    var data string
+
+    if err == datastore.ErrNoSuchEntity {
+        user404 := path.Join(dir, "user404.html.mustache")
+        userData := map[string]string{"user": vars["user"]}
+        data = mustache.RenderFileInLayout(user404, layout, userData)
+    } else if err != nil {
+        fmt.Fprint(w, err.Error())
+    } else if userMetaTemp != nil {
+
+        userMeta := userMetaTemp.(StoredUserMeta)
+
+        userData := map[string]string{
+            "username": userMeta.Username,
+            "description": userMeta.Description,
+            "location": userMeta.Location,
+            "avatarUrl": userMeta.AvatarUrl,
+            "loops": strconv.FormatInt(userMeta.Current.Loops, 10),
+            "followers": strconv.FormatInt(userMeta.Current.Followers, 10),
+        }
+
+        if userMeta.Background != "" {
+            color := strings.SplitAfterN(userMeta.Background, "0x", 2)
+            userData["profileBackground"] = color[1]
+        } else {
+            userData["profileBackground"] = "00BF8F"
+        }
+
+        data = mustache.RenderFileInLayout(profile, layout, userData)
+    }
+
     fmt.Fprint(w, data)
 }
 
@@ -23,10 +75,10 @@ func UserStoreHandler(w http.ResponseWriter, r *http.Request) {
     c := appengine.NewContext(r)
     vineApi := VineRequest{c}
 
-    key := datastore.NewKey(c, "Queue", r.FormValue("id"), 0, nil)
+    _, err := GetQueuedUser(r.FormValue("id"), c)
     data := make(map[string]bool)
 
-    if err := datastore.Get(c, key, nil); err != nil && err == datastore.ErrNoSuchEntity {
+    if err == datastore.ErrNoSuchEntity {
 
         go QueueUser(r.FormValue("id"), c)
 
@@ -34,12 +86,14 @@ func UserStoreHandler(w http.ResponseWriter, r *http.Request) {
 
         if err == ErrUserDoesntExist {
             data["exists"] = false
+            data["queued"] = false
         } else {
             data["exists"] = true
+            data["stored"] = false
+            data["queued"] = true
         }
 
         data["stored"] = false
-        data["queued"] = true
 
     } else {
         data["exists"] = true

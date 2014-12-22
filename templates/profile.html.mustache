@@ -1,0 +1,81 @@
+<style type="text/css">
+    .profile-content {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    .user-name {
+        margin-left: 0.5em;
+        font-size: 50px;
+        font-weight: bold;
+        margin-top: -1.25em;
+        height: auto;
+        position: absolute;
+        color: white;
+        display: inline-block;
+    }
+    .profile-text {
+        margin-left: 0.5em;
+        padding: 15px;
+    }
+    #user-banner {
+        width: 100%;
+        height: 200px;
+        background-color: #{{profileBackground}};
+    }
+</style>
+
+<div id="user-banner"></div>
+<div class="profile-content">
+    <img src={{avatarUrl}} height="200" class="img-thumbnail" style="margin-top: -100px;float: left;">
+    <span class="user-name">{{username}}</span>
+    <div class="col-md-4 profile-text">
+        {{description}}
+        <br>
+        <i>{{location}}</i>
+    </div>
+    <div style="padding-top: 15px;" class="col-md-3 col-md-offset-2">
+        <div class="list-block">
+            <ul class="text-center legend">
+                <li style="width: 50%;">
+                    <h3>
+                        <b class="formatInt" title="{{followers}} followers">
+                            {{followers}}
+                        </b>
+                    </h3>
+                    Followers
+                </li>
+                <li style="width: 50%;">
+                    <h3>
+                        <b class="formatInt" title="{{loops}} loops">
+                            {{loops}}
+                        </b>
+                    </h3>
+                    Loops
+                </li>
+            </ul>
+        </div>
+    </div>           
+</div>
+<br>
+<span class="col-md-12 text-center lead">Jump to section:</span>
+<div id="profile-nav">
+    <ul class="nav">
+        <div class="profile-section-nav btn-group btn-group-lg btn-group-justified" role="group">
+            <li role="navigation" class="btn btn-default">
+                <a href="#posts">Posts</a>
+            </li>
+            <li role="navigation" class="btn btn-default">
+                <a href="#followers">Followers</a>
+            </li>
+            <li role="navigation" class="btn btn-default">
+                <a href="#loops">Loops</a>
+            </li>
+            <li role="navigation" class="btn btn-default">
+                <a href="#following">Following</a>
+            </li>
+            <li role="navigation" class="btn btn-default">
+                <a href="#likes">Likes</a>
+            </li>
+        </div>
+    </ul>
+</div>

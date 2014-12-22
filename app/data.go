@@ -3,6 +3,7 @@ package main
 import (
     "appengine"
     "appengine/datastore"
+    "strings"
     "time"
 )
 
@@ -35,7 +36,7 @@ func (db *DB) FetchUser(user string) {
             Background: data.ProfileBackground,
         }
         if data.VanityUrls != nil {
-            userMeta.VanityUrl = data.VanityUrls[0]
+            userMeta.VanityUrl = strings.ToLower(data.VanityUrls[0])
         }
 
         if userMeta.Verified {

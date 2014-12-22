@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Davine - Vine Analytics</title>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="//fonts.googleapis.com/css?family=Lily+Script+One" rel="stylesheet" type="text/css">
+    <link href="/css/main.css" rel="stylesheet" type="text/css">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <style type="text/css">
+
+        body {
+            background-color: #F6F5F6;
+        }
+        .jumbotron {
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        #head-link {
+            font-size: 8vh !important;
+            color: #{{profileBackground}} !important;
+        }
+        .navbar-static-top {
+            border: 1px solid rgb(231, 231, 231);
+            margin-bottom: 0;
+            background-color: white;
+        }
+        .active>a {
+            background-color: #{{profileBackground}} !important;
+            color: white !important;
+        }
+        .main {
+            background-color: #F6F5F6;
+            padding-top: 20px;
+            padding-bottom: 25px;
+        }
+        .content {
+            width: 100%;
+            height: 100%;
+            padding: 25px;
+            background: #fff;
+            border: 1px solid rgb(231,231,231);
+        }
+        .sidebar {
+            float: right;
+            text-align: left;
+            width: 40%;
+            text-indent: 5em;
+        }
+        .sidebar > ul {
+            list-style: none;
+        }
+        .sidebar > p {
+            text-indent: 0em;
+            margin-left: 5em;
+        }
+        .navbar.bottom-nav {
+            background-color: transparent;   
+        }
+        .btn-default {
+            border-color: #E7E7E7;
+        }
+        .list-block {
+            display: table;
+            width: 100%;
+            border-collapse: collapse;
+            border: none;
+        }
+        .list-block ul {
+            display: table-row;
+        }
+        .list-block li {
+            display: table-cell;
+            margin: 0;
+        }
+        .legend > li{
+	        color: white;
+	        background-color:#{{profileBackground}};
+        }
+        .legend li:not(:first-child) {
+            border-left: 1px solid #fff;
+        }
+        
+        #profile-nav li {
+            padding: 20px 16px;
+            border-radius: 0;
+        }
+        #profile-nav a {
+            color: #{{profileBackground}}
+        }
+    </style>
+</head>
+
+<body>
+    <div class="jumbotron" style="display: block;">
+        <div class="container text-center">
+            <h1 id="head-link">Davine</h1>
+        </div>
+    </div>
+
+    <nav class="navbar navbar-default navbar-static-top">
+        <div class="container">
+            <div class="collapse navbar-collapse" id=
+            "bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    <li>
+                        <a href="/discover">Discover</a>
+                    </li>
+
+                    <li>
+                        <a href="/top">Top</a>
+                    </li>
+
+                    <li>
+                        <a href="/about">About</a>
+                    </li>
+                </ul>
+
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="#">
+                            <i class="fa fa-search"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main">
+        <div class="container" style="background-color: white;border: 1px solid #E7E7E7;padding: 0;">
+            {{{content}}}
+        </div>
+    </div>
+
+    <div class="container" style="padding: 0;">
+        <nav class="navbar navbar-default bottom-nav" style="border-color: #E7E7E7;">
+            <div class="container-fluid" style="width:100%">
+                <p class="navbar-text navbar-left">
+                    <a class="navbar-link" href="/top">Top 10</a> | <a class="navbar-link" href="/discover">Discover</a>
+                </p>
+
+                <p class="navbar-text navbar-right">
+                    <a class="navbar-link" href="/about">About</a> | <a class="navbar-link" href="/about#faq">FAQ</a>
+                </p>
+            </div>
+        </nav>
+    </div>
+    
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/1.5.3/numeral.min.js"></script>
+    <script type="text/javascript" charset="utf-8">
+        $(function(){
+
+            $('.formatInt').each(function(i) {
+                val = $('.formatInt')[i].innerText;
+                str = numeral(parseInt(val));
+                $('.formatInt')[i].innerText = str.format('0.0a');
+            });
+        });  
+    </script>
+</body>
+</html>
