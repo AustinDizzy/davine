@@ -79,3 +79,76 @@
         </div>
     </ul>
 </div>
+<div class="col-md-12">
+<div class="page-header" id="posts">
+    <h3>Posts <small>Revines vs. Original Posts</small></h3>
+</div>
+    <div id="postsChartContainer" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+    <script type="text/javascript">
+    var fn = function(){
+        
+        var userData = {};
+        
+        userData.authoredPosts = "{{data.AuthoredPosts}}".substring(1, "{{data.AuthoredPosts}}".length - 1).split(" ");
+        for (i = 0; i < userData.authoredPosts.length; i++){ userData.authoredPosts[i] = parseInt(userData.authoredPosts[i],10) }
+        userData.revines = "{{data.Revines}}".substring(1, "{{data.Revines}}".length - 1).split(" ");
+        for (i = 0; i < userData.revines.length; i++){ userData.revines[i] = parseInt(userData.revines[i],10) }
+        userData.updated = "{{data.Updated}}".substring(1, "{{data.Updated}}".length - 1).replace(" UTC", " UTC,").split(",");
+        for (i = 0; i < userData.updated.length; i++){ userData.updated[i] = Date.parse(userData.updated[i])}
+        
+        console.log(userData);
+        console.table(userData);
+        
+        $('#postsChartContainer').highcharts({
+        chart: {
+            type: 'area'
+        },
+        colors: ['#{{profileBackground}}', tinycolor('#{{profileBackground}}').splitcomplement()[2].toHexString()],
+        title: {
+            text: null
+        },
+        subtitle: {
+            text: null
+        },
+        xAxis: {
+            type: 'datetime'
+        },
+        yAxis: {
+            title: {
+                text: null
+            },
+            labels: {
+                formatter: function () {
+                    return numeral(this.value).format('0 a');
+                }
+            }
+        },
+        plotOptions: {
+            area: {
+                stacking: "normal",
+                pointStart: userData.updated[0],
+                pointInterval: 24 * 3600 * 1000,
+                marker: {
+                    enabled: false,
+                    symbol: 'circle',
+                    radius: 2,
+                    states: {
+                        hover: {
+                            enabled: true
+                        }
+                    }
+                }
+            }
+        },
+        series: [{
+            name: 'Posts',
+            data: userData.authoredPosts
+        }, {
+            name: 'Revines',
+            data: userData.revines
+        }]
+    });
+    }
+    document.addEventListener('DOMContentLoaded', fn, false);
+    </script>
+</div>

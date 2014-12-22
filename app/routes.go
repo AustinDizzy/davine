@@ -26,18 +26,26 @@ func UserFetchHandler(w http.ResponseWriter, r *http.Request) {
     match, _ := regexp.MatchString("[0-9]+$", vars["user"])
     var err error
     var userMetaTemp interface{}
+    var storedUserData interface{}
+    var data string
 
     if match {
         userId, _ := strconv.ParseInt(vars["user"], 10, 64)
         userMetaTemp, err = db.GetUserMeta(userId)
+        storedUserData, _ = db.GetUserData(userId)
     } else {
         temp := []StoredUserMeta{}
         q := datastore.NewQuery("UserMeta").Filter("VanityUrl =", strings.ToLower(vars["user"])).Limit(1)
-        q.GetAll(c, &temp)
-        userMetaTemp = temp[0]
+        k, _ := q.GetAll(c, &temp)
+        if len(temp) > 0 {
+            userMetaTemp = temp[0]
+            storedUserData, _ = db.GetUserData(k[0].IntID())
+        } else {
+            user404 := path.Join(dir, "user404.html.mustache")
+            userData := map[string]string{"user": vars["user"]}
+            data = mustache.RenderFileInLayout(user404, layout, userData)
+        }
     }
-
-    var data string
 
     if err == datastore.ErrNoSuchEntity {
         user404 := path.Join(dir, "user404.html.mustache")
@@ -49,13 +57,14 @@ func UserFetchHandler(w http.ResponseWriter, r *http.Request) {
 
         userMeta := userMetaTemp.(StoredUserMeta)
 
-        userData := map[string]string{
+        userData := map[string]interface{}{
             "username": userMeta.Username,
             "description": userMeta.Description,
             "location": userMeta.Location,
             "avatarUrl": userMeta.AvatarUrl,
             "loops": strconv.FormatInt(userMeta.Current.Loops, 10),
             "followers": strconv.FormatInt(userMeta.Current.Followers, 10),
+            "data": storedUserData,
         }
 
         if userMeta.Background != "" {
