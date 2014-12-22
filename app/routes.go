@@ -44,6 +44,7 @@ func UserFetchHandler(w http.ResponseWriter, r *http.Request) {
 			user404 := path.Join(dir, "user404.html.mustache")
 			userData := map[string]string{"user": vars["user"]}
 			data = mustache.RenderFileInLayout(user404, layout, userData)
+			w.WriteHeader(http.StatusNotFound)
 		}
 	}
 
@@ -51,6 +52,7 @@ func UserFetchHandler(w http.ResponseWriter, r *http.Request) {
 		user404 := path.Join(dir, "user404.html.mustache")
 		userData := map[string]string{"user": vars["user"]}
 		data = mustache.RenderFileInLayout(user404, layout, userData)
+		w.WriteHeader(http.StatusNotFound)
 	} else if err != nil {
 		fmt.Fprint(w, err.Error())
 	} else if userMetaTemp != nil {
