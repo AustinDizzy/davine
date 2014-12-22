@@ -1,0 +1,4 @@
+cron:
+- description: daily user data fetch
+  url: /cron/fetch
+  schedule: every 24 hours

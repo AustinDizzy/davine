@@ -13,6 +13,10 @@ handlers:
   static_files: public/about.html
   upload: public/index.html
   expiration: "2d"
+  
+- url: /cron/*
+  script: _go_app
+  login: admin
 
 - url: /(.*\.css)
   mime_type: text/css
