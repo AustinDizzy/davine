@@ -4,7 +4,7 @@ runtime: go
 api_version: go1
 
 handlers:
-- url: /
+- url: /(index.html)?
   static_files: public/index.html
   upload: public/index.html
   expiration: "1d"
