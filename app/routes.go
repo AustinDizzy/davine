@@ -116,6 +116,19 @@ func UserStoreHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(data)
 }
 
+func AboutHandler(w http.ResponseWriter, r *http.Request) {
+    dir := path.Join(os.Getenv("PWD"), "templates")
+	aboutPage := path.Join(dir, "about.html.mustache")
+	layout := path.Join(dir, "pageLayout.html.mustache")
+
+	db := DB{appengine.NewContext(r)}
+	totalUsers, _ := db.GetTotalUsers()
+	stats := map[string]int{"users": totalUsers}
+	data := mustache.RenderFileInLayout(aboutPage, layout, stats)
+
+	fmt.Fprint(w, data)
+}
+
 func CronFetchHandler(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 

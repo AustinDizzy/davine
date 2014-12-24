@@ -136,3 +136,13 @@ func (db *DB) GetUserMeta(user int64) (interface{}, error) {
 		return meta, nil
 	}
 }
+
+func (db *DB) GetTotalUsers() (int, error) {
+
+    var metaStats MetaStats
+
+    key := datastore.NewKey(db.Context, "__Stat_Kind_IsRootEntity__", "UserMeta", 0, nil)
+    err := datastore.Get(db.Context, key, &metaStats)
+
+    return metaStats.Count, err
+}

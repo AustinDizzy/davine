@@ -101,3 +101,8 @@ type PreviousBackground struct {
 	Background string    `datastore:",noindex"`
 	Modified   time.Time `datastore:",noindex"`
 }
+
+type MetaStats struct {
+    Count int `datastore:"count"`
+    Timestamp time.Time `datastore:"timestamp"`
+}

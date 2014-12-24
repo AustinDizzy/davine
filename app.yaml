@@ -9,11 +9,6 @@ handlers:
   upload: public/index.html
   expiration: "1d"
   
-- url: /about
-  static_files: public/about.html
-  upload: public/index.html
-  expiration: "2d"
-  
 - url: /cron/*
   script: _go_app
   login: admin
