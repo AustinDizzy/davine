@@ -98,10 +98,9 @@
         </div>
     </div>
 
-    <nav class="navbar navbar-default navbar-static-top">
+    <nav class="navbar navbar-default navbar-static-top" id="main-menu">
         <div class="container">
-            <div class="collapse navbar-collapse" id=
-            "bs-example-navbar-collapse-1">
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
                     <li>
                         <a href="/">Home</a>
@@ -119,7 +118,9 @@
                         <a href="/about">About</a>
                     </li>
                 </ul>
-
+                <span class="navbar-brand" style="display:none;color:#{{profileBackground}} !important">
+                    <a href="/" style="text-decoration:none !important; color: inherit !important;">Davine</a>
+                </span>
                 <ul class="nav navbar-nav navbar-right">
                     <li>
                         <a href="#">
@@ -157,16 +158,6 @@
     <script src="//code.highcharts.com/highcharts.js"></script>
     <script src="//code.highcharts.com/modules/exporting.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/tinycolor/1.1.1/tinycolor.min.js"></script>
-    <script type="text/javascript" charset="utf-8">
-        $(function(){
-
-            $('.formatInt').each(function(i) {
-                val = $('.formatInt')[i].innerText;
-                str = numeral(parseInt(val));
-                $('.formatInt')[i].innerText = str.format('0a');
-            });
-
-        });
-    </script>
+    <script src="/js/main.js"></script>
 </body>
 </html>
