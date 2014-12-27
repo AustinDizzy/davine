@@ -53,7 +53,7 @@
             e.preventDefault();
 
             var user = $(".userId").val();
-            var match = user.match(/^(?!\s*$)(?:https?\:\/\/vine.co\/)?([a-zA-Z0-9\.]*$)/);
+            var match = user.match(/^(?!\s*$)(?:https?\:\/\/vine.co\/(?:u\/)?)?([a-zA-Z0-9\.]*$)/);
             if (match) {
                 $.post(document.URL + "user?id=" + match[1], function(data){
                     console.log(data);
