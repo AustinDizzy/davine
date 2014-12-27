@@ -48,7 +48,7 @@ func (v *VineRequest) get(url string) (*VineUser, error) {
 
 func (v *VineRequest) GetUser(userId string) (*VineUser, error) {
 	url := "/users/profiles/"
-	match, _ := regexp.MatchString("[0-9]+", userId)
+	match, _ := regexp.MatchString("^[0-9]+$", userId)
 
 	if match {
 		url += userId

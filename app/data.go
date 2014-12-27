@@ -15,8 +15,11 @@ func (db *DB) FetchUser(user string) {
 	vineApi := VineRequest{db.Context}
 	data, err := vineApi.GetUser(user)
 
-	if data.Private == 1 {
-		return
+	if data == nil {
+	    db.Context.Errorf("failed fetch on user %v. got err %v", user, err)
+	    return
+	} else if data.Private == 1 {
+	    return
 	}
 
 	var userMeta StoredUserMeta
@@ -35,7 +38,7 @@ func (db *DB) FetchUser(user string) {
 			AvatarUrl:   data.AvatarUrl,
 			Background:  data.ProfileBackground,
 		}
-		if data.VanityUrls != nil {
+		if len(data.VanityUrls) != 0 {
 			userMeta.VanityUrl = strings.ToLower(data.VanityUrls[0])
 		}
 
