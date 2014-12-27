@@ -23,7 +23,7 @@ func UserFetchHandler(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 
 	db := DB{c}
-	match, _ := regexp.MatchString("[0-9]+$", vars["user"])
+	match, _ := regexp.MatchString("^[0-9]+$", vars["user"])
 	var err error
 	var userMetaTemp interface{}
 	var storedUserData interface{}
