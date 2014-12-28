@@ -164,3 +164,13 @@ func CronFetchHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprint(w, "fetching users")
 }
+
+func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
+    dir := path.Join(os.Getenv("PWD"), "templates")
+    notFound := path.Join(dir, "404.html")
+    layout := path.Join(dir, "pageLayout.html.mustache")
+    data := map[string]string{"url": r.RequestURI}
+    page := mustache.RenderFileInLayout(notFound, layout, data)
+    w.WriteHeader(404)
+    fmt.Fprint(w, page)
+}
