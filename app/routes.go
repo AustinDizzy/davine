@@ -131,20 +131,13 @@ func AboutHandler(w http.ResponseWriter, r *http.Request) {
 
 func TopHandler(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
-	var topFollowed, topLooped []StoredUserMeta
-
-	//top followed
-	q := datastore.NewQuery("UserMeta").Order("-Current.Followers").Limit(10)
-	q.GetAll(c, &topFollowed)
-
-	//top looped
-	q = datastore.NewQuery("UserMeta").Order("-Current.Loops").Limit(10)
-	q.GetAll(c, &topLooped)
+	db := DB{c}
 
 	dir := path.Join(os.Getenv("PWD"), "templates")
 	top := path.Join(dir, "top.html")
 	layout := path.Join(dir, "pageLayout.html.mustache")
-	data := map[string][]StoredUserMeta{"topFollowed": topFollowed, "topLooped": topLooped}
+	data := db.GetTop()
+	data["LastUpdated"] = db.GetLastUpdated()
 	page := mustache.RenderFileInLayout(top, layout, data)
 	fmt.Fprint(w, page)
 }

@@ -5,6 +5,7 @@ import (
 	"appengine/datastore"
 	"strings"
 	"time"
+	"sort"
 )
 
 type DB struct {
@@ -148,4 +149,65 @@ func (db *DB) GetTotalUsers() (int, error) {
     err := datastore.Get(db.Context, key, &metaStats)
 
     return metaStats.Count, err
+}
+
+func (db *DB) GetTop() (data map[string]interface{}) {
+
+	var topOverall, topFollowed, topLooped, topPosts, topRevines []StoredUserMeta
+	var lastUpdated time.Time
+
+	//top overall
+	q := datastore.NewQuery("UserMeta").Order("-Current.Followers").Limit(10)
+	q.GetAll(db.Context, &topOverall)
+
+	sort.Sort(ByOverall(topOverall))
+
+	//top followed
+	q = datastore.NewQuery("UserMeta").Order("-Current.Followers").Limit(10)
+	q.GetAll(db.Context, &topFollowed)
+
+	//top looped
+	q = datastore.NewQuery("UserMeta").Order("-Current.Loops").Limit(10)
+	q.GetAll(db.Context, &topLooped)
+
+	//top posts
+	q = datastore.NewQuery("UserMeta").Order("-Current.AuthoredPosts").Limit(5)
+	q.GetAll(db.Context, &topPosts)
+
+	//top Revines
+	q = datastore.NewQuery("UserMeta").Order("-Current.Revines").Limit(5)
+	q.GetAll(db.Context, &topRevines)
+
+	lastUpdated = db.GetLastUpdated()
+
+	data = map[string]interface{}{
+	    "topOverall": topOverall,
+	    "topFollowed": topFollowed,
+	    "topLooped": topLooped,
+	    "topPosts": topPosts,
+	    "topRevines": topRevines,
+	    "lastUpdated": lastUpdated,
+	}
+	return
+}
+
+func (a ByOverall) Len() int           { return len(a) }
+func (a ByOverall) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a ByOverall) Less(i, j int) bool {
+    followers := a[i].Current.Followers > a[j].Current.Followers
+    loops := a[i].Current.Loops > a[j].Current.Loops
+    following := a[i].Current.Following > a[j].Current.Following
+    return followers && loops && following
+}
+
+func (db *DB) GetLastUpdatedUser() StoredUserData {
+    var lastUpdatedUser []StoredUserData
+    q := datastore.NewQuery("UserData").Order("-LastUpdated").Limit(1)
+    q.GetAll(db.Context, &lastUpdatedUser)
+    return lastUpdatedUser[0]
+}
+
+func (db *DB) GetLastUpdated() time.Time {
+    lastUpdatedUser := db.GetLastUpdatedUser()
+    return lastUpdatedUser.LastUpdated
 }

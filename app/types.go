@@ -106,3 +106,5 @@ type MetaStats struct {
     Count int `datastore:"count"`
     Timestamp time.Time `datastore:"timestamp"`
 }
+
+type ByOverall []StoredUserMeta
