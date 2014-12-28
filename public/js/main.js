@@ -1,5 +1,11 @@
 $(function(){
 
+    $('ul.nav a[href="'+ window.location +'"]').parent().addClass('active');
+    
+    $('ul.nav a').filter(function() {
+        return this.href == window.location;
+    }).parent().addClass('active');
+
     $('.formatInt').each(function(i) {
         val = $('.formatInt')[i].innerText;
         str = numeral(parseInt(val));
