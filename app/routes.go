@@ -17,8 +17,8 @@ import (
 
 func UserFetchHandler(w http.ResponseWriter, r *http.Request) {
 	dir := path.Join(os.Getenv("PWD"), "templates")
-	profile := path.Join(dir, "profile.html.mustache")
-	layout := path.Join(dir, "profileLayout.html.mustache")
+	profile := path.Join(dir, "profile.html")
+	layout := path.Join(dir, "profileLayout.html")
 	vars := mux.Vars(r)
 	c := appengine.NewContext(r)
 
@@ -41,7 +41,7 @@ func UserFetchHandler(w http.ResponseWriter, r *http.Request) {
 			userMetaTemp = temp[0]
 			storedUserData, _ = db.GetUserData(k[0].IntID())
 		} else {
-			user404 := path.Join(dir, "user404.html.mustache")
+			user404 := path.Join(dir, "user404.html")
 			userData := map[string]string{"user": vars["user"]}
 			data = mustache.RenderFileInLayout(user404, layout, userData)
 			w.WriteHeader(http.StatusNotFound)
@@ -49,7 +49,7 @@ func UserFetchHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err == datastore.ErrNoSuchEntity {
-		user404 := path.Join(dir, "user404.html.mustache")
+		user404 := path.Join(dir, "user404.html")
 		userData := map[string]string{"user": vars["user"]}
 		data = mustache.RenderFileInLayout(user404, layout, userData)
 		w.WriteHeader(http.StatusNotFound)
@@ -118,8 +118,8 @@ func UserStoreHandler(w http.ResponseWriter, r *http.Request) {
 
 func AboutHandler(w http.ResponseWriter, r *http.Request) {
     dir := path.Join(os.Getenv("PWD"), "templates")
-	aboutPage := path.Join(dir, "about.html.mustache")
-	layout := path.Join(dir, "pageLayout.html.mustache")
+	aboutPage := path.Join(dir, "about.html")
+	layout := path.Join(dir, "pageLayout.html")
 
 	db := DB{appengine.NewContext(r)}
 	totalUsers, _ := db.GetTotalUsers()
@@ -133,7 +133,7 @@ func AboutHandler(w http.ResponseWriter, r *http.Request) {
 func DiscoverHandler(w http.ResponseWriter, r *http.Request) {
     dir := path.Join(os.Getenv("PWD"), "templates")
     discover := path.Join(dir, "discover.html")
-    layout := path.Join(dir, "pageLayout.html.mustache")
+    layout := path.Join(dir, "pageLayout.html")
     page := mustache.RenderFileInLayout(discover, layout)
     fmt.Fprint(w, page)
 }
@@ -144,7 +144,7 @@ func TopHandler(w http.ResponseWriter, r *http.Request) {
 
 	dir := path.Join(os.Getenv("PWD"), "templates")
 	top := path.Join(dir, "top.html")
-	layout := path.Join(dir, "pageLayout.html.mustache")
+	layout := path.Join(dir, "pageLayout.html")
 	data := db.GetTop()
 	data["LastUpdated"] = db.GetLastUpdated()
 	page := mustache.RenderFileInLayout(top, layout, data)
@@ -170,7 +170,7 @@ func CronFetchHandler(w http.ResponseWriter, r *http.Request) {
 func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
     dir := path.Join(os.Getenv("PWD"), "templates")
     notFound := path.Join(dir, "404.html")
-    layout := path.Join(dir, "pageLayout.html.mustache")
+    layout := path.Join(dir, "pageLayout.html")
     data := map[string]string{"url": r.RequestURI}
     page := mustache.RenderFileInLayout(notFound, layout, data)
     w.WriteHeader(404)
