@@ -123,7 +123,8 @@ func AboutHandler(w http.ResponseWriter, r *http.Request) {
 
 	db := DB{appengine.NewContext(r)}
 	totalUsers, _ := db.GetTotalUsers()
-	stats := map[string]int{"users": totalUsers}
+	stats := map[string]interface{}{"users": totalUsers}
+	stats["lastUpdated"] = db.GetLastUpdated()
 	data := mustache.RenderFileInLayout(aboutPage, layout, stats)
 
 	fmt.Fprint(w, data)
