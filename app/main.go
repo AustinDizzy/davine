@@ -11,6 +11,7 @@ func init() {
 	router.HandleFunc("/u/{user}", UserFetchHandler).Methods("GET")
 	router.HandleFunc("/about", AboutHandler).Methods("GET")
 	router.HandleFunc("/top", TopHandler).Methods("GET")
+	router.HandleFunc("/discover", DiscoverHandler).Methods("GET")
 	router.NotFoundHandler = http.HandlerFunc(NotFoundHandler)
 
 	router.HandleFunc("/cron/fetch", CronFetchHandler).Methods("GET")

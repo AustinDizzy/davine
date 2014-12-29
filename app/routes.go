@@ -129,6 +129,14 @@ func AboutHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, data)
 }
 
+func DiscoverHandler(w http.ResponseWriter, r *http.Request) {
+    dir := path.Join(os.Getenv("PWD"), "templates")
+    discover := path.Join(dir, "discover.html")
+    layout := path.Join(dir, "pageLayout.html.mustache")
+    page := mustache.RenderFileInLayout(discover, layout)
+    fmt.Fprint(w, page)
+}
+
 func TopHandler(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	db := DB{c}
