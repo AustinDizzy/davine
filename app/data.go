@@ -194,10 +194,7 @@ func (db *DB) GetTop() (data map[string]interface{}) {
 func (a ByOverall) Len() int           { return len(a) }
 func (a ByOverall) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a ByOverall) Less(i, j int) bool {
-    followers := a[i].Current.Followers > a[j].Current.Followers
-    loops := a[i].Current.Loops > a[j].Current.Loops
-    following := a[i].Current.Following > a[j].Current.Following
-    return followers && loops && following
+    return a[i].Current.Followers > a[j].Current.Followers && a[i].Current.Loops > a[j].Current.Loops && a[i].Current.Following < a[j].Current.Following
 }
 
 func (db *DB) GetLastUpdatedUser() StoredUserData {
