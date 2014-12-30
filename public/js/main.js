@@ -1,5 +1,6 @@
 $(function(){
     
+    $("[data-toggle='tooltip']").tooltip();
     $('ul.nav > li > a[href="'+ window.location +'"]').parent().addClass('active');
 
     $('ul.nav > li > a').filter(function() {
