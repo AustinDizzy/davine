@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func init() {
+func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/user", UserStoreHandler).Methods("POST").Queries("id", "")
 	router.HandleFunc("/u/{user}", UserFetchHandler).Methods("GET")
