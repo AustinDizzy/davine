@@ -101,7 +101,7 @@ func (db *DB) FetchUser(user string) {
 			userData.Loops = append(userData.Loops, data.LoopCount)
 			userData.AuthoredPosts = append(userData.AuthoredPosts, data.AuthoredPostCount)
 			userData.Revines = append(userData.Revines, data.PostCount-data.AuthoredPostCount)
-			userData.Likes = append(userData.Followers, data.LikeCount)
+			userData.Likes = append(userData.Likes, data.LikeCount)
 			userData.Updated = append(userData.Updated, time.Now())
 		}
 	}
