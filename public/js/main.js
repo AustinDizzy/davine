@@ -1,8 +1,8 @@
 $(function(){
-
-    $('ul.nav a[href="'+ window.location +'"]').parent().addClass('active');
     
-    $('ul.nav a').filter(function() {
+    $('ul.nav > li > a[href="'+ window.location +'"]').parent().addClass('active');
+
+    $('ul.nav > li > a').filter(function() {
         return this.href == window.location;
     }).parent().addClass('active');
 
