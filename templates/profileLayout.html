@@ -18,7 +18,6 @@
         }
         #head-link {
             font-size: 8vh !important;
-            color: #{{profileBackground}} !important;
         }
         .navbar-static-top {
             border: 1px solid rgb(231, 231, 231);
@@ -94,7 +93,7 @@
 <body>
     <div class="jumbotron" style="display: block;">
         <div class="container text-center">
-            <h1 id="head-link">Davine</h1>
+            <h1 id="head-link" style="color:#F6F5F6">Davine</h1>
         </div>
     </div>
 
@@ -159,5 +158,16 @@
     <script src="//code.highcharts.com/modules/exporting.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/tinycolor/1.1.1/tinycolor.min.js"></script>
     <script src="/js/main.js"></script>
+    <script src="/js/geopattern.min.js"></script>
+    <script type="text/javascript">
+        $(function(){
+            if ('{{profileBackground}}'.length != 0) {
+                $('.jumbotron, #user-banner').geopattern('{{username}}', {color: '#{{profileBackground}}'});
+            } else {
+                console.log("test");
+                $('#head-link').css("color", "#00bf8f");
+            }
+        });
+    </script>
 </body>
 </html>
