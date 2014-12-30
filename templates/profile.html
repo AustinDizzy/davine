@@ -1,0 +1,402 @@
+<style type="text/css">
+    .profile-content {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    .user-name {
+        margin-left: 0.5em;
+        font-size: 50px;
+        font-weight: bold;
+        margin-top: -1.25em;
+        height: auto;
+        position: absolute;
+        color: white;
+        display: inline-block;
+    }
+    .profile-text {
+        margin-left: 0.5em;
+        padding: 15px;
+    }
+    #user-banner {
+        width: 100%;
+        height: 200px;
+        background-color: #{{profileBackground}};
+    }
+</style>
+
+<div id="user-banner"></div>
+<div class="profile-content">
+    <img src={{avatarUrl}} height="200" class="img-thumbnail" style="margin-top: -100px;float: left;">
+    <span class="user-name">{{username}}</span>
+    <div class="col-md-4 profile-text">
+        {{description}}
+        <br>
+        <i>{{location}}</i>
+    </div>
+    <div style="padding-top: 15px;" class="col-md-3 col-md-offset-2">
+        <div class="list-block">
+            <ul class="text-center legend">
+                <li style="width: 50%;">
+                    <h3>
+                        <b class="formatInt" title="{{followers}} followers" data-format="0.0 a">
+                            {{followers}}
+                        </b>
+                    </h3>
+                    Followers
+                </li>
+                <li style="width: 50%;">
+                    <h3>
+                        <b class="formatInt" title="{{loops}} loops" data-format="0 a">
+                            {{loops}}
+                        </b>
+                    </h3>
+                    Loops
+                </li>
+            </ul>
+        </div>
+    </div>           
+</div>
+<br>
+<span class="col-md-12 text-center lead">Jump to section:</span>
+<div id="profile-nav">
+    <ul class="nav">
+        <div class="profile-section-nav btn-group btn-group-lg btn-group-justified" role="group">
+            <a href="#loops" role="navigation" class="btn btn-default">Loops</a>
+            <a href="#followers" role="navigation" class="btn btn-default">Followers</a>
+            <a href="#posts" role="navigation" class="btn btn-default">Posts</a>
+            <a href="#following" role="navigation" class="btn btn-default">Following</a>
+            <a href="#likes" role="navigation" class="btn btn-default">Likes</a>
+            <a href="#misc" role="navigation" class="btn btn-default">Other</a>
+        </div>
+    </ul>
+</div>
+<div class="col-md-12">
+    <div class="page-header" id="loops">
+        <h3>Loops <small>Loops vs. Original Posts</small></h3>
+    </div>
+    <div id="loopsChartContainer" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+    <div class="page-header" id="followers">
+        <h3>Followers <small>Followers vs. Loops</small></h3>
+    </div>
+    <div id="followersChartContainer" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+    <div class="page-header" id="posts">
+        <h3>Posts <small>Revines vs. Original Posts</small></h3>
+    </div>
+    <div id="postsChartContainer" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+    <div class="page-header" id="following">
+        <h3>Following</h3>
+    </div>
+    <div id="followingChartContainer" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+    <div class="page-header" id="likes">
+        <h3>Likes <small>Likes vs. Revines</small></h3>
+    </div>
+    <div id="likesChartContainer" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+    <div class="page-header" id="misc">
+        <h3>Miscellaneous <small>Other statistics gathered</small></h3>
+    </div>
+    <script type="text/javascript">
+        var fn = function(){
+
+            var userData = {};
+            var userDelta = {};
+
+            userData.authoredPosts = "{{data.AuthoredPosts}}".substring(1, "{{data.AuthoredPosts}}".length - 1).split(" ");
+            for (i = 0; i < userData.authoredPosts.length; i++){ userData.authoredPosts[i] = parseInt(userData.authoredPosts[i],10) }
+            userData.revines = "{{data.Revines}}".substring(1, "{{data.Revines}}".length - 1).split(" ");
+            for (i = 0; i < userData.revines.length; i++){ userData.revines[i] = parseInt(userData.revines[i],10) }
+            userData.updated = "{{data.Updated}}".substring(1, "{{data.Updated}}".length - 1).replace(/ UTC/g, " UTC,").split(",");
+            userData.updated.pop();
+            for (i = 0; i < userData.updated.length; i++){ userData.updated[i] = Date.parse(userData.updated[i])}
+            userData.loops = "{{data.Loops}}".substring(1, "{{data.Loops}}".length - 1).split(" ");
+            for (i = 0; i < userData.updated.length; i++){ userData.loops[i] = parseInt(userData.loops[i], 10) }
+            userData.followers = "{{data.Followers}}".substring(1, "{{data.Followers}}".length - 1).split(" ");
+            for (i = 0; i < userData.followers.length; i++){ userData.followers[i] = parseInt(userData.followers[i], 10) }
+            userData.following = "{{data.Following}}".substring(1, "{{data.Following}}".length - 1).split(" ");
+            for (i = 0; i < userData.following.length; i++){ userData.following[i] = parseInt(userData.following[i], 10) }
+            userData.likes = "{{data.Likes}}".substring(1, "{{data.Likes}}".length - 1).split(" ");
+            for (i = 0; i < userData.likes.length; i++){ userData.likes[i] = parseInt(userData.likes[i], 10) }
+            
+            console.log("{{data.Updated}}");
+
+            userDelta.authoredPosts = getArrayDelta(userData.authoredPosts);
+            userDelta.revines = getArrayDelta(userData.revines);
+            userDelta.loops = getArrayDelta(userData.loops);
+            
+            console.table(userData);
+            console.table(userDelta);
+
+            $('#postsChartContainer').highcharts({
+                chart: {
+                    type: 'area'
+                },
+                colors: ['#{{profileBackground}}', tinycolor('#{{profileBackground}}').splitcomplement()[2].toHexString()],
+                title: {
+                    text: null
+                },
+                subtitle: {
+                    text: null
+                },
+                xAxis: {
+                    type: 'datetime'
+                },
+                yAxis: {
+                    title: {
+                        text: null
+                    },
+                    labels: {
+                        formatter: function () {
+                            return numeral(this.value).format('0 a');
+                        }
+                    }
+                },
+                plotOptions: {
+                    area: {
+                        stacking: "normal",
+                        pointStart: userData.updated[0],
+                        pointInterval: 24 * 3600 * 1000,
+                        marker: {
+                            enabled: false,
+                            symbol: 'circle',
+                            radius: 2,
+                            states: {
+                                hover: {
+                                    enabled: true
+                                }
+                            }
+                        }
+                    }
+                },
+                series: [{
+                    name: 'Posts',
+                    data: userData.authoredPosts
+                }, {
+                    name: 'Revines',
+                    data: userData.revines
+                }]
+            });
+
+            $('#loopsChartContainer').highcharts({
+                chart: {
+                    zoomType: 'xy'
+                },
+                colors: [tinycolor('#{{profileBackground}}').splitcomplement()[2].toHexString(), '#{{profileBackground}}'],
+                title: {
+                    text: null
+                },
+                subtitle: {
+                    text: null
+                },
+                xAxis: {
+                    type: 'datetime'
+                },
+                yAxis: [{
+                    title: {
+                        text: null
+                    },
+                    labels: {
+                        formatter: function () {
+                            return numeral(this.value).format('0.0 a');
+                        }
+                    }
+                }, {
+                    title: {
+                        text: null
+                    },
+                    labels: {
+                        formatter: function() {
+                            return numeral(this.value).format('0 a');
+                        }
+                    },
+                    opposite: true
+                }],
+                tooptip: {
+                    suffix: " loops"
+                },
+                plotOptions: {
+                    series: {
+                        pointStart: userData.updated[0],
+                        pointInterval: 24 * 3600 * 1000
+                    }
+                },
+                series: [{
+                    name: 'Loops',
+                    type: 'spline',
+                    data: userData.loops,
+                    zIndex: 2
+                }, {
+                    name: 'Posts',
+                    type: 'column',
+                    data: userData.authoredPosts,
+                    yAxis: 1,
+                    zIndex: 1
+                }]
+            });
+            
+            $('#followersChartContainer').highcharts({
+                chart: {
+                    zoomType: 'xy'
+                },
+                colors: [tinycolor('#{{profileBackground}}').splitcomplement()[2].toHexString(), '#{{profileBackground}}'],
+                title: {
+                    text: null
+                },
+                subtitle: {
+                    text: null
+                },
+                tooltip: {
+                    shared: true
+                },
+                xAxis: {
+                    type: 'datetime'
+                },
+                yAxis: [{
+                    title: {
+                        text: null
+                    },
+                    labels: {
+                        formatter: function () {
+                            return numeral(this.value).format('0.0 a');
+                        }
+                    }
+                }, {
+                    title: {
+                        text: null
+                    },
+                    labels: {
+                        formatter: function() {
+                            return numeral(this.value).format('0 a');
+                        }
+                    },
+                    opposite: true
+                }],
+                plotOptions: {
+                    series: {
+                        pointStart: userData.updated[0],
+                        pointInterval: 24 * 3600 * 1000
+                    }
+                },
+                series: [{
+                    name: 'Followers',
+                    data: userData.followers,
+                    type: 'spline'
+                }, {
+                    name: 'Loops',
+                    data: userData.loops,
+                    type: 'spline',
+                    opposite: true,
+                    yAxis: 1
+                }]
+            });
+            
+            $('#followingChartContainer').highcharts({
+                chart: {
+                    zoomType: 'xy'
+                },
+                colors: [tinycolor('#{{profileBackground}}').splitcomplement()[2].toHexString(), '#{{profileBackground}}'],
+                title: {
+                    text: null
+                },
+                subtitle: {
+                    text: null
+                },
+                tooltip: {
+                    shared: true
+                },
+                xAxis: {
+                    type: 'datetime'
+                },
+                yAxis: [{
+                    title: {
+                        text: null
+                    },
+                    labels: {
+                        formatter: function () {
+                            return numeral(this.value).format('0.0 a');
+                        }
+                    }
+                }],
+                plotOptions: {
+                    series: {
+                        pointStart: userData.updated[0],
+                        pointInterval: 24 * 3600 * 1000
+                    }
+                },
+                series: [{
+                    name: 'Following',
+                    type: 'area',
+                    data: userData.following,
+                }]
+            });
+            
+            $('#likesChartContainer').highcharts({
+                chart: {
+                    zoomType: 'xy'
+                },
+                colors: [tinycolor('#{{profileBackground}}').splitcomplement()[2].toHexString(), '#{{profileBackground}}'],
+                title: {
+                    text: null
+                },
+                subtitle: {
+                    text: null
+                },
+                tooltip: {
+                    shared: true
+                },
+                xAxis: {
+                    type: 'datetime'
+                },
+                yAxis: [{
+                    title: {
+                        text: null
+                    },
+                    labels: {
+                        formatter: function () {
+                            return numeral(this.value).format('0 a');
+                        }
+                    }
+                }, {
+                    title: {
+                        text: null
+                    },
+                    labels: {
+                        formatter: function() {
+                            return numeral(this.value).format('0 a');
+                        }
+                    },
+                    opposite: true
+                }],
+                plotOptions: {
+                    series: {
+                        pointStart: userData.updated[0],
+                        pointInterval: 24 * 3600 * 1000
+                    }
+                },
+                series: [{
+                    name: 'Likes',
+                    data: userData.likes,
+                }, {
+                    name: 'Revines',
+                    data: userData.revines,
+                    opposite: true,
+                    yAxis: 1
+                }]
+            });
+        }
+        
+        function getArrayDelta(arr) {
+            deltaArr = [];
+            if(arr.length > 1) {
+                for(i = 0; i < arr.length - 1; i++) {
+                    deltaArr[i] = arr[i+1] - arr[i];
+                }
+                console.log("old arr: " + arr);
+                console.log("delta arr:" + deltaArr);
+                return deltaArr;
+            } else {
+                return arr;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', fn, false);
+    </script>
+</div>
