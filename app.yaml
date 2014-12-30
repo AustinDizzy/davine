@@ -9,6 +9,12 @@ handlers:
   upload: public/index.html
   expiration: "1d"
   
+- url: /favicon.ico
+  mime_type: image/x-icon
+  static_files: public/favicon.ico
+  upload: public/favicon.ico
+  expiration: "30d"
+
 - url: /cron/*
   script: _go_app
   login: admin
@@ -22,6 +28,12 @@ handlers:
   mime_type: text/javascript
   static_files: public/\1
   upload: public/(.*\.js)
+
+- url: /(.*\.(png|jpeg|jpg))
+  mime_type: image/\2
+  static_files: public/\1
+  upload: public/(.*\.\2)
+  expiration: "30d"
 
 - url: /.*
   script: _go_app
