@@ -1,4 +1,5 @@
-#![Davine](https://raw.githubusercontent.com/AustinDizzy/davine-share/master/assets/Davine-text-render.png "Davine - Plant your vines, we'll watch them grow.")
+#![Davine](https://raw.githubusercontent.com/AustinDizzy/davine-share/master/assets/Davine-text-render.png "Davine - Plant your vines, we'll watch them grow.") 
+[![Build Status](https://travis-ci.org/AustinDizzy/davine.svg)](https://travis-ci.org/AustinDizzy/davine)
 
 
 [Davine](//davine.co) is an open data, open source, and ad-free social analytics service built for, and in no way affiliated with, [Vine](https://vine.co).
