@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func main() {
+func init() {
 	router := mux.NewRouter()
 	router.HandleFunc("/user", UserStoreHandler).Methods("POST").Queries("id", "")
 	router.HandleFunc("/u/{user}", UserFetchHandler).Methods("GET")
@@ -17,4 +17,8 @@ func main() {
 	router.HandleFunc("/cron/fetch", CronFetchHandler).Methods("GET")
 
 	http.Handle("/", router)
+}
+
+func main() {
+    //just so we can compile
 }
