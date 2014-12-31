@@ -1,6 +1,42 @@
 <div class="container">
     <div class="content">
-        <h1>Coming Soon!</h1>
+        <div class="row">
+            <div class="col-md-6">
+                <table class="table table-hover">
+                    <caption>Recently Discovered Users</caption>
+                {{#recentUsers}}
+                    <tr>
+                        <td>
+                            <img src="{{AvatarUrl}}" class="img-responsive" width="75px" />
+                        </td>
+                        <td style="vertical-align:middle">
+                            <a href="//vine.co/u/{{UserIdStr}}">{{Username}}</a>
+                        </td>
+                    </tr>
+                {{/recentUsers}}
+                </table>
+            </div>
+            <div class="col-md-6">
+                <table class="table table-hover">
+                    <caption>Recently Verified Users</caption>
+                    {{#recentVerified}}
+                        <tr>
+                            <td>
+                                <img src="{{AvatarUrl}}" class="img-responsive" width="75px" />
+                            </td>
+                            <td style="vertical-align:middle">
+                                <a href="/u/{{VanityUrl}}">{{Username}}</a>
+                            </td>
+                            <td>
+                                Verified on <script type="text/javascript">document.write(new Date("{{VerifiedDate}}").toLocaleString())</script>
+                            </td>
+                        </tr>
+                    {{/recentVerified}}
+                </table>
+            </div>
+        </div>
+        <hr>
+        <h1>More Coming Soon!</h1>
         <br>
         <p class="lead">Please check back at this page later for new content.</p>
     </div>
