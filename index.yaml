@@ -16,6 +16,8 @@ indexes:
     direction: desc
   - name: Verified
     direction: desc
+  - name: VerifiedDate
+    direction: desc
   - name: Current.Followers
     direction: desc
   - name: Current.Loops
