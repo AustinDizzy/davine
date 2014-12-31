@@ -159,7 +159,7 @@ func CronFetchHandler(w http.ResponseWriter, r *http.Request) {
 	db := DB{c}
 
 	for _, v := range keys {
-		go db.FetchUser(v.StringID())
+		go db.FetchUser(strconv.FormatInt(v.IntID(), 10))
 	}
 
 	c.Infof("Finished cron fetch")
