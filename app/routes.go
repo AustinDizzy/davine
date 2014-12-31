@@ -92,16 +92,14 @@ func UserStoreHandler(w http.ResponseWriter, r *http.Request) {
 
 	if err == datastore.ErrNoSuchEntity {
 
-		go QueueUser(r.FormValue("id"), c)
-
 		_, err := vineApi.GetUser(r.FormValue("id"))
 
-		if err == ErrUserDoesntExist {
+		if err != nil {
 			data["exists"] = false
 			data["queued"] = false
 		} else {
+		    go QueueUser(r.FormValue("id"), c)
 			data["exists"] = true
-			data["stored"] = false
 			data["queued"] = true
 		}
 

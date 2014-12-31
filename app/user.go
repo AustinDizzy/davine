@@ -12,20 +12,19 @@ import (
 func QueueUser(userId string, c appengine.Context) {
     vineApi := VineRequest{c}
     user, err := vineApi.GetUser(userId)
-    if err == ErrUserDoesntExist {
-        return
+    if err == nil {
+
+        key := datastore.NewKey(c, "Queue", "", user.UserId, nil)
+
+        var data QueuedUser
+        if len(user.VanityUrls) > 0 {
+            data = QueuedUser{strings.ToLower(user.VanityUrls[0]), time.Now()}
+        } else {
+            data = QueuedUser{user.UserIdStr, time.Now()}
+        }
+
+        datastore.Put(c, key, &data)
     }
-
-    key := datastore.NewKey(c, "Queue", "", user.UserId, nil)
-
-    var data QueuedUser
-    if len(user.VanityUrls) > 0 {
-        data = QueuedUser{strings.ToLower(user.VanityUrls[0]), time.Now()}
-    } else {
-        data = QueuedUser{user.UserIdStr, time.Now()}
-    }
-
-    datastore.Put(c, key, &data)
 }
 
 func GetQueuedUser(userId string, c appengine.Context) (user *QueuedUser, err error) {
