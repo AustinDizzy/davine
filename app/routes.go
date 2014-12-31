@@ -67,6 +67,7 @@ func UserFetchHandler(w http.ResponseWriter, r *http.Request) {
 			"loops":       strconv.FormatInt(userMeta.Current.Loops, 10),
 			"followers":   strconv.FormatInt(userMeta.Current.Followers, 10),
 			"data":        storedUserData,
+			"previous":    userMeta.Previous,
 		}
 
 		if userMeta.Background != "" {

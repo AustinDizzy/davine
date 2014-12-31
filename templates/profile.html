@@ -94,6 +94,57 @@
     <div class="page-header" id="misc">
         <h3>Miscellaneous <small>Other statistics gathered</small></h3>
     </div>
+    <div class="col-md-6">
+        <table class="table table-bordered">
+            <caption>Previous Locations</caption>
+            <th>Location</th><th>Modified Date</th>
+            {{#previous.Location}}
+                <tr>
+                    <td>{{Location}}</td>
+                    <td>{{Modified}}</td>
+                </tr>
+            {{/previous.Location}}
+            {{^previous.Location}}
+                <tr>
+                    <td colspan="2" class="text-center">No Previous Data Available</td>
+                </tr>
+            {{/previous.Location}}
+        </table>
+    </div>
+    <div class="col-md-6">
+        <table class="table table-bordered">
+            <caption>Previous Usernames</caption>
+            <th>Username</th><th>Modified Date</th>
+            {{#previous.Username}}
+                <tr>
+                    <td>{{Username}}</td>
+                    <td>{{Modified}}</td>
+                </tr>
+            {{/previous.Username}}
+            {{^previous.Username}}
+                <tr>
+                    <td colspan="2" class="text-center">No Previous Data Available</td>
+                </tr>
+            {{/previous.Username}}
+        </table>
+    </div>
+    <div class="col-md-12">
+        <table class="table table-bordered">
+            <caption>Previous Descriptions</caption>
+            <th>Description</th><th>Modified Date</th>
+            {{#previous.Description}}
+                <tr>
+                    <td>{{Description}}</td>
+                    <td>{{Modified}}</td>
+                </tr>
+            {{/previous.Description}}
+            {{^previous.Description}}
+                <tr>
+                    <td colspan="2" class="text-center">No Previous Data Available</td>
+                </tr>
+            {{/previous.Description}}
+        </table>
+    </div>
     <script type="text/javascript">
         var fn = function(){
 
