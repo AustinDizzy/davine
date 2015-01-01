@@ -86,14 +86,16 @@ func UserFetchHandler(w http.ResponseWriter, r *http.Request) {
 func UserStoreHandler(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	vineApi := VineRequest{c}
-
 	_, err := GetQueuedUser(r.FormValue("id"), c)
 	data := make(map[string]bool)
+
+	if err != datastore.ErrNoSuchEntity && err != nil {
+	    c.Errorf("got UserStore err: %v", err)
+	}
 
 	if err == datastore.ErrNoSuchEntity {
 
 		_, err := vineApi.GetUser(r.FormValue("id"))
-
 		if err != nil {
 			data["exists"] = false
 			data["queued"] = false

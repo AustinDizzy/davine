@@ -23,7 +23,12 @@ func QueueUser(userId string, c appengine.Context) {
             data = QueuedUser{user.UserIdStr, time.Now()}
         }
 
-        datastore.Put(c, key, &data)
+        _, err := datastore.Put(c, key, &data)
+        if err != nil {
+            c.Errorf("got datastore err on QueueUser: %v", err)
+        }
+    } else {
+        c.Errorf("got QueueUser err: %v", err)
     }
 }
 
