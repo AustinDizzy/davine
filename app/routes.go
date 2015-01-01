@@ -98,7 +98,7 @@ func UserStoreHandler(w http.ResponseWriter, r *http.Request) {
 			data["exists"] = false
 			data["queued"] = false
 		} else {
-		    go QueueUser(r.FormValue("id"), c)
+		    QueueUser(r.FormValue("id"), c)
 			data["exists"] = true
 			data["queued"] = true
 		}
@@ -204,7 +204,7 @@ func CronFetchHandler(w http.ResponseWriter, r *http.Request) {
 	db := DB{c}
 
 	for _, v := range keys {
-		go db.FetchUser(strconv.FormatInt(v.IntID(), 10))
+		db.FetchUser(strconv.FormatInt(v.IntID(), 10))
 	}
 
 	c.Infof("Finished cron fetch")
