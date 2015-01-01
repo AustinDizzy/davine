@@ -30,9 +30,3 @@ indexes:
     direction: desc
   - name: Current.Following
     direction: desc
-    
-- kind: UserData
-  ancestor: no
-  properties:
-  - name: LastUpdate
-    direction: desc
