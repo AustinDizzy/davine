@@ -188,6 +188,14 @@ func RandomHandler(w http.ResponseWriter, r *http.Request) {
        http.Redirect(w, r, "/u/" + user.UserID, 301)
 }
 
+func DonateHandler(w http.ResponseWriter, r *http.Request) {
+    dir := path.Join(os.Getenv("PWD"), "templates")
+    donate := path.Join(dir, "donate.html")
+    layout := path.Join(dir, "pageLayout.html")
+    page := mustache.RenderFileInLayout(donate, layout, nil)
+    fmt.Fprint(w, page)
+}
+
 func CronFetchHandler(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 
