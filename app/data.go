@@ -155,7 +155,6 @@ func (db *DB) GetTotalUsers() (int, error) {
 func (db *DB) GetTop() (data map[string]interface{}) {
 
 	var topOverall, topFollowed, topLooped, topPosts, topRevines []StoredUserMeta
-	var lastUpdated time.Time
 
 	//top overall
 	q := datastore.NewQuery("UserMeta").Order("-Current.Followers").Limit(10)
@@ -179,7 +178,7 @@ func (db *DB) GetTop() (data map[string]interface{}) {
 	q = datastore.NewQuery("UserMeta").Order("-Current.Revines").Limit(5)
 	q.GetAll(db.Context, &topRevines)
 
-	lastUpdated = db.GetLastUpdated()
+	lastUpdated := db.GetLastUpdated()
 
 	data = map[string]interface{}{
 	    "topOverall": topOverall,
@@ -198,16 +197,24 @@ func (a ByOverall) Less(i, j int) bool {
     return a[i].Current.Followers > a[j].Current.Followers && a[i].Current.Loops > a[j].Current.Loops && a[i].Current.Following < a[j].Current.Following
 }
 
-func (db *DB) GetLastUpdatedUser() StoredUserData {
-    var lastUpdatedUser []StoredUserData
+func (db *DB) GetLastUpdatedUser() *StoredUserData {
+    var lastUpdatedUser []*StoredUserData
     q := datastore.NewQuery("UserData").Order("-LastUpdated").Limit(1)
     q.GetAll(db.Context, &lastUpdatedUser)
-    return lastUpdatedUser[0]
+    if len(lastUpdatedUser) == 0 {
+        return nil
+    } else {
+        return lastUpdatedUser[0]
+    }
 }
 
 func (db *DB) GetLastUpdated() time.Time {
     lastUpdatedUser := db.GetLastUpdatedUser()
-    return lastUpdatedUser.LastUpdated
+    if lastUpdatedUser == nil {
+        return time.Date(1, 1, 1, 0, 0, 0, 0, time.UTC)
+    } else {
+        return lastUpdatedUser.LastUpdated
+    }
 }
 
 func Shuffle(a []*datastore.Key) []*datastore.Key {
