@@ -173,6 +173,21 @@ func TopHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, page)
 }
 
+func RandomHandler(w http.ResponseWriter, r *http.Request) {
+       c := appengine.NewContext(r)
+       q := datastore.NewQuery("UserMeta").KeysOnly()
+       keys, _ := q.GetAll(c, nil)
+       
+       keys = Shuffle(keys)
+       var user QueuedUser
+       c.Infof("first key %v", keys[0])
+       key := datastore.NewKey(c, "Queue", "", keys[0].IntID(), nil)
+       err := datastore.Get(c, key, &user)
+       c.Errorf("got err %v", err)
+       c.Infof("got user %v", user)
+       http.Redirect(w, r, "/u/" + user.UserID, 301)
+}
+
 func CronFetchHandler(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 

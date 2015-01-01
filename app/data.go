@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 	"sort"
+	"math/rand"
 )
 
 type DB struct {
@@ -207,4 +208,13 @@ func (db *DB) GetLastUpdatedUser() StoredUserData {
 func (db *DB) GetLastUpdated() time.Time {
     lastUpdatedUser := db.GetLastUpdatedUser()
     return lastUpdatedUser.LastUpdated
+}
+
+func Shuffle(a []*datastore.Key) []*datastore.Key {
+    b := a
+    for i := range a {
+        j := rand.Intn(i + 1)
+        b[i], b[j] = b[j], b[i]
+    }
+    return b
 }
