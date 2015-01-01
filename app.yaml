@@ -19,21 +19,9 @@ handlers:
   script: _go_app
   login: admin
 
-- url: /(.*\.css)
-  mime_type: text/css
+- url: /(.+\.(css|js|png|ico))
   static_files: public/\1
-  upload: public/(.*\.css)
-  
-- url: /(.*\.js)
-  mime_type: text/javascript
-  static_files: public/\1
-  upload: public/(.*\.js)
-
-- url: /(.*\.(png|jpeg|jpg))
-  mime_type: image/\2
-  static_files: public/\1
-  upload: public/(.*\.\2)
-  expiration: "30d"
+  upload: public/(.*)
 
 - url: /.*
   script: _go_app
