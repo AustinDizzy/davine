@@ -61,7 +61,7 @@
                 $.post(document.URL + "user?id=" + match[1], function(data){
                     console.log(data);
                     if (data.stored) {
-                        document.location = document.URL + "u/" + user;
+                        document.location = document.URL + "u/" + match[1];
                     } else if (data.queued) {
                          var msg = "<strong>Success!</strong> We haven't seen that user yet,";
                         msg += " so we've added the to our list. Come back in a bit and check";
@@ -72,6 +72,11 @@
                         msg += " be a user that exists on Vine. Please make sure you've entered their profile";
                         msg += " corrently and that there are no trailing whitespaces or misspellings.";
                         showMessage("warning", msg);
+                    } else if (!data.stored && data.exists) {
+                        var msg = "<strong>Success!</strong> The user you've submitted has been recently discovered";
+                        msg += " by our service and its profile will soon be crawled. Please come back later or";
+                        msg += " bookmark <a href='/u/" + match[1] + "'><b>this page</b></a>.";
+                        showMessage("success", msg);
                     }
                 });
             } else {
