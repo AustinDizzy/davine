@@ -2,6 +2,8 @@ cron:
 - description: daily user data fetch
   url: /cron/fetch
   schedule: every 24 hours
+  timezone: US/Eastern
 - description: tri-hourly popular user fetch
   url: /cron/popular
   schedule: every 3 hours
+  timezone: US/Eastern
