@@ -205,6 +205,19 @@ func DonateHandler(w http.ResponseWriter, r *http.Request) {
     fmt.Fprint(w, page)
 }
 
+func PopularFetchHandler(w http.ResponseWriter, r *http.Request) {
+    c := appengine.NewContext(r)
+    vineApi := VineRequest{c}
+
+    users, err := vineApi.GetPopularUsers()
+    for _, v := range users {
+        if _, err := GetQueuedUser(v, c); err == datastore.ErrNoSuchEntity {
+            QueueUser(v, c)
+        }
+    }
+    fmt.Fprint(w, "queuing popular users: %v w/ err %v", users, err)
+}
+
 func CronFetchHandler(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 

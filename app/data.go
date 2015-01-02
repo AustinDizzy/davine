@@ -225,3 +225,16 @@ func Shuffle(a []*datastore.Key) []*datastore.Key {
     }
     return b
 }
+
+func RemoveDuplicates(a []string) []string {
+	found := make(map[string]bool)
+	j := 0
+	for i, x := range a {
+		if !found[x] {
+			found[x] = true
+			a[j] = a[i]
+			j++
+		}
+	}
+	return a[:j]
+}

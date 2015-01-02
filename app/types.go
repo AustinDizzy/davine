@@ -9,8 +9,14 @@ type QueuedUser struct {
 	Discovered time.Time
 }
 
+type VinePopularWrapper struct {
+    Data    PopularPage `json:"data"`
+    Success bool `json:"success"`
+    Error string `json:"error"`
+}
+
 type VineUserWrapper struct {
-	Data    *VineUser
+	Data    *VineUser `json:"data"`
 	Success bool   `json:"success"`
 	Error   string `json:"error"`
 }
@@ -71,6 +77,18 @@ type StoredUserData struct {
 	Revines       []int64     `datastore:",noindex"`
 	Likes         []int64     `datastore:",noindex"`
 	Updated       []time.Time `datastore:",noindex"`
+}
+
+type PopularPage struct {
+    AnchorStr string `json:"anchorStr"`
+    Records []*PopularRecord `json:"records"`
+    NextPage int `json:"nextPage"`
+    Size int `json:"size"`
+}
+
+type PopularRecord struct {
+    UserId int64 `json:"userId"`
+    UserIdStr string `json:"userIdStr"`
 }
 
 type StoredUserDelta struct {

@@ -17,6 +17,7 @@ func init() {
 	router.NotFoundHandler = http.HandlerFunc(NotFoundHandler)
 
 	router.HandleFunc("/cron/fetch", CronFetchHandler).Methods("GET")
+	router.HandleFunc("/cron/popular", PopularFetchHandler).Methods("GET")
 
 	http.Handle("/", router)
 }
