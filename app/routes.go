@@ -189,11 +189,13 @@ func RandomHandler(w http.ResponseWriter, r *http.Request) {
        
        keys = Shuffle(keys)
        var user QueuedUser
-       c.Infof("first key %v", keys[0])
        key := datastore.NewKey(c, "Queue", "", keys[0].IntID(), nil)
        err := datastore.Get(c, key, &user)
-       c.Errorf("got err %v", err)
-       c.Infof("got user %v", user)
+       if err != nil {
+        c.Errorf("got err %v", err)
+       } else {
+        c.Infof("got user %v", user)
+       }
        http.Redirect(w, r, "/u/" + user.UserID, 301)
 }
 
@@ -216,6 +218,7 @@ func PopularFetchHandler(w http.ResponseWriter, r *http.Request) {
         }
     }
     fmt.Fprint(w, "queuing popular users: %v w/ err %v", users, err)
+    c.Infof("queueing popular users: %v w/ err %v", users, err)
 }
 
 func CronFetchHandler(w http.ResponseWriter, r *http.Request) {
