@@ -169,15 +169,10 @@
             for (i = 0; i < userData.following.length; i++){ userData.following[i] = parseInt(userData.following[i], 10) }
             userData.likes = "{{data.Likes}}".substring(1, "{{data.Likes}}".length - 1).split(" ");
             for (i = 0; i < userData.likes.length; i++){ userData.likes[i] = parseInt(userData.likes[i], 10) }
-            
-            console.log("{{data.Updated}}");
 
             userDelta.authoredPosts = getArrayDelta(userData.authoredPosts);
             userDelta.revines = getArrayDelta(userData.revines);
             userDelta.loops = getArrayDelta(userData.loops);
-            
-            console.table(userData);
-            console.table(userDelta);
 
             $('#postsChartContainer').highcharts({
                 chart: {
@@ -443,8 +438,6 @@
                 for(i = 0; i < arr.length - 1; i++) {
                     deltaArr[i] = arr[i+1] - arr[i];
                 }
-                console.log("old arr: " + arr);
-                console.log("delta arr:" + deltaArr);
                 return deltaArr;
             } else {
                 return arr;
