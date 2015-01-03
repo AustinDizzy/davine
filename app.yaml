@@ -7,7 +7,6 @@ handlers:
 - url: /(index.html)?
   static_files: public/index.html
   upload: public/index.html
-  expiration: "1d"
   
 - url: /favicon.ico
   mime_type: image/x-icon
