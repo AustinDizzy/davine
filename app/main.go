@@ -2,8 +2,14 @@ package main
 
 import (
 	"github.com/gorilla/mux"
+	"gopkg.in/yaml.v2"
+	"io/ioutil"
+	"path"
+	"os"
 	"net/http"
 )
+
+var Config map[string]string
 
 func init() {
 	router := mux.NewRouter()
@@ -18,6 +24,9 @@ func init() {
 
 	router.HandleFunc("/cron/fetch", CronFetchHandler).Methods("GET")
 	router.HandleFunc("/cron/popular", PopularFetchHandler).Methods("GET")
+
+	configFile, _ := ioutil.ReadFile(path.Join(os.Getenv("PWD"), "config.yaml"))
+	yaml.Unmarshal(configFile, &Config)
 
 	http.Handle("/", router)
 }
