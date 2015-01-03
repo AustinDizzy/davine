@@ -23,5 +23,5 @@ func init() {
 }
 
 func main() {
-    //just so we can compile
+	//just so we can compile
 }

@@ -3,10 +3,10 @@ package main
 import (
 	"appengine"
 	"appengine/datastore"
+	"math/rand"
+	"sort"
 	"strings"
 	"time"
-	"sort"
-	"math/rand"
 )
 
 type DB struct {
@@ -18,10 +18,10 @@ func (db *DB) FetchUser(user string) {
 	data, err := vineApi.GetUser(user)
 
 	if data == nil {
-	    db.Context.Errorf("failed fetch on user %v. got err %v", user, err)
-	    return
+		db.Context.Errorf("failed fetch on user %v. got err %v", user, err)
+		return
 	} else if data.Private == 1 {
-	    return
+		return
 	}
 
 	var userMeta StoredUserMeta
@@ -144,12 +144,12 @@ func (db *DB) GetUserMeta(user int64) (interface{}, error) {
 
 func (db *DB) GetTotalUsers() (int, error) {
 
-    var metaStats MetaStats
+	var metaStats MetaStats
 
-    key := datastore.NewKey(db.Context, "__Stat_Kind_IsRootEntity__", "UserMeta", 0, nil)
-    err := datastore.Get(db.Context, key, &metaStats)
+	key := datastore.NewKey(db.Context, "__Stat_Kind_IsRootEntity__", "UserMeta", 0, nil)
+	err := datastore.Get(db.Context, key, &metaStats)
 
-    return metaStats.Count, err
+	return metaStats.Count, err
 }
 
 func (db *DB) GetTop() (data map[string]interface{}) {
@@ -181,49 +181,49 @@ func (db *DB) GetTop() (data map[string]interface{}) {
 	lastUpdated := db.GetLastUpdated()
 
 	data = map[string]interface{}{
-	    "topOverall": topOverall,
-	    "topFollowed": topFollowed,
-	    "topLooped": topLooped,
-	    "topPosts": topPosts,
-	    "topRevines": topRevines,
-	    "lastUpdated": lastUpdated,
+		"topOverall":  topOverall,
+		"topFollowed": topFollowed,
+		"topLooped":   topLooped,
+		"topPosts":    topPosts,
+		"topRevines":  topRevines,
+		"lastUpdated": lastUpdated,
 	}
 	return
 }
 
-func (a ByOverall) Len() int           { return len(a) }
-func (a ByOverall) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a ByOverall) Len() int      { return len(a) }
+func (a ByOverall) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
 func (a ByOverall) Less(i, j int) bool {
-    return a[i].Current.Followers > a[j].Current.Followers && a[i].Current.Loops > a[j].Current.Loops && a[i].Current.Following < a[j].Current.Following
+	return a[i].Current.Followers > a[j].Current.Followers && a[i].Current.Loops > a[j].Current.Loops && a[i].Current.Following < a[j].Current.Following
 }
 
 func (db *DB) GetLastUpdatedUser() *StoredUserData {
-    var lastUpdatedUser []*StoredUserData
-    q := datastore.NewQuery("UserData").Order("-LastUpdated").Limit(1)
-    q.GetAll(db.Context, &lastUpdatedUser)
-    if len(lastUpdatedUser) == 0 {
-        return nil
-    } else {
-        return lastUpdatedUser[0]
-    }
+	var lastUpdatedUser []*StoredUserData
+	q := datastore.NewQuery("UserData").Order("-LastUpdated").Limit(1)
+	q.GetAll(db.Context, &lastUpdatedUser)
+	if len(lastUpdatedUser) == 0 {
+		return nil
+	} else {
+		return lastUpdatedUser[0]
+	}
 }
 
 func (db *DB) GetLastUpdated() time.Time {
-    lastUpdatedUser := db.GetLastUpdatedUser()
-    if lastUpdatedUser == nil {
-        return time.Date(1, 1, 1, 0, 0, 0, 0, time.UTC)
-    } else {
-        return lastUpdatedUser.LastUpdated
-    }
+	lastUpdatedUser := db.GetLastUpdatedUser()
+	if lastUpdatedUser == nil {
+		return time.Date(1, 1, 1, 0, 0, 0, 0, time.UTC)
+	} else {
+		return lastUpdatedUser.LastUpdated
+	}
 }
 
 func Shuffle(a []*datastore.Key) []*datastore.Key {
-    b := a
-    for i := range a {
-        j := rand.Intn(i + 1)
-        b[i], b[j] = b[j], b[i]
-    }
-    return b
+	b := a
+	for i := range a {
+		j := rand.Intn(i + 1)
+		b[i], b[j] = b[j], b[i]
+	}
+	return b
 }
 
 func RemoveDuplicates(a []string) []string {

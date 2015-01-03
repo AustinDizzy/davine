@@ -10,15 +10,15 @@ type QueuedUser struct {
 }
 
 type VinePopularWrapper struct {
-    Data    PopularPage `json:"data"`
-    Success bool `json:"success"`
-    Error string `json:"error"`
+	Data    PopularPage `json:"data"`
+	Success bool        `json:"success"`
+	Error   string      `json:"error"`
 }
 
 type VineUserWrapper struct {
 	Data    *VineUser `json:"data"`
-	Success bool   `json:"success"`
-	Error   string `json:"error"`
+	Success bool      `json:"success"`
+	Error   string    `json:"error"`
 }
 
 type VineUser struct {
@@ -80,15 +80,15 @@ type StoredUserData struct {
 }
 
 type PopularPage struct {
-    AnchorStr string `json:"anchorStr"`
-    Records []*PopularRecord `json:"records"`
-    NextPage int `json:"nextPage"`
-    Size int `json:"size"`
+	AnchorStr string           `json:"anchorStr"`
+	Records   []*PopularRecord `json:"records"`
+	NextPage  int              `json:"nextPage"`
+	Size      int              `json:"size"`
 }
 
 type PopularRecord struct {
-    UserId int64 `json:"userId"`
-    UserIdStr string `json:"userIdStr"`
+	UserId    int64  `json:"userId"`
+	UserIdStr string `json:"userIdStr"`
 }
 
 type StoredUserDelta struct {
@@ -121,8 +121,8 @@ type PreviousBackground struct {
 }
 
 type MetaStats struct {
-    Count int `datastore:"count"`
-    Timestamp time.Time `datastore:"timestamp"`
+	Count     int       `datastore:"count"`
+	Timestamp time.Time `datastore:"timestamp"`
 }
 
 type ByOverall []StoredUserMeta

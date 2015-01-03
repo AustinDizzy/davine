@@ -50,34 +50,34 @@ func (v *VineRequest) GetUser(userId string) (*VineUser, error) {
 	}
 
 	resp, err := v.get(url)
-    if err != nil {
-        return nil, err
-    } else {
-        data := new(VineUserWrapper)
-        err = json.Unmarshal(resp, &data)
-        if data.Success {
-            return data.Data, nil
-        } else {
-            return nil, errors.New(data.Error)
-        }
-    }
+	if err != nil {
+		return nil, err
+	} else {
+		data := new(VineUserWrapper)
+		err = json.Unmarshal(resp, &data)
+		if data.Success {
+			return data.Data, nil
+		} else {
+			return nil, errors.New(data.Error)
+		}
+	}
 }
 
 func (v *VineRequest) GetPopularUsers() ([]string, error) {
-    resp, err := v.get("/timelines/popular?size=60")
-    if err != nil {
-        return nil, err
-    } else {
-        var users []string
-        data := new(VinePopularWrapper)
-        err = json.Unmarshal(resp, &data)
-        if data.Success {
-            for _, v := range data.Data.Records {
-                users = append(users, v.UserIdStr)
-            }
-            return users, nil
-        } else {
-            return nil, errors.New(data.Error)
-        }
-    }
+	resp, err := v.get("/timelines/popular?size=60")
+	if err != nil {
+		return nil, err
+	} else {
+		var users []string
+		data := new(VinePopularWrapper)
+		err = json.Unmarshal(resp, &data)
+		if data.Success {
+			for _, v := range data.Data.Records {
+				users = append(users, v.UserIdStr)
+			}
+			return users, nil
+		} else {
+			return nil, errors.New(data.Error)
+		}
+	}
 }
