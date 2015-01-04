@@ -93,6 +93,8 @@
            $(this).parent().hide();
         });
 
+        $('a[href="/random/user"]').attr('href', '/random/user?' + new Date().getTime());
+
         function showMessage(type, msg) {
             if($('.user-alert').css('display') == "none") {
                 $('.user-alert').removeClass('alert-danger alert-warning alert-success').addClass('alert-' + type).slideDown();
