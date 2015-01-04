@@ -11,6 +11,7 @@ install:
     - export GOROOT=`pwd`/go_appengine/goroot
     - ./go_appengine/goapp get github.com/hoisie/mustache
     - ./go_appengine/goapp get github.com/gorilla/mux
+    - ./go_appengine/goapp get gopkg.in/yaml.v2
 
 script:
     - ./go_appengine/goapp build ./davine/app/*
