@@ -34,6 +34,7 @@ func (db *DB) FetchUser(user string) {
 	if err == datastore.ErrNoSuchEntity {
 		userMeta = StoredUserMeta{
 			Username:    data.Username,
+			UserId:      data.UserIdStr,
 			Location:    data.Location,
 			Description: data.Description,
 			Verified:    data.Verified == 1,
@@ -71,6 +72,10 @@ func (db *DB) FetchUser(user string) {
 	} else {
 
 		userMeta = userMetaTemp.(StoredUserMeta)
+
+		if userMeta.UserId == "" {
+			userMeta.UserId = data.UserIdStr
+		}
 
 		if userMeta.Location != data.Location {
 			userMeta.Previous.Location = append(userMeta.Previous.Location, PreviousLocation{userMeta.Location, time.Now()})

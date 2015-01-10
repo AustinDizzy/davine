@@ -9,12 +9,12 @@
                 {{#topOverall}}
                     <tr>
                         <td>
-                            <a href="/u/{{VanityUrl}}">
+                            <a data-user="{{UserId}}" data-vanity="{{VanityUrl}}">
                                 <img src="{{AvatarUrl}}" alt="{{Username}}'s avatar" class="img-responsive" width="75px" />
                             </a>
                         </td>
                         <td style="vertical-align:middle">
-                            <a href="/u/{{VanityUrl}}">{{Username}}</a>
+                            <a data-user="{{UserId}}" data-vanity="{{VanityUrl}}">{{Username}}</a>
                         </td>
                         <td style="vertical-align:middle">
                             <span class="formatInt" data-format="0,0">{{Current.Followers}}</span> followers
@@ -35,7 +35,7 @@
                 {{#topFollowed}}
                     <tr>
                         <td>
-                            <a href="/u/{{VanityUrl}}">{{Username}}</a>
+                            <a data-user="{{UserId}}" data-vanity="{{VanityUrl}}">{{Username}}</a>
                         </td>
                         <td class="formatInt" data-format="0,0">{{Current.Followers}}</td>
                     </tr>
@@ -48,7 +48,7 @@
                 {{#topLooped}}
                     <tr>
                         <td>
-                            <a href="/u/{{VanityUrl}}">{{Username}}</a>
+                            <a data-user="{{UserId}}" data-vanity="{{VanityUrl}}">{{Username}}</a>
                         </td>
                         <td class="formatInt" data-format="0,0">{{Current.Loops}}</td>
                     </tr>
@@ -61,7 +61,7 @@
                 {{#topPosts}}
                     <tr>
                         <td>
-                            <a href="/u/{{VanityUrl}}">{{Username}}</a>
+                            <a data-user="{{UserId}}" data-vanity="{{VanityUrl}}">{{Username}}</a>
                         </td>
                         <td class="formatInt" data-format="0,0">{{Current.AuthoredPosts}}</td>
                     </tr>
@@ -74,7 +74,7 @@
                 {{#topRevines}}
                     <tr>
                         <td>
-                            <a href="/u/{{VanityUrl}}">{{Username}}</a>
+                            <a data-user="{{UserId}}" data-vanity="{{VanityUrl}}">{{Username}}</a>
                         </td>
                         <td class="formatInt" data-format="0,0">{{Current.Revines}}</td>
                     </tr>

@@ -7,6 +7,11 @@ $(function(){
         return this.href == window.location;
     }).parent().addClass('active');
 
+    $('a[data-vanity][data-user]').each(function(){
+        var url = ($(this).attr('data-vanity') === '' ? $(this).attr('data-user') : $(this).attr('data-vanity'));
+        $(this).attr('href', '/u/' + url);
+    });
+
     $('.formatInt').each(function(i) {
         val = $('.formatInt')[i].innerText;
         str = numeral(parseInt(val));

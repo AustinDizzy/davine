@@ -42,7 +42,7 @@ type VineUser struct {
 }
 
 type StoredUserMeta struct {
-	Username    string
+	Username, UserId    string
 	Location    string `datastore:",noindex"`
 	Description string `datastore:",noindex"`
 	Background  string `datastore:",noindex"`

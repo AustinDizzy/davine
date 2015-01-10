@@ -61,6 +61,7 @@ func UserFetchHandler(w http.ResponseWriter, r *http.Request) {
 
 		userData := map[string]interface{}{
 			"username":    userMeta.Username,
+			"userId":      userMeta.UserId,
 			"description": userMeta.Description,
 			"location":    userMeta.Location,
 			"avatarUrl":   userMeta.AvatarUrl,
