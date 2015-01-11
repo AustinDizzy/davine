@@ -42,12 +42,12 @@ type VineUser struct {
 }
 
 type StoredUserMeta struct {
-	Username, UserId    string
-	Location    string `datastore:",noindex"`
-	Description string `datastore:",noindex"`
-	Background  string `datastore:",noindex"`
-	Current     StoredUserMetaCurrent
-	Previous    struct {
+	Username, UserId string
+	Location         string `datastore:",noindex"`
+	Description      string `datastore:",noindex"`
+	Background       string `datastore:",noindex"`
+	Current          StoredUserMetaCurrent
+	Previous         struct {
 		Username    []PreviousUsername    `datastore:",noindex"`
 		Location    []PreviousLocation    `datastore:",noindex"`
 		Description []PreviousDescription `datastore:",noindex"`

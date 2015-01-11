@@ -13,50 +13,50 @@ import (
 )
 
 type Export struct {
-    Context appengine.Context
+	Context appengine.Context
 }
 
 func (x *Export) User(user string, w http.ResponseWriter) {
-    db := DB{x.Context}
-    userId, _ := strconv.ParseInt(user, 10, 64)
+	db := DB{x.Context}
+	userId, _ := strconv.ParseInt(user, 10, 64)
 
-    userMetaTemp, err := db.GetUserMeta(userId)
-    userMeta, _ := json.MarshalIndent(userMetaTemp.(StoredUserMeta), "", "  ")
-    if err != nil {
-        x.Context.Errorf("got err on export: %v", err)
-        return
-    }
+	userMetaTemp, err := db.GetUserMeta(userId)
+	userMeta, _ := json.MarshalIndent(userMetaTemp.(StoredUserMeta), "", "  ")
+	if err != nil {
+		x.Context.Errorf("got err on export: %v", err)
+		return
+	}
 
-    userDataTemp, err := db.GetUserData(userId)
-    userData, _ := json.MarshalIndent(userDataTemp.(StoredUserData), "", "  ")
-    if err != nil {
-        x.Context.Errorf("got err on export: %v", err)
-        return
-    }
+	userDataTemp, err := db.GetUserData(userId)
+	userData, _ := json.MarshalIndent(userDataTemp.(StoredUserData), "", "  ")
+	if err != nil {
+		x.Context.Errorf("got err on export: %v", err)
+		return
+	}
 
-    zipWriter := zip.NewWriter(w)
+	zipWriter := zip.NewWriter(w)
 
-    var files = []struct {
-            Name, Data string
-    }{
-            {"UserMeta.json", string(userMeta)},
-            {"UserData.json", string(userData)},
-    }
-    for _, file := range files {
-            f, err := zipWriter.Create(file.Name)
-            if err != nil {
-                    x.Context.Errorf(err.Error())
-            }
-            _, err = f.Write([]byte(file.Data))
-            if err != nil {
-                    x.Context.Errorf(err.Error())
-            }
-    }
+	var files = []struct {
+		Name, Data string
+	}{
+		{"UserMeta.json", string(userMeta)},
+		{"UserData.json", string(userData)},
+	}
+	for _, file := range files {
+		f, err := zipWriter.Create(file.Name)
+		if err != nil {
+			x.Context.Errorf(err.Error())
+		}
+		_, err = f.Write([]byte(file.Data))
+		if err != nil {
+			x.Context.Errorf(err.Error())
+		}
+	}
 
-    err = zipWriter.Close()
-    if err != nil {
-            x.Context.Errorf(err.Error())
-    }
+	err = zipWriter.Close()
+	if err != nil {
+		x.Context.Errorf(err.Error())
+	}
 }
 
 func QueueUser(userId string, c appengine.Context) {
