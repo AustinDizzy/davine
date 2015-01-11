@@ -12,6 +12,10 @@ install:
     - ./go_appengine/goapp get github.com/hoisie/mustache
     - ./go_appengine/goapp get github.com/gorilla/mux
     - ./go_appengine/goapp get gopkg.in/yaml.v2
+    - ./go_appengine/goapp get golang.org/x/oauth2
+    - ./go_appengine/goapp get golang.org/x/oauth2/google
+    - ./go_appengine/goapp get google.golang.org/cloud
+    - ./go_appengine/goapp get google.golang.org/cloud/storage
 
 script:
     - ./go_appengine/goapp build ./davine/app/*
