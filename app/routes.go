@@ -3,10 +3,17 @@ package main
 import (
 	"appengine"
 	"appengine/datastore"
+	"appengine/file"
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/hoisie/mustache"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
+	"google.golang.org/cloud/storage"
+	"google.golang.org/cloud"
+	"gopkg.in/yaml.v2"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"path"
@@ -246,4 +253,35 @@ func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
 	page := mustache.RenderFileInLayout(notFound, layout, data)
 	w.WriteHeader(404)
 	fmt.Fprint(w, page)
+}
+
+func StartupHandler(w http.ResponseWriter, r *http.Request) {
+    if len(Config) == 0 {
+        c := appengine.NewContext(r)
+        client := &http.Client{
+            Transport: &oauth2.Transport{
+                Source: google.AppEngineTokenSource(c, storage.ScopeReadOnly),
+                Base: &urlfetch.Transport{
+                    Context: c,
+                },
+            },
+        }
+        bucket, _ := file.DefaultBucketName(c)
+        ctx := cloud.NewContext("davine-web", client)
+        rc, err := storage.NewReader(ctx, bucket, "config.yaml")
+        if err != nil {
+            c.Errorf("error reading config: %v", err.Error())
+            return
+        }
+        configFile, err := ioutil.ReadAll(rc)
+        rc.Close()
+        if err != nil {
+            c.Errorf("error reading config: %v", err.Error())
+            return
+        }
+
+        c.Infof("loaded config file: %v", configFile)
+        yaml.Unmarshal(configFile, &Config)
+        c.Infof("loaded config struct: %v", Config)
+    }
 }
