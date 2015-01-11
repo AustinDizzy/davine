@@ -4,6 +4,7 @@ import (
 	"appengine"
 	"appengine/datastore"
 	"appengine/file"
+	"appengine/urlfetch"
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
@@ -213,6 +214,52 @@ func DonateHandler(w http.ResponseWriter, r *http.Request) {
 	layout := path.Join(dir, "pageLayout.html")
 	page := mustache.RenderFileInLayout(donate, layout, nil)
 	fmt.Fprint(w, page)
+}
+
+func ExportHandler(w http.ResponseWriter, r *http.Request) {
+    c := appengine.NewContext(r)
+    db := DB{c}
+    vars := mux.Vars(r)
+
+    if r.Method == "GET" {
+        userId, err := strconv.ParseInt(vars["user"], 10, 64)
+        if err != nil {
+            c.Errorf("got err: %v", err)
+            http.Redirect(w, r, "/404", 301)
+            return
+        }
+        userMeta, err := db.GetUserMeta(userId)
+        if err == datastore.ErrNoSuchEntity {
+            http.Redirect(w, r, "/404", 301)
+            return
+        }
+        user := userMeta.(StoredUserMeta)
+        data := map[string]string{"username":user.Username,"userId":vars["user"],"captcha":Config["captchaPublic"]}
+        dir := path.Join(os.Getenv("PWD"), "templates")
+        export := path.Join(dir, "export.html")
+        layout := path.Join(dir, "pageLayout.html")
+        page := mustache.RenderFileInLayout(export, layout, data)
+        fmt.Fprint(w, page)
+    } else if r.Method == "POST" {
+        client := urlfetch.Client(c)
+        url := "https://www.google.com/recaptcha/api/siteverify?secret=" + Config["captchaPrivate"]
+        url += "&response=" + r.FormValue("g-recaptcha-response") + "&remoteip=" + r.RemoteAddr
+		req, _ := http.NewRequest("GET", url, nil)
+		resp, err := client.Do(req)
+		if err != nil {
+		    c.Errorf("got err: %v", err)
+		    return
+		}
+		body, _ := ioutil.ReadAll(resp.Body)
+		var data map[string]interface{}
+		json.Unmarshal(body, &data)
+		if true {
+		    export := Export{c}
+            export.User(vars["user"], w)
+		} else {
+            fmt.Fprint(w, "Seems like your CAPTCHA was wrong. Please press back and try again.")
+		}
+    }
 }
 
 func PopularFetchHandler(w http.ResponseWriter, r *http.Request) {

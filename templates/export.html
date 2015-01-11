@@ -1,0 +1,16 @@
+<div class="container">
+    <div class="content">
+        <h1 class="text-center">Data Export for: {{username}}</h1>
+        <p class="lead">
+            You are requesting a data export (in zipped-JSON format, more format options coming soon) for 
+            <a href="https://vine.co/u/{{userId}}" target="_blank">{{username}}</a> with the user ID {{userId}}.
+            Please confirm your request below.
+        </p>
+        <form action="?" method="POST" class="col-md-4 col-md-offset-4 text-center">
+            <div class="g-recaptcha" data-sitekey="{{captcha}}"></div>
+            <br/>
+            <input type="submit" value="Submit" class="btn btn-primary">
+        </form>
+    </div>
+</div>
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
