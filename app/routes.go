@@ -253,7 +253,7 @@ func ExportHandler(w http.ResponseWriter, r *http.Request) {
 		body, _ := ioutil.ReadAll(resp.Body)
 		var data map[string]interface{}
 		json.Unmarshal(body, &data)
-		if true {
+		if data["success"].(bool) {
 			export := Export{c}
 			export.User(vars["user"], w)
 		} else {

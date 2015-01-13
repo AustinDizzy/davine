@@ -34,6 +34,7 @@ func (x *Export) User(user string, w http.ResponseWriter) {
 		return
 	}
 
+    w.Header().Add("Content-Type", "application/zip")
 	zipWriter := zip.NewWriter(w)
 
 	var files = []struct {
