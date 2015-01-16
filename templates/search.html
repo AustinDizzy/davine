@@ -1,0 +1,83 @@
+<div class="container">
+    <div class="content">
+        <div class="page-header">
+            <h1>Search <small>We've already found what you're looking for.</small></h1>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12">
+                <form class="input-group input-group">
+                    <input type="search" class="form-control input-lg" name="q" placeholder="Search for...">
+                    <span class="input-group-addon control-group">
+                        <label class="">
+                            Sort on
+                        </label>
+                        <select class="btn controls" name="s">
+                            <option value="overall">Overall</option>
+                            <option value="followers">Followers</option>
+                            <option value="loops">Loops</option>
+                            <option value="posts">Posts</option>
+                            <option value="revines">Revines</option>
+                        </select>
+                    </span>
+                    <span class="input-group-btn">
+                        <button class="btn btn-default btn-lg" type="submit">Search</button>
+                    </span>
+                </form>
+            </div>
+        </div>
+
+        <table class="table table-hover" style="table-layout:fixed;word-wrap:break-word;margin-top:20px;">
+            <caption class="lead">
+                <span class="formatInt" data-format="0,0">
+                    {{count}}
+                </span> (max 100) results for "{{query}}"
+            </caption>
+            <tr>
+                <th class="text-center">User</th>
+                <th class="text-center">Description</th>
+                <th class="text-center">Location</th>
+                <th class="text-center">Followers, Following, Loops</th>
+            </tr>
+        {{#results}}
+            <tr>
+                <td style="vertical-align:middle" class="text-center">
+                    <a data-user="{{UserId}}" data-vanity="{{VanityUrl}}">
+                        <img src="{{AvatarUrl}}" alt="{{Username}}'s avatar" width="75px" />
+                    </a>
+                    <a data-user="{{UserId}}" data-vanity="{{VanityUrl}}" class="searchable">{{Username}}</a>
+                </td>
+                <td style="vertical-align:middle" class="text-center searchable">
+                    {{Description}}
+                </td>
+                <td style="vertical-align:middle" class="text-center searchable">
+                    {{Location}}
+                </td>
+                <td style="vertical-align:middle" class="text-center">
+                    <span class="formatInt" data-format="0,0">{{Current.Followers}}</span> followers <br>
+                    following <span class="formatInt" data-format="0,0">{{Current.Following}}</span> <br>
+                    <span class="formatInt" data-format="0,0">{{Current.Loops}}</span> loops
+                </td>
+            </tr>
+        {{/results}}
+        </table>
+    </div>
+</div>
+<script type="text/javascript">
+    var fn = function(){
+        if(!{{count}}) {
+            $('table').remove();
+        } else {
+            $('.searchable').each(function(i, v) {
+                var pos = v.innerHTML.toLowerCase().indexOf('{{query}}'.toLowerCase());
+                if (pos != -1) {
+                    $(this).get(0).innerHTML = $(this).get(0).innerHTML.replace(new RegExp('{{query}}', 'ig'),
+                        $(this).get(0).innerHTML.substring(pos, pos + '{{query}}'.length).bold()
+                    );
+                }
+            });
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', fn, false);
+</script>

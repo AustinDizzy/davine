@@ -19,6 +19,7 @@ func init() {
 	router.HandleFunc("/about", AboutHandler).Methods("GET")
 	router.HandleFunc("/top", TopHandler).Methods("GET")
 	router.HandleFunc("/discover", DiscoverHandler).Methods("GET")
+	router.HandleFunc("/search", SearchHandler).Methods("GET", "POST")
 	router.HandleFunc("/random/user", RandomHandler).Methods("GET")
 	router.HandleFunc("/donate", DonateHandler).Methods("GET")
 	router.HandleFunc("/x/{user}", ExportHandler).Methods("GET", "POST")

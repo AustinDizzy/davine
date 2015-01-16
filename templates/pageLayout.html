@@ -46,9 +46,28 @@
                     <a href="/" style="text-decoration:none !important; color: inherit !important;">Davine</a>
                 </span>
                 <ul class="nav navbar-nav navbar-right">
-                    <li>
+                    <li id="search-cont" style="display:none">
+                        <form class="navbar-form" role="search" action="/search" method="GET">
+                            <div class="input-group">
+                                <input type="text" class="form-control pull-right" name="q" style="width: 300px;" placeholder="Search...">
+                                <span class="input-group-btn">
+                                    <button type="reset" class="btn btn-default search-hide">
+                                        <span class="fa fa-remove">
+                                            <span class="sr-only">Close</span>
+                                        </span>
+                                    </button>
+                                    <button type="submit" class="btn btn-default">
+                                        <span class="fa fa-search">
+                                            <span class="sr-only">Search</span>
+                                        </span>
+                                    </button>
+                                </span>
+                            </div>
+                        </form>
+                    </li>
+                    <li class="search-show">
                         <a href="#">
-                            <i class="fa fa-search" data-toggle="tooltip" data-container="body" data-placement="left" title="Advanced Search coming soon!"></i>
+                            <i class="fa fa-search"></i>
                         </a>
                     </li>
                 </ul>

@@ -3,6 +3,7 @@ package main
 import (
 	"appengine"
 	"appengine/datastore"
+	"appengine/search"
 	"math/rand"
 	"sort"
 	"strings"
@@ -17,7 +18,9 @@ func (db *DB) FetchUser(user string) {
 	vineApi := VineRequest{db.Context}
 	data, err := vineApi.GetUser(user)
 
-	if data == nil {
+    if err == datastore.ErrNoSuchEntity {
+        return
+    } else if data == nil {
 		db.Context.Errorf("failed fetch on user %v. got err %v", user, err)
 		return
 	} else if data.Private == 1 {
@@ -28,6 +31,16 @@ func (db *DB) FetchUser(user string) {
 	var userData StoredUserData
 
 	userId := data.UserId
+
+    userIndex := &UserIndex{
+        Username: data.Username,
+        Location: data.Location,
+        Description: data.Description,
+    }
+
+    if len(data.VanityUrls) != 0 {
+        userIndex.VanityUrl = strings.ToLower(data.VanityUrls[0])
+    }
 
 	userMetaTemp, err := db.GetUserMeta(userId)
 
@@ -115,6 +128,13 @@ func (db *DB) FetchUser(user string) {
 	dataKey := datastore.NewKey(db.Context, "UserData", "", userId, nil)
 	metaKey := datastore.NewKey(db.Context, "UserMeta", "", userId, nil)
 
+    index, err := search.Open("users")
+    if err != nil {
+        db.Context.Errorf(err.Error())
+    } else {
+        index.Put(db.Context, data.UserIdStr, userIndex)
+    }
+
 	datastore.Put(db.Context, dataKey, &userData)
 	datastore.Put(db.Context, metaKey, &userMeta)
 }
@@ -200,6 +220,30 @@ func (a ByOverall) Len() int      { return len(a) }
 func (a ByOverall) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
 func (a ByOverall) Less(i, j int) bool {
 	return a[i].Current.Followers > a[j].Current.Followers && a[i].Current.Loops > a[j].Current.Loops && a[i].Current.Following < a[j].Current.Following
+}
+
+func (a ByFollowers) Len() int      { return len(a) }
+func (a ByFollowers) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
+func (a ByFollowers) Less(i, j int) bool {
+	return a[i].Current.Followers > a[j].Current.Followers
+}
+
+func (a ByLoops) Len() int      { return len(a) }
+func (a ByLoops) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
+func (a ByLoops) Less(i, j int) bool {
+	return a[i].Current.Loops > a[j].Current.Loops
+}
+
+func (a ByPosts) Len() int      { return len(a) }
+func (a ByPosts) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
+func (a ByPosts) Less(i, j int) bool {
+	return a[i].Current.AuthoredPosts > a[j].Current.AuthoredPosts
+}
+
+func (a ByRevines) Len() int      { return len(a) }
+func (a ByRevines) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
+func (a ByRevines) Less(i, j int) bool {
+	return a[i].Current.Revines > a[j].Current.Revines
 }
 
 func (db *DB) GetLastUpdatedUser() *StoredUserData {

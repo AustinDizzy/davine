@@ -158,10 +158,8 @@
     </div>
     <script type="text/javascript">
         var fn = function(){
-
             var userData = {};
             var userDelta = {};
-
             userData.authoredPosts = "{{data.AuthoredPosts}}".substring(1, "{{data.AuthoredPosts}}".length - 1).split(" ");
             for (i = 0; i < userData.authoredPosts.length; i++){ userData.authoredPosts[i] = parseInt(userData.authoredPosts[i],10) }
             userData.revines = "{{data.Revines}}".substring(1, "{{data.Revines}}".length - 1).split(" ");
@@ -177,11 +175,9 @@
             for (i = 0; i < userData.following.length; i++){ userData.following[i] = parseInt(userData.following[i], 10) }
             userData.likes = "{{data.Likes}}".substring(1, "{{data.Likes}}".length - 1).split(" ");
             for (i = 0; i < userData.likes.length; i++){ userData.likes[i] = parseInt(userData.likes[i], 10) }
-
             userDelta.authoredPosts = getArrayDelta(userData.authoredPosts);
             userDelta.revines = getArrayDelta(userData.revines);
             userDelta.loops = getArrayDelta(userData.loops);
-
             $('#postsChartContainer').highcharts({
                 chart: {
                     type: 'area'
@@ -231,7 +227,6 @@
                     data: userData.revines
                 }]
             });
-
             $('#loopsChartContainer').highcharts({
                 chart: {
                     zoomType: 'xy'
@@ -451,7 +446,6 @@
                 return arr;
             }
         }
-
         document.addEventListener('DOMContentLoaded', fn, false);
     </script>
 </div>

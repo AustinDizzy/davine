@@ -3,6 +3,7 @@ package main
 import (
 	"appengine"
 	"appengine/datastore"
+	"appengine/search"
 	"archive/zip"
 	"encoding/json"
 	"net/http"
@@ -101,4 +102,34 @@ func GetQueuedUser(userId string, c appengine.Context) (user *QueuedUser, err er
 	}
 
 	return
+}
+
+func SearchUsers(c appengine.Context, query string) ([]StoredUserMeta, error) {
+    db := DB{c}
+    index, err := search.Open("users")
+    if err != nil {
+        return nil, err
+    }
+
+    var users []StoredUserMeta
+
+    opts := &search.SearchOptions{
+        Limit:   100,
+        IDsOnly: true,
+    }
+
+    for t := index.Search(c, query, opts); ; {
+        key, err := t.Next(nil)
+        if err == search.Done {
+            break
+        } else if err != nil {
+            return nil, err
+        }
+        id, _ := strconv.ParseInt(key, 10, 64)
+        userMeta, err := db.GetUserMeta(id)
+
+        users = append(users, userMeta.(StoredUserMeta))
+    }
+
+    return users, nil
 }

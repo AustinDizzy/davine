@@ -12,6 +12,16 @@ $(function(){
         $(this).attr('href', '/u/' + url);
     });
 
+    $('.search-show').click(function(){
+        $(this).hide();
+        $('#search-cont').show();
+    });
+
+    $('.search-hide').click(function(){
+        $('.search-show').show();
+        $('#search-cont').hide();
+    });
+
     $('.formatInt').each(function(i) {
         val = $('.formatInt')[i].innerText;
         str = numeral(parseInt(val));
