@@ -210,46 +210,46 @@ func RandomHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func SearchHandler(w http.ResponseWriter, r *http.Request) {
-    c := appengine.NewContext(r)
-    dir := path.Join(os.Getenv("PWD"), "templates")
-    search := path.Join(dir, "search.html")
-    layout := path.Join(dir, "pageLayout.html")
-    data := map[string]interface{}{
-        "query": r.FormValue("q"),
-        "count": 0,
-    }
+	c := appengine.NewContext(r)
+	dir := path.Join(os.Getenv("PWD"), "templates")
+	search := path.Join(dir, "search.html")
+	layout := path.Join(dir, "pageLayout.html")
+	data := map[string]interface{}{
+		"query": r.FormValue("q"),
+		"count": 0,
+	}
 	if len(r.FormValue("q")) > 0 {
-        results, err := SearchUsers(c, r.FormValue("q"))
-        if err != nil {
-            c.Errorf("got err on search: %v", err)
-        }
+		results, err := SearchUsers(c, r.FormValue("q"))
+		if err != nil {
+			c.Errorf("got err on search: %v", err)
+		}
 
-        switch r.FormValue("s") {
-            case "overall":
-                sort.Sort(ByOverall(results))
-                break
-            case "followers":
-                sort.Sort(ByFollowers(results))
-                break
-            case "loops":
-                sort.Sort(ByLoops(results))
-                break
-            case "posts":
-                sort.Sort(ByPosts(results))
-                break
-            case "revines":
-                sort.Sort(ByRevines(results))
-                break
-        }
+		switch r.FormValue("s") {
+		case "overall":
+			sort.Sort(ByOverall(results))
+			break
+		case "followers":
+			sort.Sort(ByFollowers(results))
+			break
+		case "loops":
+			sort.Sort(ByLoops(results))
+			break
+		case "posts":
+			sort.Sort(ByPosts(results))
+			break
+		case "revines":
+			sort.Sort(ByRevines(results))
+			break
+		}
 
-        if r.Method == "GET" {
-            data["count"] = len(results)
-            data["results"] = results
-        } else if r.Method == "POST" {
-            jsonData, _ := json.Marshal(results)
-            fmt.Fprint(w, string(jsonData))
-            return
-        }
+		if r.Method == "GET" {
+			data["count"] = len(results)
+			data["results"] = results
+		} else if r.Method == "POST" {
+			jsonData, _ := json.Marshal(results)
+			fmt.Fprint(w, string(jsonData))
+			return
+		}
 	}
 
 	page := mustache.RenderFileInLayout(search, layout, data)

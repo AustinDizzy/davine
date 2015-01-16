@@ -18,9 +18,9 @@ func (db *DB) FetchUser(user string) {
 	vineApi := VineRequest{db.Context}
 	data, err := vineApi.GetUser(user)
 
-    if err == datastore.ErrNoSuchEntity {
-        return
-    } else if data == nil {
+	if err == datastore.ErrNoSuchEntity {
+		return
+	} else if data == nil {
 		db.Context.Errorf("failed fetch on user %v. got err %v", user, err)
 		return
 	} else if data.Private == 1 {
@@ -32,15 +32,15 @@ func (db *DB) FetchUser(user string) {
 
 	userId := data.UserId
 
-    userIndex := &UserIndex{
-        Username: data.Username,
-        Location: data.Location,
-        Description: data.Description,
-    }
+	userIndex := &UserIndex{
+		Username:    data.Username,
+		Location:    data.Location,
+		Description: data.Description,
+	}
 
-    if len(data.VanityUrls) != 0 {
-        userIndex.VanityUrl = strings.ToLower(data.VanityUrls[0])
-    }
+	if len(data.VanityUrls) != 0 {
+		userIndex.VanityUrl = strings.ToLower(data.VanityUrls[0])
+	}
 
 	userMetaTemp, err := db.GetUserMeta(userId)
 
@@ -128,12 +128,12 @@ func (db *DB) FetchUser(user string) {
 	dataKey := datastore.NewKey(db.Context, "UserData", "", userId, nil)
 	metaKey := datastore.NewKey(db.Context, "UserMeta", "", userId, nil)
 
-    index, err := search.Open("users")
-    if err != nil {
-        db.Context.Errorf(err.Error())
-    } else {
-        index.Put(db.Context, data.UserIdStr, userIndex)
-    }
+	index, err := search.Open("users")
+	if err != nil {
+		db.Context.Errorf(err.Error())
+	} else {
+		index.Put(db.Context, data.UserIdStr, userIndex)
+	}
 
 	datastore.Put(db.Context, dataKey, &userData)
 	datastore.Put(db.Context, metaKey, &userMeta)

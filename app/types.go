@@ -132,5 +132,5 @@ type ByPosts []StoredUserMeta
 type ByRevines []StoredUserMeta
 
 type UserIndex struct {
-    Username, Location, Description, VanityUrl string
+	Username, Location, Description, VanityUrl string
 }

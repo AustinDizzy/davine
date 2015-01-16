@@ -35,7 +35,7 @@ func (x *Export) User(user string, w http.ResponseWriter) {
 		return
 	}
 
-    w.Header().Add("Content-Type", "application/zip")
+	w.Header().Add("Content-Type", "application/zip")
 	zipWriter := zip.NewWriter(w)
 
 	var files = []struct {
@@ -105,31 +105,31 @@ func GetQueuedUser(userId string, c appengine.Context) (user *QueuedUser, err er
 }
 
 func SearchUsers(c appengine.Context, query string) ([]StoredUserMeta, error) {
-    db := DB{c}
-    index, err := search.Open("users")
-    if err != nil {
-        return nil, err
-    }
+	db := DB{c}
+	index, err := search.Open("users")
+	if err != nil {
+		return nil, err
+	}
 
-    var users []StoredUserMeta
+	var users []StoredUserMeta
 
-    opts := &search.SearchOptions{
-        Limit:   100,
-        IDsOnly: true,
-    }
+	opts := &search.SearchOptions{
+		Limit:   100,
+		IDsOnly: true,
+	}
 
-    for t := index.Search(c, query, opts); ; {
-        key, err := t.Next(nil)
-        if err == search.Done {
-            break
-        } else if err != nil {
-            return nil, err
-        }
-        id, _ := strconv.ParseInt(key, 10, 64)
-        userMeta, err := db.GetUserMeta(id)
+	for t := index.Search(c, query, opts); ; {
+		key, err := t.Next(nil)
+		if err == search.Done {
+			break
+		} else if err != nil {
+			return nil, err
+		}
+		id, _ := strconv.ParseInt(key, 10, 64)
+		userMeta, err := db.GetUserMeta(id)
 
-        users = append(users, userMeta.(StoredUserMeta))
-    }
+		users = append(users, userMeta.(StoredUserMeta))
+	}
 
-    return users, nil
+	return users, nil
 }
