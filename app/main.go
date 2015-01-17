@@ -31,9 +31,10 @@ func init() {
 	if appengine.IsDevAppServer() {
 		configFile, _ := ioutil.ReadFile(path.Join(os.Getenv("PWD"), "config.yaml"))
 		yaml.Unmarshal(configFile, &Config)
-	} else {
-		router.HandleFunc("/_ah/start", StartupHandler).Methods("GET")
 	}
+	
+	router.HandleFunc("/_ah/start", StartupHandler).Methods("GET")
+	router.HandleFunc("/_ah/warmup", StartupHandler).Methods("GET")
 
 	http.Handle("/", router)
 }
