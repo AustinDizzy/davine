@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"regexp"
+	"strconv"
 )
 
 type VineRequest struct {
@@ -63,21 +64,21 @@ func (v *VineRequest) GetUser(userId string) (*VineUser, error) {
 	}
 }
 
-func (v *VineRequest) GetPopularUsers() ([]string, error) {
-	resp, err := v.get("/timelines/popular?size=60")
+func (v *VineRequest) GetPopularUsers(users chan string, length int) error {
+	resp, err := v.get("/timelines/popular?size=" + strconv.Itoa(length))
 	if err != nil {
-		return nil, err
+		return err
 	} else {
-		var users []string
 		data := new(VinePopularWrapper)
 		err = json.Unmarshal(resp, &data)
 		if data.Success {
 			for _, v := range data.Data.Records {
-				users = append(users, v.UserIdStr)
+				users <- v.UserIdStr
 			}
-			return users, nil
+			close(users)
+			return nil
 		} else {
-			return nil, errors.New(data.Error)
+			return errors.New(data.Error)
 		}
 	}
 }

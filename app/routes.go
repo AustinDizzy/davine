@@ -22,6 +22,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func UserFetchHandler(w http.ResponseWriter, r *http.Request) {
@@ -313,15 +314,19 @@ func ExportHandler(w http.ResponseWriter, r *http.Request) {
 func PopularFetchHandler(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	vineApi := VineRequest{c}
+    start := time.Now()
+    users := make(chan string, 60)
 
-	users, err := vineApi.GetPopularUsers()
-	for _, v := range users {
+	err := vineApi.GetPopularUsers(users, cap(users))
+	for v := range users {
 		if _, err := GetQueuedUser(v, c); err == datastore.ErrNoSuchEntity {
 			QueueUser(v, c)
 		}
 	}
+
+    finish := time.Since(start)
 	fmt.Fprint(w, "queuing popular users: %v w/ err %v", users, err)
-	c.Infof("queueing popular users: %v w/ err %v", users, err)
+	c.Infof("queueing popular users: %v w/ err %v. Took %s", users, err, finish)
 }
 
 func CronFetchHandler(w http.ResponseWriter, r *http.Request) {
@@ -330,12 +335,15 @@ func CronFetchHandler(w http.ResponseWriter, r *http.Request) {
 	q := datastore.NewQuery("Queue").KeysOnly()
 	keys, _ := q.GetAll(c, nil)
 	db := DB{c}
+    start := time.Now()
 
 	for _, v := range keys {
 		db.FetchUser(strconv.FormatInt(v.IntID(), 10))
 	}
 
-	c.Infof("Finished cron fetch")
+	finish := time.Since(start)
+
+	c.Infof("Finished cron fetch, took %s", finish)
 
 	fmt.Fprint(w, "fetching users")
 }
