@@ -62,15 +62,6 @@ func (db *DB) FetchUser(user string) {
 			userMeta.VerifiedDate = time.Now()
 		}
 
-		userMeta.Current = StoredUserMetaCurrent{
-			Followers:     data.FollowerCount,
-			Following:     data.FollowingCount,
-			Loops:         data.LoopCount,
-			AuthoredPosts: data.AuthoredPostCount,
-			Revines:       data.PostCount - data.AuthoredPostCount,
-			Likes:         data.LikeCount,
-		}
-
 		userData = StoredUserData{
 			LastUpdated:   time.Now(),
 			Followers:     []int64{data.FollowerCount},
@@ -123,6 +114,15 @@ func (db *DB) FetchUser(user string) {
 			userData.Likes = append(userData.Likes, data.LikeCount)
 			userData.Updated = append(userData.Updated, time.Now())
 		}
+	}
+	
+	userMeta.Current = StoredUserMetaCurrent{
+		Followers:     data.FollowerCount,
+		Following:     data.FollowingCount,
+		Loops:         data.LoopCount,
+		AuthoredPosts: data.AuthoredPostCount,
+		Revines:       data.PostCount - data.AuthoredPostCount,
+		Likes:         data.LikeCount,
 	}
 
 	dataKey := datastore.NewKey(db.Context, "UserData", "", userId, nil)
