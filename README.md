@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.org/AustinDizzy/davine.svg)](https://travis-ci.org/AustinDizzy/davine)
 
 
-[Davine](//davine.co) is an open data, open source, and ad-free social analytics service built for, and in no way affiliated with, [Vine](https://vine.co).
+[Davine](//www.davine.co) is an open data, open source, and ad-free social analytics service built for, and in no way affiliated with, [Vine](https://vine.co).
 
 
 Davine tracks the following from each user it crawls or is manually introduced to:
