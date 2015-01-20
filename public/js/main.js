@@ -22,6 +22,10 @@ $(function(){
         $('#search-cont').hide();
     });
 
+    $('.user-avatar').on('error', function(){
+        $(this).attr('src', 'https://v.cdn.vine.co/avatars/default.png');
+    });
+
     $('.formatInt').each(function(i) {
         val = $('.formatInt')[i].innerText;
         str = numeral(parseInt(val));
