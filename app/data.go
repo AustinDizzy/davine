@@ -266,13 +266,9 @@ func (db *DB) GetLastUpdated() time.Time {
 	}
 }
 
-func Shuffle(a []*datastore.Key) []*datastore.Key {
-	b := a
-	for i := range a {
-		j := rand.Intn(i + 1)
-		b[i], b[j] = b[j], b[i]
-	}
-	return b
+func RandomKey(a []*datastore.Key) *datastore.Key {
+	rand.Seed(time.Now().UTC().UnixNano())
+	return a[rand.Intn(len(a))]
 }
 
 func RemoveDuplicates(a []string) []string {

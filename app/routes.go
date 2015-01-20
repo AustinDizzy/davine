@@ -196,12 +196,15 @@ func TopHandler(w http.ResponseWriter, r *http.Request) {
 func RandomHandler(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	q := datastore.NewQuery("UserMeta").KeysOnly()
-	keys, _ := q.GetAll(c, nil)
-
-	keys = Shuffle(keys)
+	keys, err := q.GetAll(c, nil)
+    if err != nil {
+        c.Errorf("got err %v", err)
+        return
+    }
+	randomKey := RandomKey(keys)
 	var user QueuedUser
-	key := datastore.NewKey(c, "Queue", "", keys[0].IntID(), nil)
-	err := datastore.Get(c, key, &user)
+	key := datastore.NewKey(c, "Queue", "", randomKey.IntID(), nil)
+	err = datastore.Get(c, key, &user)
 	if err != nil {
 		c.Errorf("got err %v", err)
 	} else {
