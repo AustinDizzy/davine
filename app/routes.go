@@ -274,6 +274,7 @@ func ExportHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	if r.Method == "GET" {
+	    StartupHandler(w, r)
 		userId, err := strconv.ParseInt(vars["user"], 10, 64)
 		if err != nil {
 			c.Errorf("got err: %v", err)
