@@ -6,6 +6,7 @@ import (
 	"appengine/search"
 	"math/rand"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -18,11 +19,9 @@ func (db *DB) FetchUser(user string) {
 	vineApi := VineRequest{db.Context}
 	data, err := vineApi.GetUser(user)
 
-	if err == datastore.ErrNoSuchEntity {
-		return
-	} else if data == nil {
-		db.Context.Errorf("failed fetch on user %v. got err %v", user, err)
-		return
+    if err == ErrUserDoesntExist {
+	    db.UnqueueUser(user)
+	    return
 	} else if data.Private == 1 {
 		return
 	}
@@ -264,6 +263,26 @@ func (db *DB) GetLastUpdated() time.Time {
 	} else {
 		return lastUpdatedUser.LastUpdated
 	}
+}
+
+func (db *DB) UnqueueUser(user string) {
+    var key *datastore.Key
+    vineApi := VineRequest{db.Context}
+    if vineApi.IsVanity(user) {
+        q := datastore.NewQuery("Queue").Filter("UserID =", user).KeysOnly()
+        keys, err := q.GetAll(db.Context, nil)
+        if err == nil {
+            key = keys[0]
+        } else {
+            db.Context.Errorf("error removing %v from queue: %v", user, err)
+        }
+    } else {
+        userId, _ := strconv.ParseInt(user, 10, 64)
+        key = datastore.NewKey(db.Context, "Queue", "", userId, nil)
+    }
+
+    datastore.Delete(db.Context, key)
+    db.Context.Infof("%v removed from queue.", user)
 }
 
 func RandomKey(a []*datastore.Key) *datastore.Key {
