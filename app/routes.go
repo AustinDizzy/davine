@@ -5,6 +5,7 @@ import (
 	"appengine/datastore"
 	"appengine/file"
 	"appengine/urlfetch"
+	"appengine/user"
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
@@ -391,4 +392,37 @@ func StartupHandler(w http.ResponseWriter, r *http.Request) {
 		yaml.Unmarshal(configFile, &Config)
 		c.Infof("loaded config struct: %v", Config)
 	}
+}
+
+func AdminHandler(w http.ResponseWriter, r *http.Request) {
+    c := appengine.NewContext(r)
+    db := DB{c}
+    adminUser := user.Current(c)
+    if adminUser == nil {
+        url, _ := user.LoginURL(c, "/admin/dashboard")
+        http.Redirect(w, r, url, 301)
+        return
+    }
+    if r.Method == "GET" {
+        dir := path.Join(os.Getenv("PWD"), "templates")
+	    admin := path.Join(dir, "admin.html")
+	    data := map[string]interface{}{"user": adminUser.String(), "config": Config,}
+	    page := mustache.RenderFile(admin, data)
+	    fmt.Fprint(w, page)
+    } else if r.Method == "POST" {
+        if len(r.FormValue("v")) == 0 {
+            return
+        }
+        switch r.FormValue("op") {
+            case "UnqueueUser":
+                db.Context.Infof("unqueuing %v", r.FormValue("v"))
+                db.UnqueueUser(r.FormValue("v"))
+            case "BatchUsers":
+                users := strings.Split(r.FormValue("v"), ",")
+                for _, v := range users {
+                    QueueUser(v, c)
+                }
+        }
+        fmt.Fprintf(w, "{\"op\":\"%v\",\"success\":true}", r.FormValue("op"))
+    }
 }

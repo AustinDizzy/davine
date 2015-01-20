@@ -18,6 +18,11 @@ handlers:
   script: _go_app
   login: admin
 
+- url: /admin/*
+  script: _go_app
+  login: admin
+  secure: always
+
 - url: /(.+\.(css|js|png|ico))
   static_files: public/\1
   upload: public/(.*)
@@ -27,3 +32,8 @@ handlers:
   
 inbound_services:
 - warmup
+
+admin_console:
+  pages:
+  - name: Davine Dashboard
+    url: /admin/dashboard
