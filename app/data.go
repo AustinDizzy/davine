@@ -22,6 +22,9 @@ func (db *DB) FetchUser(user string) {
     if err == ErrUserDoesntExist {
 	    db.UnqueueUser(user)
 	    return
+	} else if data == nil {
+		db.Context.Errorf("failed fetch on user %v. got err %v", user, err)
+		return
 	} else if data.Private == 1 {
 		return
 	}
