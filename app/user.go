@@ -7,7 +7,6 @@ import (
 	"archive/zip"
 	"encoding/json"
 	"net/http"
-	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -85,22 +84,20 @@ func QueueUser(userId string, c appengine.Context) {
 }
 
 func GetQueuedUser(userId string, c appengine.Context) (user *QueuedUser, err error) {
-	match, _ := regexp.MatchString("^[0-9]+$", userId)
-	if match {
+	vineApi := VineRequest{c}
+	if vineApi.IsVanity(userId) {
+        var temp []*QueuedUser
+		q := datastore.NewQuery("Queue").Filter("UserID =", strings.ToLower(userId)).Limit(1)
+		k, e := q.GetAll(c, &temp)
+		if len(k) != 0 {
+			user = temp[0]
+		}
+		err = e
+	} else {
 		intId, _ := strconv.ParseInt(userId, 10, 64)
 		key := datastore.NewKey(c, "Queue", "", intId, nil)
 		err = datastore.Get(c, key, &user)
-	} else {
-		temp := []*QueuedUser{}
-		q := datastore.NewQuery("Queue").Filter("UserID =", strings.ToLower(userId)).Limit(1)
-		k, _ := q.GetAll(c, &temp)
-		if len(k) != 0 {
-			user = temp[0]
-		} else {
-			err = datastore.ErrNoSuchEntity
-		}
 	}
-
 	return
 }
 

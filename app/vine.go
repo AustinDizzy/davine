@@ -44,9 +44,9 @@ func (v *VineRequest) GetUser(userId string) (*VineUser, error) {
 	url := "/users/profiles/"
 
 	if v.IsVanity(userId) {
-		url += userId
-	} else {
 		url += "vanity/" + userId
+	} else {
+        url += userId
 	}
 
 	resp, err := v.get(url)
