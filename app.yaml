@@ -23,7 +23,7 @@ handlers:
   login: admin
   secure: always
 
-- url: /(.+\.(css|js|png|ico))
+- url: /(.+\.(css|js|png|ico|txt))
   static_files: public/\1
   upload: public/(.*)
 
