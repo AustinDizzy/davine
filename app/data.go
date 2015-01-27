@@ -19,8 +19,10 @@ func (db *DB) FetchUser(user string) {
 	vineApi := VineRequest{db.Context}
 	data, err := vineApi.GetUser(user)
 
-    if err.Error() == ErrUserDoesntExist.Error() {
-	    db.UnqueueUser(user)
+    if err != nil {
+        if err.Error() == ErrUserDoesntExist.Error() {
+            db.UnqueueUser(user)
+        }
 	    return
 	} else if data == nil {
 		db.Context.Errorf("failed fetch on user %v. got err %v", user, err)
