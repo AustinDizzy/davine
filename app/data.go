@@ -19,7 +19,7 @@ func (db *DB) FetchUser(user string) {
 	vineApi := VineRequest{db.Context}
 	data, err := vineApi.GetUser(user)
 
-    if err == ErrUserDoesntExist {
+    if err.Error() == ErrUserDoesntExist.Error() {
 	    db.UnqueueUser(user)
 	    return
 	} else if data == nil {
