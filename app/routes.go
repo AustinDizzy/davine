@@ -335,7 +335,7 @@ func PopularFetchHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func CronFetchHandler(w http.ResponseWriter, r *http.Request) {
-	c := appengine.NewContext(r)
+	c := appengine.Timeout(appengine.NewContext(r), 30 * time.Minute)
 
 	q := datastore.NewQuery("Queue").KeysOnly()
 	keys, _ := q.GetAll(c, nil)
