@@ -359,8 +359,13 @@ func CronFetchHandler(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	db := DB{c}
 	start := time.Now()
-	t := taskqueue.NewPOSTTask("/cron/fetch", map[string][]string{"id":{r.FormValue("id")}})
-	t.Name = r.FormValue("id")
+	n, _ := strconv.Atoi(r.FormValue("n"))
+
+	t := taskqueue.NewPOSTTask("/cron/fetch", map[string][]string{
+	    "id":{r.FormValue("id")},
+	    "n": {strconv.Itoa(n+1)},
+	})
+	t.Name = r.FormValue("id") + "-" + strconv.Itoa(n+1)
 
 	db.FetchUser(r.FormValue("id"))
 

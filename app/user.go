@@ -75,8 +75,11 @@ func QueueUser(userId string, c appengine.Context) {
 			data = QueuedUser{user.UserIdStr, time.Now()}
 		}
 
-		t := taskqueue.NewPOSTTask("/cron/fetch", map[string][]string{"id": {user.UserIdStr}})
-		t.Name = user.UserIdStr
+		t := taskqueue.NewPOSTTask("/cron/fetch", map[string][]string{
+		    "id": {user.UserIdStr},
+		    "n": {"0"},
+		})
+		t.Name = user.UserIdStr + "-0"
 		if appengine.IsDevAppServer() {
 			t.Delay = 10 * time.Minute
 		} else {
