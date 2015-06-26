@@ -63,21 +63,17 @@ func (v *VineRequest) GetUser(userId string) (*VineUser, error) {
 	}
 }
 
-func (v *VineRequest) GetPopularUsers(users chan string, length int) error {
-	resp, err := v.get("/timelines/popular?size=" + strconv.Itoa(length))
+func (v *VineRequest) GetPopularUsers(num int) ([]*VineUser, error) {
+	resp, err := v.get("/timelines/popular?size=" + strconv.Itoa(num))
 	if err != nil {
-		return err
+		return nil, err
 	} else {
 		data := new(VinePopularWrapper)
 		err = json.Unmarshal(resp, &data)
 		if data.Success {
-			for _, v := range data.Data.Records {
-				users <- v.UserIdStr
-			}
-			close(users)
-			return nil
+			return data.Data.Records, err
 		} else {
-			return errors.New(data.Error)
+			return data.Data.Records, errors.New(data.Error)
 		}
 	}
 }

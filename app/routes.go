@@ -4,10 +4,13 @@ import (
 	"appengine"
 	"appengine/datastore"
 	"appengine/file"
+	"appengine/memcache"
 	"appengine/taskqueue"
 	"appengine/urlfetch"
 	"appengine/user"
+	"bytes"
 	"encoding/json"
+	"encoding/gob"
 	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/hoisie/mustache"
@@ -198,10 +201,10 @@ func RandomHandler(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	q := datastore.NewQuery("UserMeta").KeysOnly()
 	keys, err := q.GetAll(c, nil)
-	if err != nil {
-		c.Errorf("got err %v", err)
-		return
-	}
+    if err != nil {
+        c.Errorf("got err %v", err)
+        return
+    }
 	randomKey := RandomKey(keys)
 	var user QueuedUser
 	key := datastore.NewKey(c, "Queue", "", randomKey.IntID(), nil)
@@ -275,7 +278,7 @@ func ExportHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	if r.Method == "GET" {
-		StartupHandler(w, r)
+	    StartupHandler(w, r)
 		userId, err := strconv.ParseInt(vars["user"], 10, 64)
 		if err != nil {
 			c.Errorf("got err: %v", err)
@@ -319,17 +322,35 @@ func ExportHandler(w http.ResponseWriter, r *http.Request) {
 func PopularFetchHandler(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	vineApi := VineRequest{c}
-	start := time.Now()
-	users := make(chan string, 60)
+    start := time.Now()
+    var popfeedUsers []*memcache.Item
+    var userFeed []string
 
-	err := vineApi.GetPopularUsers(users, cap(users))
-	for v := range users {
-		if _, err := GetQueuedUser(v, c); err == datastore.ErrNoSuchEntity {
-			QueueUser(v, c)
+	users, err := vineApi.GetPopularUsers(60)
+	for _, u := range users {
+		if _, err := GetQueuedUser(u.UserIdStr, c); err == datastore.ErrNoSuchEntity {
+			QueueUser(u.UserIdStr, c)
 		}
+
+		var d bytes.Buffer
+		enc := gob.NewEncoder(&d)
+		enc.Encode(u)
+
+		userFeed = append(userFeed, u.UserIdStr)
+
+		popfeedUsers = append(popfeedUsers, &memcache.Item{
+		    Key: u.UserIdStr,
+		    Value: d.Bytes(),
+		})
 	}
 
-	finish := time.Since(start)
+    popfeedUsers = append(popfeedUsers, &memcache.Item{
+        Key: "popusers",
+        Value: []byte(strings.Join(userFeed, ",")),
+    })
+
+    memcache.AddMulti(c, popfeedUsers)
+    finish := time.Since(start)
 	fmt.Fprint(w, "queuing popular users: %v w/ err %v", users, err)
 	c.Infof("queueing popular users: %v w/ err %v. Took %s", users, err, finish)
 }
@@ -338,7 +359,7 @@ func CronFetchHandler(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	db := DB{c}
 	start := time.Now()
-	t := taskqueue.NewPOSTTask("/cron/fetch", map[string][]string{"id": {r.FormValue("id")}})
+	t := taskqueue.NewPOSTTask("/cron/fetch", map[string][]string{"id":{r.FormValue("id")}})
 	t.Name = r.FormValue("id")
 
 	db.FetchUser(r.FormValue("id"))
@@ -346,14 +367,14 @@ func CronFetchHandler(w http.ResponseWriter, r *http.Request) {
 	finish := time.Since(start)
 
 	if appengine.IsDevAppServer() {
-		t.Delay = (10 * time.Minute) - finish
+	    t.Delay = (10 * time.Minute) - finish
 	} else {
-		t.Delay = (24 * time.Hour) - finish
+	    t.Delay = (24 * time.Hour) - finish
 	}
 
 	if _, err := taskqueue.Add(c, t, ""); err != nil {
-		c.Errorf("Error adding user %s to taskqueue: %v", r.FormValue("id"), err)
-	}
+	    c.Errorf("Error adding user %s to taskqueue: %v", r.FormValue("id"), err)
+    }
 
 	c.Infof("Finished cron fetch, took %s", finish)
 	w.WriteHeader(200)
@@ -401,34 +422,34 @@ func StartupHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func AdminHandler(w http.ResponseWriter, r *http.Request) {
-	c := appengine.NewContext(r)
-	db := DB{c}
-	adminUser := user.Current(c)
-	if adminUser == nil {
-		url, _ := user.LoginURL(c, "/admin/dashboard")
-		http.Redirect(w, r, url, 301)
-		return
-	}
-	if r.Method == "GET" {
-		dir := path.Join(os.Getenv("PWD"), "templates")
-		admin := path.Join(dir, "admin.html")
-		data := map[string]interface{}{"user": adminUser.String(), "config": Config}
-		page := mustache.RenderFile(admin, data)
-		fmt.Fprint(w, page)
-	} else if r.Method == "POST" {
-		if len(r.FormValue("v")) == 0 {
-			return
-		}
-		switch r.FormValue("op") {
-		case "UnqueueUser":
-			db.Context.Infof("unqueuing %v", r.FormValue("v"))
-			db.UnqueueUser(r.FormValue("v"))
-		case "BatchUsers":
-			users := strings.Split(r.FormValue("v"), ",")
-			for _, v := range users {
-				QueueUser(v, c)
-			}
-		}
-		fmt.Fprintf(w, "{\"op\":\"%v\",\"success\":true}", r.FormValue("op"))
-	}
+    c := appengine.NewContext(r)
+    db := DB{c}
+    adminUser := user.Current(c)
+    if adminUser == nil {
+        url, _ := user.LoginURL(c, "/admin/dashboard")
+        http.Redirect(w, r, url, 301)
+        return
+    }
+    if r.Method == "GET" {
+        dir := path.Join(os.Getenv("PWD"), "templates")
+	    admin := path.Join(dir, "admin.html")
+	    data := map[string]interface{}{"user": adminUser.String(), "config": Config,}
+	    page := mustache.RenderFile(admin, data)
+	    fmt.Fprint(w, page)
+    } else if r.Method == "POST" {
+        if len(r.FormValue("v")) == 0 {
+            return
+        }
+        switch r.FormValue("op") {
+            case "UnqueueUser":
+                db.Context.Infof("unqueuing %v", r.FormValue("v"))
+                db.UnqueueUser(r.FormValue("v"))
+            case "BatchUsers":
+                users := strings.Split(r.FormValue("v"), ",")
+                for _, v := range users {
+                    QueueUser(v, c)
+                }
+        }
+        fmt.Fprintf(w, "{\"op\":\"%v\",\"success\":true}", r.FormValue("op"))
+    }
 }
