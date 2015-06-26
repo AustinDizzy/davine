@@ -1,0 +1,4 @@
+queue:
+- name: default
+  rate: 100/s
+  bucket_size: 250

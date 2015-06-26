@@ -46,7 +46,7 @@ func (v *VineRequest) GetUser(userId string) (*VineUser, error) {
 	if v.IsVanity(userId) {
 		url += "vanity/" + userId
 	} else {
-        url += userId
+		url += userId
 	}
 
 	resp, err := v.get(url)
@@ -83,6 +83,6 @@ func (v *VineRequest) GetPopularUsers(users chan string, length int) error {
 }
 
 func (v *VineRequest) IsVanity(user string) bool {
-    match, _ := regexp.MatchString("^[0-9]+$", user)
-    return !match
+	match, _ := regexp.MatchString("^[0-9]+$", user)
+	return !match
 }

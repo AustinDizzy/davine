@@ -19,11 +19,11 @@ func (db *DB) FetchUser(user string) {
 	vineApi := VineRequest{db.Context}
 	data, err := vineApi.GetUser(user)
 
-    if err != nil {
-        if err.Error() == ErrUserDoesntExist.Error() {
-            db.UnqueueUser(user)
-        }
-	    return
+	if err != nil {
+		if err.Error() == ErrUserDoesntExist.Error() {
+			db.UnqueueUser(user)
+		}
+		return
 	} else if data == nil {
 		db.Context.Errorf("failed fetch on user %v. got err %v", user, err)
 		return
@@ -119,7 +119,7 @@ func (db *DB) FetchUser(user string) {
 			userData.Updated = append(userData.Updated, time.Now())
 		}
 	}
-	
+
 	userMeta.Current = StoredUserMetaCurrent{
 		Followers:     data.FollowerCount,
 		Following:     data.FollowingCount,
@@ -271,23 +271,23 @@ func (db *DB) GetLastUpdated() time.Time {
 }
 
 func (db *DB) UnqueueUser(user string) {
-    var key *datastore.Key
-    vineApi := VineRequest{db.Context}
-    if vineApi.IsVanity(user) {
-        q := datastore.NewQuery("Queue").Filter("UserID =", user).KeysOnly()
-        keys, err := q.GetAll(db.Context, nil)
-        if err == nil {
-            key = keys[0]
-        } else {
-            db.Context.Errorf("error removing %v from queue: %v", user, err)
-        }
-    } else {
-        userId, _ := strconv.ParseInt(user, 10, 64)
-        key = datastore.NewKey(db.Context, "Queue", "", userId, nil)
-    }
+	var key *datastore.Key
+	vineApi := VineRequest{db.Context}
+	if vineApi.IsVanity(user) {
+		q := datastore.NewQuery("Queue").Filter("UserID =", user).KeysOnly()
+		keys, err := q.GetAll(db.Context, nil)
+		if err == nil {
+			key = keys[0]
+		} else {
+			db.Context.Errorf("error removing %v from queue: %v", user, err)
+		}
+	} else {
+		userId, _ := strconv.ParseInt(user, 10, 64)
+		key = datastore.NewKey(db.Context, "Queue", "", userId, nil)
+	}
 
-    datastore.Delete(db.Context, key)
-    db.Context.Infof("%v removed from queue.", user)
+	datastore.Delete(db.Context, key)
+	db.Context.Infof("%v removed from queue.", user)
 }
 
 func RandomKey(a []*datastore.Key) *datastore.Key {

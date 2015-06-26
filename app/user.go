@@ -4,6 +4,7 @@ import (
 	"appengine"
 	"appengine/datastore"
 	"appengine/search"
+	"appengine/taskqueue"
 	"archive/zip"
 	"encoding/json"
 	"net/http"
@@ -74,8 +75,19 @@ func QueueUser(userId string, c appengine.Context) {
 			data = QueuedUser{user.UserIdStr, time.Now()}
 		}
 
-		_, err := datastore.Put(c, key, &data)
-		if err != nil {
+		t := taskqueue.NewPOSTTask("/cron/fetch", map[string][]string{"id": {user.UserIdStr}})
+		t.Name = user.UserIdStr
+		if appengine.IsDevAppServer() {
+			t.Delay = 10 * time.Minute
+		} else {
+			t.Delay = 24 * time.Hour
+		}
+
+		if _, err = taskqueue.Add(c, t, ""); err != nil {
+			c.Errorf("Error adding user %s to taskqueue: %v", user.UserIdStr, err)
+		}
+
+		if _, err = datastore.Put(c, key, &data); err != nil {
 			c.Errorf("got datastore err on QueueUser: %v", err)
 		}
 	} else {
@@ -86,7 +98,7 @@ func QueueUser(userId string, c appengine.Context) {
 func GetQueuedUser(userId string, c appengine.Context) (user *QueuedUser, err error) {
 	vineApi := VineRequest{c}
 	if vineApi.IsVanity(userId) {
-        var temp []*QueuedUser
+		var temp []*QueuedUser
 		q := datastore.NewQuery("Queue").Filter("UserID =", strings.ToLower(userId)).Limit(1)
 		k, e := q.GetAll(c, &temp)
 		if len(k) != 0 {

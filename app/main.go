@@ -27,14 +27,14 @@ func init() {
 
 	router.HandleFunc("/admin/dashboard", AdminHandler).Methods("GET", "POST")
 
-	router.HandleFunc("/cron/fetch", CronFetchHandler).Methods("GET")
+	router.HandleFunc("/cron/fetch", CronFetchHandler).Methods("POST")
 	router.HandleFunc("/cron/popular", PopularFetchHandler).Methods("GET")
 
 	if appengine.IsDevAppServer() {
 		configFile, _ := ioutil.ReadFile(path.Join(os.Getenv("PWD"), "config.yaml"))
 		yaml.Unmarshal(configFile, &Config)
 	}
-	
+
 	router.HandleFunc("/_ah/start", StartupHandler).Methods("GET")
 	router.HandleFunc("/_ah/warmup", StartupHandler).Methods("GET")
 
