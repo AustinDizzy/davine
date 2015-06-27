@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Davine - Open Data Analytics for Vine</title>
+
+  <link href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//fonts.googleapis.com/css?family=Lily+Script+One" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="//brick.a.ssl.fastly.net/Roboto:400,700">
+  <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  <style type="text/css">
+    body,
+    html {
+      height: 100%;
+    }
+
+    .navbar-main {
+      background-color: transparent;
+      border: 0;
+      border-radius: 0;
+      margin-bottom: -50px;
+    }
+
+    .navbar-main a {
+      color: white;
+    }
+
+    .nav>li>a:hover {
+      color: #00bf8f;
+      background-color: #f6f5f6;
+    }
+
+    .jumbotron {
+      margin-top: 0;
+      padding-top: 50px;
+      background-color: #00bf8f;
+    }
+
+    #head-link {
+      font-family: 'Lily Script One', cursive;
+      color: #fff;
+      cursor: pointer;
+      font-size: 7em;
+      padding-bottom: 0;
+      margin-bottom: 0;
+    }
+
+    .stylish-input-group .input-group-addon {
+      background: white !important;
+    }
+
+    .stylish-input-group .form-control {
+      border-right: 0;
+      box-shadow: 0 0 0;
+      border-color: #ccc;
+    }
+
+    .stylish-input-group button {
+      border: 0;
+      background: transparent;
+    }
+
+    .panel.panel-card {
+      position: relative;
+      height: 241px;
+      border: 1px solid #d3d3d3;
+      overflow: hidden;
+    }
+
+    .panel.panel-card .panel-heading {
+      position: relative;
+      z-index: 2;
+      height: 120px;
+      border-bottom-color: #fff;
+      overflow: hidden;
+      -webkit-transition: height 600ms ease-in-out;
+      transition: height 600ms ease-in-out;
+    }
+
+    .panel.panel-card .panel-heading img {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      z-index: 1;
+      width: 120%;
+      -webkit-transform: translate3d(-50%, -50%, 0);
+      transform: translate3d(-50%, -50%, 0);
+    }
+
+    .panel.panel-card .panel-heading a {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      z-index: 3;
+    }
+
+    .panel.panel-card .panel-figure {
+      position: absolute;
+      top: auto;
+      left: 50%;
+      z-index: 3;
+      width: 70px;
+      height: 70px;
+      background-color: #fff;
+      border-radius: 50%;
+      opacity: 1;
+      -webkit-box-shadow: 0 0 0 3px #fff;
+      box-shadow: 0 0 0 3px #fff;
+      -webkit-transform: translate3d(-50%, -50%, 0);
+      transform: translate3d(-50%, -50%, 0);
+      -webkit-transition: opacity 400ms ease-in-out;
+      transition: opacity 400ms ease-in-out;
+    }
+
+    .panel.panel-card .panel-body {
+      padding-top: 40px;
+      padding-bottom: 20px;
+      -webkit-transition: padding 400ms ease-in-out;
+      transition: padding 400ms ease-in-out;
+    }
+
+    .panel.panel-card .panel-thumbnails {
+      padding: 0 15px 20px;
+    }
+
+    .panel-thumbnails .thumbnail {
+      width: 60px;
+      max-width: 100%;
+      margin: 0 auto;
+      background-color: #fff;
+    }
+
+    .panel.panel-card:hover .panel-heading {
+      height: 55px;
+      -webkit-transition: height 400ms ease-in-out;
+      transition: height 400ms ease-in-out;
+    }
+
+    .panel.panel-card:hover .panel-figure {
+      opacity: 0;
+      -webkit-transition: opacity 400ms ease-in-out;
+      transition: opacity 400ms ease-in-out;
+    }
+
+    .panel.panel-card:hover .panel-body {
+      padding-top: 20px;
+      -webkit-transition: padding 400ms ease-in-out;
+      transition: padding 400ms ease-in-out;
+    }
+
+    .search-form .form-group {
+      float: right !important;
+      transition: all 0.35s, border-radius 0s;
+      width: 32px;
+      height: 32px;
+    }
+
+    .search-form {
+      transform: translateY(15%);
+      top: 50%;
+      height: 50px;
+      position: relative;
+    }
+
+    .search-form .form-group input.form-control {
+      padding-right: 20px;
+      border: 0 none;
+      background: transparent;
+      box-shadow: none;
+      display: block;
+      color: white;
+    }
+
+    .search-form .form-group input.form-control::-webkit-input-placeholder {
+      display: none;
+      color: white;
+    }
+
+    .search-form .form-group input.form-control:-moz-placeholder {
+      /* Firefox 18- */
+      display: none;
+      color: white;
+    }
+
+    .search-form .form-group input.form-control::-moz-placeholder {
+      /* Firefox 19+ */
+      display: none;
+      color: white;
+    }
+
+    .search-form .form-group input.form-control:-ms-input-placeholder {
+      display: none;
+      color: white;
+    }
+
+    .search-form .form-group:hover,
+    .search-form .form-group.hover {
+      width: 100%;
+      border-radius: 0;
+      border-bottom: 1px solid white;
+    }
+
+    .search-form .form-group span.form-control-feedback {
+      position: absolute;
+      top: -1px;
+      right: -2px;
+      z-index: 2;
+      display: block;
+      width: 34px;
+      height: 34px;
+      line-height: 34px;
+      text-align: center;
+      color: white;
+      left: initial;
+      font-size: 14px;
+    }
+
+    .row.footer {
+      padding-bottom: 50px;
+    }
+
+    span[data-sparkline] {
+      display: inline-block;
+    }
+
+    .table td,
+    .table th {
+      text-align: center;
+    }
+
+    .page-header {
+      font-family: 'Roboto'
+    }
+
+    @media (min-width: 992px) {
+      #report-block {
+        margin-top: 40px;
+      }
+    }
+    #report-block .well {
+      box-shadow: inset 0 0 0 1000px rgba(0,0,0,.25);
+      transition: box-shadow 0.2s ease;
+    }
+    #report-block .well:hover {
+      box-shadow: inset 0 0 0 1000px rgba(0,0,0,.45);
+    }
+    #report-block .well {
+      cursor:pointer;
+      color: white
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar navbar-main">
+    <div class="container">
+      <ul class="nav navbar-nav">
+        <li><a href="/">Home</a></li>
+        <li><a href="/discover">Discover</a></li>
+        <li><a href="/top">Top</a></li>
+        <li><a href="/about">About</a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+          <form action="" class="search-form">
+            <div class="form-group has-feedback">
+              <label for="search" class="sr-only">Search</label>
+              <input type="text" class="form-control" name="search" id="search" placeholder="user search">
+              <span class="fa fa-search form-control-feedback"></span>
+            </div>
+          </form>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  <div class="jumbotron">
+    <div class="container text-center">
+      <h1 id="head-link">Davine</h1>
+      <p style="color:#F6F5F6;">Plant your vines, we'll watch them grow.</p>
+    </div>
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-6 col-sm-offset-3">
+          <div class="input-group stylish-input-group">
+            <input type="text" class="form-control" placeholder="https://vine.co/AustinDizzy or https://vine.co/u/907787504051171328">
+            <span class="input-group-addon">
+              <button type="submit">
+                <span class="fa fa-sitemap"></span>
+              </button>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {{{content}}}
+  <div class="container">
+    <hr>
+    <div class="row footer">
+      <span class="col-sm-3 col-md-4 text-left text-muted">Not endorsed, affiliated with, or a part of <a href="https://vine.co" title="pls don't sue us, we're open source, open data, and make negative dollars on this project - all out of pocket">Vine Labs, Inc.</a></span>
+      <span class="col-sm-3 col-sm-offset-6 col-md-4 col-md-offset-4 text-right">
+        <a href="https://github.com/AustinDizzy/davine">Open Source</a> |
+        <a href="/about#contact">Contact</a>
+      </span>
+    </div>
+  </div>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/1.5.3/numeral.min.js"></script>
+  <script src="/js/geopattern.min.js"></script>
+  <script src="//code.highcharts.com/highcharts.js"></script>
+  <script src="//code.highcharts.com/modules/exporting.js"></script>
+  <script src="/js/index.js"></script>
+</body>
+
+</html>

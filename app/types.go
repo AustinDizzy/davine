@@ -81,9 +81,14 @@ type StoredUserData struct {
 
 type PopularPage struct {
 	AnchorStr string           `json:"anchorStr"`
-	Records   []*VineUser `json:"records"`
+	Records   []*PopularRecord `json:"records"`
 	NextPage  int              `json:"nextPage"`
 	Size      int              `json:"size"`
+}
+
+type PopularRecord struct {
+    UserId   int64 `json:"userId"`
+    UserIdStr string `json:"userIdStr"`
 }
 
 type StoredUserDelta struct {

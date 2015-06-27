@@ -20,6 +20,7 @@ import (
 	"google.golang.org/cloud/storage"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
+	"math/rand"
 	"net/http"
 	"os"
 	"path"
@@ -29,6 +30,39 @@ import (
 	"strings"
 	"time"
 )
+
+func IndexHandler(w http.ResponseWriter, r *http.Request) {
+    dir := path.Join(os.Getenv("PWD"), "templates")
+    index := path.Join(dir, "index.html")
+    layout := path.Join(dir, "layout.html")
+    c := appengine.NewContext(r)
+    data := map[string]interface{}{}
+
+    if popusers, err := memcache.Get(c, "popusers"); err == nil {
+        var users []*VineUser
+        var dec *gob.Decoder
+        userIDs := strings.Split(string(popusers.Value[:]), ",")
+        for len(users) < 6 {
+            rand.Seed(time.Now().Unix())
+            r := rand.Intn(len(userIDs))
+
+            key, err := memcache.Get(c, userIDs[r])
+            dec = gob.NewDecoder(bytes.NewReader(key.Value))
+            var u *VineUser
+            err = dec.Decode(&u)
+            if err == nil {
+                users = append(users, u)
+                userIDs = append(userIDs[:r], userIDs[r+1:]...)
+                //above removes already chosen user from userID array
+            }
+        }
+        data["popusers"] = users
+    } else {
+        c.Errorf("popusers memcache err: %v", err)
+    }
+
+    fmt.Fprint(w, mustache.RenderFileInLayout(index, layout, data))
+}
 
 func UserFetchHandler(w http.ResponseWriter, r *http.Request) {
 	dir := path.Join(os.Getenv("PWD"), "templates")
@@ -331,17 +365,18 @@ func PopularFetchHandler(w http.ResponseWriter, r *http.Request) {
 		if _, err := GetQueuedUser(u.UserIdStr, c); err == datastore.ErrNoSuchEntity {
 			QueueUser(u.UserIdStr, c)
 		}
-
 		var d bytes.Buffer
-		enc := gob.NewEncoder(&d)
-		enc.Encode(u)
-
-		userFeed = append(userFeed, u.UserIdStr)
-
-		popfeedUsers = append(popfeedUsers, &memcache.Item{
-		    Key: u.UserIdStr,
-		    Value: d.Bytes(),
-		})
+		if user, err := vineApi.GetUser(u.UserIdStr); err == nil {
+		    enc := gob.NewEncoder(&d)
+		    user.ProfileBackground = strings.TrimPrefix(user.ProfileBackground, "0x")
+		    enc.Encode(user)
+		    
+		    userFeed = append(userFeed, u.UserIdStr)
+		    popfeedUsers = append(popfeedUsers, &memcache.Item{
+		        Key: u.UserIdStr,
+		        Value: d.Bytes(),
+            })
+		}
 	}
 
     popfeedUsers = append(popfeedUsers, &memcache.Item{

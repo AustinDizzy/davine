@@ -4,10 +4,6 @@ runtime: go
 api_version: go1
 
 handlers:
-- url: /(index.html)?
-  static_files: public/index.html
-  upload: public/index.html
-  
 - url: /favicon.ico
   mime_type: image/x-icon
   static_files: public/favicon.ico

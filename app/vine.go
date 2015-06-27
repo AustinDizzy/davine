@@ -63,7 +63,7 @@ func (v *VineRequest) GetUser(userId string) (*VineUser, error) {
 	}
 }
 
-func (v *VineRequest) GetPopularUsers(num int) ([]*VineUser, error) {
+func (v *VineRequest) GetPopularUsers(num int) ([]*PopularRecord, error) {
 	resp, err := v.get("/timelines/popular?size=" + strconv.Itoa(num))
 	if err != nil {
 		return nil, err
