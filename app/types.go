@@ -4,6 +4,8 @@ import (
 	"time"
 )
 
+const PageTitle = "Davine - Open Data Analytics for Vine"
+
 type QueuedUser struct {
 	UserID     string
 	Discovered time.Time

@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Davine - Open Data Analytics for Vine</title>
+  <title>{{title}}</title>
 
   <link href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
   <link href="//netdna.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
@@ -19,6 +19,7 @@
     body,
     html {
       height: 100%;
+      background-color: #f6f5f6;
     }
 
     .navbar-main {
@@ -244,7 +245,7 @@
         margin-top: 40px;
       }
     }
-    #report-block .well {
+    #report-block .well, #dataset-hero {
       box-shadow: inset 0 0 0 1000px rgba(0,0,0,.25);
       transition: box-shadow 0.2s ease;
     }
@@ -255,7 +256,33 @@
       cursor:pointer;
       color: white
     }
+    #dataset-hero {
+        color: white;
+    }
+    .content {
+        margin-top: -30px;
+    width: 100%;
+    height: 100%;
+    padding: 25px;
+    background: #fff;
+    border: 1px solid rgb(231,231,231);
+    display: table;
+}
+.sidebar {
+    float: right;
+    text-align: left;
+    width: 40%;
+    text-indent: 5em;
+}
+.sidebar > ul {
+    list-style: none;
+}
+.sidebar > p {
+    text-indent: 0;
+    margin-left: 5em;
+}
   </style>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 </head>
 
 <body>
@@ -269,10 +296,11 @@
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-          <form action="" class="search-form">
+          <form action="/search" class="search-form">
             <div class="form-group has-feedback">
               <label for="search" class="sr-only">Search</label>
-              <input type="text" class="form-control" name="search" id="search" placeholder="user search">
+              <input type="text" class="form-control" name="q" id="search" placeholder="user search">
+              <input type="hidden" name="s" value="overall">
               <span class="fa fa-search form-control-feedback"></span>
             </div>
           </form>
@@ -280,7 +308,7 @@
       </ul>
     </div>
   </nav>
-  <div class="jumbotron">
+  <div class="jumbotron" id="head-hero">
     <div class="container text-center">
       <h1 id="head-link">Davine</h1>
       <p style="color:#F6F5F6;">Plant your vines, we'll watch them grow.</p>
@@ -289,7 +317,7 @@
       <div class="row">
         <div class="col-sm-6 col-sm-offset-3">
           <div class="input-group stylish-input-group">
-            <input type="text" class="form-control" placeholder="https://vine.co/AustinDizzy or https://vine.co/u/907787504051171328">
+            <input type="text" class="form-control" placeholder="link to Vine profile">
             <span class="input-group-addon">
               <button type="submit">
                 <span class="fa fa-sitemap"></span>
@@ -311,12 +339,12 @@
       </span>
     </div>
   </div>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
   <script src="//netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/1.5.3/numeral.min.js"></script>
   <script src="/js/geopattern.min.js"></script>
   <script src="//code.highcharts.com/highcharts.js"></script>
   <script src="//code.highcharts.com/modules/exporting.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/tinycolor/1.1.1/tinycolor.min.js"></script>
   <script src="/js/index.js"></script>
 </body>
 

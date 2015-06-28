@@ -130,7 +130,11 @@ $(function() {
       str = numeral(parseInt(val));
       $('.formatInt')[i].innerText = str.format($(this).data("format"));
   });
-  $('.jumbotron').geopattern("Davine - Vine Analytics", {
+  $('a[data-vanity][data-user]').each(function(){
+      var url = ($(this).attr('data-vanity') === '' ? $(this).attr('data-user') : $(this).attr('data-vanity'));
+      $(this).attr('href', '/u/' + url);
+  });
+  $('#head-hero').geopattern(document.title, {
     'color': "#00bf8f",
     'generator': 'squares'
   });
@@ -156,105 +160,5 @@ $(function() {
     if ($(window).width() < 768) {
       $('iframe[src|=https://vine.co/v/]').attr('height', '190');
     }
-  });
-
-  var bgData = [];
-  while (bgData.length != 2) {
-    var arr = []
-    while (arr.length < 7) {
-      var randomnumber = Math.ceil(Math.random() * 15), found = false;
-      for (var i = 0; i < arr.length; i++) {
-        if (arr[i] == randomnumber) {
-          found = true;
-          break;
-        }
-      }
-      if (!found) arr[arr.length] = randomnumber;
-    }
-    bgData.push(arr);
-  }
-  $('#graphbg-cont').highcharts({
-    chart: {
-      animation: false,
-      type: 'areaspline',
-      backgroundColor: '#00bf8f',
-      events: {
-        load: function() {
-          this.yAxis[0].update({
-            labels: {
-              enabled: false
-            },
-            title: {
-              text: null
-            }
-          });
-        }
-      },
-      margin: 0,
-      spacing: [0, 0, 0, 0]
-    },
-    exporting: {
-      enabled: false
-    },
-    colors: ['#00E7AD', '#168E70'],
-    title: {
-      text: false
-    },
-    legend: {
-      enabled: false
-    },
-    xAxis: {
-      labels: {
-        enabled: false
-      },
-      tickLength: 0
-    },
-    yAxis: {
-      lineWidth: 0,
-      minorGridLineWidth: 0,
-      lineColor: 'transparent',
-      gridLineColor: 'transparent',
-
-      labels: {
-        enabled: false
-      },
-      minorTickLength: 0,
-      tickLength: 0
-    },
-    tooltip: {
-      enabled: false
-    },
-
-    credits: {
-      enabled: false
-    },
-    plotOptions: {
-      areaspline: {
-        enableMouseTracking: false,
-        fillOpacity: 0.5
-      }
-    },
-    series: [{
-      data: bgData[0]
-    }, {
-      data: bgData[1]
-    }]
-  })
-  var data = $("#graphbg-cont").highcharts().getSVG({
-    exporting: {
-      sourceWidth: $('#report-block .well').get(0).clientWidth,
-      sourceHeight: $('#report-block .well').get(0).clientHeight
-    }
-  });
-  $("#graphbg-cont").remove();
-  var DOMURL = window.URL || window.webkitURL || window;
-
-  var svg = new Blob([data], {
-    type: 'image/svg+xml;charset=utf-8'
-  });
-  var url = DOMURL.createObjectURL(svg);
-
-  $('#report-block .well').css({
-    'background-image': 'url(' + url + ')'
   });
 });

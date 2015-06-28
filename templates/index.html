@@ -1,151 +1,256 @@
-<div class="container text-center" style="font-family:'Roboto'">
-     <h3>Blog: <a href="http://blog.davine.co">What is Davine?</a></h3>
-</div>
 <div class="container">
-    <div class="row">
-        <div class="col-md-8 col-sm-8">
-            <div class="page-header">
-                 <h2>Popular Now</h2>
-            </div>
-            <!--CARD START-->
-            {{#popusers}}
-            <div class="col-sm-6 col-md-4">
-                <div class="panel panel-default panel-card">
-                    <div class="panel-heading" data-color="{{ProfileBackground}}" data-name="{{Username}}">
-                        <a class="btn btn-default btn-sm" role="button" href="https://vine.co/u/{{UserIdStr}}">
-                            <i class="fa fa-vine" style="color:#{{ProfileBackground}}"></i>
-                        </a>
-                    </div>
-                    <div class="panel-figure">
-                        <img class="img-responsive img-circle" src="{{AvatarUrl}}" />
-                    </div>
-                    <div class="panel-body text-center">
-                         <h4 class="panel-header"><a href="/u/{{UserIdStr}}">{{Username}}</a></h4>
-                         <small>{{Description}}</small>
-                    </div>
-                    <div class="panel-thumbnails">
-                        <div class="row">
-                            <div class="col-xs-6 text-center">
-                                <span class="formatInt" data-format="0.0a">{{FollowerCount}}</span>
-                                <i class="fa fa-users"></i>
-                            </div>
-                            <div class="col-xs-6 text-center">
-                                <span class="formatInt" data-format="0.0a">{{LoopCount}}</span>
-                                <i class="fa fa-eye"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {{/popusers}}
+    <div class="content">
+        <div class="text-center" style="font-family:'Roboto'">
+            <h3>Blog: <a href="http://blog.davine.co">What is Davine?</a></h3>
         </div>
-            <!--CARD END-->
-            <!--Featured Profile START-->
-            <div class="col-md-4 col-sm-4">
+        <div class="row">
+            <div class="col-md-8 col-sm-8">
                 <div class="page-header">
-                    <h2>Featured <span class="hidden-sm">Profile</span>
-                        <small>
-                            <small data-toggle="tooltip" data-placement="top" title="FAQ: <a href='/about#featured'>How do I get featured?</a>">?</small>
-                        </small>
-                    </h2>
+                     <h2>Popular Now</h2>
                 </div>
-                <div class="col-sm-12 col-md-9">
+                <!--CARD START-->
+                {{#popusers}}
+                <div class="col-sm-6 col-md-4">
                     <div class="panel panel-default panel-card">
-                        <div class="panel-heading" data-name="Matt Bettiol" data-color="33ccbf">
-                            <a class="btn btn-default btn-sm" role="button" href="https://vine.co/u/mattbettiol">
-                                <i class="fa fa-vine" style="color:#00bf8f"></i>
+                        <div class="panel-heading" data-color="{{ProfileBackground}}" data-name="{{Username}}">
+                            <a class="btn btn-default btn-sm" role="button" href="https://vine.co/u/{{UserIdStr}}">
+                                <i class="fa fa-vine" style="color:#{{ProfileBackground}}"></i>
                             </a>
                         </div>
                         <div class="panel-figure">
-                            <img class="img-responsive img-circle" src="https://v.cdn.vine.co/r/avatars/5D1601041D1004309641658019840_10bfc004b77.3.4_42I..96XwmxJxVzJzqe8CdK_W2kRwTsqnLgQHVIhlq6vHGlM36ljW2zI1f3tCcKZ.jpg?versionId=UICNrU2CBeGM8lRB95faZqX5Wn.ZWqMb" />
+                            <img class="img-responsive img-circle" src="{{AvatarUrl}}" />
                         </div>
                         <div class="panel-body text-center">
-                            <h4 class="panel-header">
-                                <a href="http://davine.co/u/mattbettiol">Matt Bettiol</a>
-                            </h4>
-                            <small>What I if told you, you read this wrong.</small>
+                             <h4 class="panel-header"><a href="/u/{{UserIdStr}}">{{Username}}</a></h4>
+                             <small>{{Description}}</small>
                         </div>
                         <div class="panel-thumbnails">
                             <div class="row">
-                                <div class="col-xs-6 text-center">67 <i class="fa fa-users"></i>
-
+                                <div class="col-xs-6 text-center">
+                                    <span class="formatInt" data-format="0.0a">{{FollowerCount}}</span>
+                                    <i class="fa fa-users"></i>
                                 </div>
-                                <div class="col-xs-6 text-center">4.5k <i class="fa fa-eye"></i>
-
+                                <div class="col-xs-6 text-center">
+                                    <span class="formatInt" data-format="0.0a">{{LoopCount}}</span>
+                                    <i class="fa fa-eye"></i>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <iframe class="clearfix" src="https://vine.co/v/OLv0FLJaDli/embed/simple" width="250" height="250" frameborder="0"></iframe>
+                {{/popusers}}
             </div>
-            <!--Featured Profile END-->
-        </div>
-        <div class="clearfix"></div>
-        <div class="row">
-            <div class="col-md-8 col-sm-10">
-                <div class="page-header">
-                     <h2>Trending</h2>
-
+                <!--CARD END-->
+                <!--Featured Profile START-->
+                <div class="col-md-4 col-sm-4">
+                    <div class="page-header">
+                        <h2>Featured <span class="hidden-sm">Profile</span>
+                            <small>
+                                <small data-toggle="tooltip" data-placement="top" title="FAQ: <a href='/about#featured'>How do I get featured?</a>">?</small>
+                            </small>
+                        </h2>
+                    </div>
+                    <div class="col-sm-12 col-md-9">
+                        <div class="panel panel-default panel-card">
+                            <div class="panel-heading" data-name="Matt Bettiol" data-color="33ccbf">
+                                <a class="btn btn-default btn-sm" role="button" href="https://vine.co/u/mattbettiol">
+                                    <i class="fa fa-vine" style="color:#00bf8f"></i>
+                                </a>
+                            </div>
+                            <div class="panel-figure">
+                                <img class="img-responsive img-circle" src="https://v.cdn.vine.co/r/avatars/5D1601041D1004309641658019840_10bfc004b77.3.4_42I..96XwmxJxVzJzqe8CdK_W2kRwTsqnLgQHVIhlq6vHGlM36ljW2zI1f3tCcKZ.jpg?versionId=UICNrU2CBeGM8lRB95faZqX5Wn.ZWqMb" />
+                            </div>
+                            <div class="panel-body text-center">
+                                <h4 class="panel-header">
+                                    <a href="http://davine.co/u/mattbettiol">Matt Bettiol</a>
+                                </h4>
+                                <small>What I if told you, you read this wrong.</small>
+                            </div>
+                            <div class="panel-thumbnails">
+                                <div class="row">
+                                    <div class="col-xs-6 text-center">67 <i class="fa fa-users"></i>
+    
+                                    </div>
+                                    <div class="col-xs-6 text-center">4.5k <i class="fa fa-eye"></i>
+    
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <iframe class="clearfix" src="https://vine.co/v/OLv0FLJaDli/embed/simple" width="250" height="250" frameborder="0"></iframe>
                 </div>
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <caption>Updated once every hour. Will have ~25 users when live.</caption>
-                        <thead>
-                            <tr>
-                                <th>User</th>
-                                <th>Verified</th>
-                                <th>Loops</th>
-                                <th>Followers</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <th scope="row"> <a href="http://davine.co/u/robbyayala">Robby Ayala</a>
-
-                                </th>
-                                <td>&check;</td>
-                                <td>725m <span data-sparkline="24, 26, 27, 26, 34, 38, 39"></span>
-
-                                </td>
-                                <td>3.3m <span data-sparkline="3325547, 3345987, 3425657, 3301247, 3485789, 3541259, 3514781"></span>
-
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row"> <a href="http://davine.co/u.SarahHopkins">Sarah Hopkins</a>
-
-                                </th>
-                                <td>&times;</td>
-                                <td>300m <span data-sparkline="290963625, 291875589, 292755157, 295534718, 297228814, 299433623, 300378838"></span>
-
-                                </td>
-                                <td>619k <span data-sparkline="611605, 612128, 613155, 616588, 617941, 618820, 619408"></span>
-
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row"> <a href="http://davine.co/u/942914934646415360">Ruth B</a>
-
-                                </th>
-                                <td>&times;</td>
-                                <td>201m <span data-sparkline="190178298, 191996379, 193367450, 195153402, 196942545, 198854529, 200102609, 201171326"></span>
-
-                                </td>
-                                <td>720k <span data-sparkline="684351, 690258, 695169, 700760, 706446, 711770, 716064, 719525"></span>
-
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                <!--Featured Profile END-->
             </div>
-            <div class="col-md-4 col-sm-6" id="report-block">
-                <div class="well text-center" style="color:#000bf8f">
-                    <div id="graphbg-cont" class="hidden"></div>
-                     <h2>Sign up for a free weekly digest of your Vine profile's growth.</h2>
-                     Learn More
+            <div class="clearfix"></div>
+            <div class="row">
+                <div class="col-md-8 col-sm-10">
+                    <div class="page-header">
+                         <h2>Trending</h2>
+    
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <caption>Updated once every hour. Will have ~25 users when live.</caption>
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Verified</th>
+                                    <th>Loops</th>
+                                    <th>Followers</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th scope="row"> <a href="http://davine.co/u/robbyayala">Robby Ayala</a>
+    
+                                    </th>
+                                    <td>&check;</td>
+                                    <td>725m <span data-sparkline="24, 26, 27, 26, 34, 38, 39"></span>
+    
+                                    </td>
+                                    <td>3.3m <span data-sparkline="3325547, 3345987, 3425657, 3301247, 3485789, 3541259, 3514781"></span>
+    
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row"> <a href="http://davine.co/u.SarahHopkins">Sarah Hopkins</a>
+    
+                                    </th>
+                                    <td>&times;</td>
+                                    <td>300m <span data-sparkline="290963625, 291875589, 292755157, 295534718, 297228814, 299433623, 300378838"></span>
+    
+                                    </td>
+                                    <td>619k <span data-sparkline="611605, 612128, 613155, 616588, 617941, 618820, 619408"></span>
+    
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row"> <a href="http://davine.co/u/942914934646415360">Ruth B</a>
+    
+                                    </th>
+                                    <td>&times;</td>
+                                    <td>201m <span data-sparkline="190178298, 191996379, 193367450, 195153402, 196942545, 198854529, 200102609, 201171326"></span>
+    
+                                    </td>
+                                    <td>720k <span data-sparkline="684351, 690258, 695169, 700760, 706446, 711770, 716064, 719525"></span>
+    
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6" id="report-block">
+                    <div class="well text-center" style="color:#000bf8f">
+                        <div id="graphbg-cont" class="hidden"></div>
+                         <h2>Sign up for a free weekly digest of your Vine profile's growth.</h2>
+                         Learn More
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+    <script type="text/javascript" defer>
+        var bgData = [];
+  while (bgData.length != 2) {
+    var arr = []
+    while (arr.length < 7) {
+      var randomnumber = Math.ceil(Math.random() * 15), found = false;
+      for (var i = 0; i < arr.length; i++) {
+        if (arr[i] == randomnumber) {
+          found = true;
+          break;
+        }
+      }
+      if (!found) arr[arr.length] = randomnumber;
+    }
+    bgData.push(arr);
+  }
+  $(function(){
+     $('#graphbg-cont').highcharts({
+        chart: {
+          animation: false,
+          type: 'areaspline',
+          backgroundColor: '#00bf8f',
+          events: {
+            load: function() {
+              this.yAxis[0].update({
+                labels: {
+                  enabled: false
+                },
+                title: {
+                  text: null
+                }
+              });
+            }
+          },
+          margin: 0,
+          spacing: [0, 0, 0, 0]
+        },
+        exporting: {
+          enabled: false
+        },
+        colors: ['#00E7AD', '#168E70'],
+        title: {
+          text: false
+        },
+        legend: {
+          enabled: false
+        },
+        xAxis: {
+          labels: {
+            enabled: false
+          },
+          tickLength: 0
+        },
+        yAxis: {
+          lineWidth: 0,
+          minorGridLineWidth: 0,
+          lineColor: 'transparent',
+          gridLineColor: 'transparent',
+    
+          labels: {
+            enabled: false
+          },
+          minorTickLength: 0,
+          tickLength: 0
+        },
+        tooltip: {
+          enabled: false
+        },
+    
+        credits: {
+          enabled: false
+        },
+        plotOptions: {
+          areaspline: {
+            enableMouseTracking: false,
+            fillOpacity: 0.5
+          }
+        },
+        series: [{
+          data: bgData[0]
+        }, {
+          data: bgData[1]
+        }]
+      })
+      var data = $("#graphbg-cont").highcharts().getSVG({
+        exporting: {
+          sourceWidth: $('#report-block .well').get(0).clientWidth,
+          sourceHeight: $('#report-block .well').get(0).clientHeight
+        }
+      });
+      $("#graphbg-cont").remove();
+      var DOMURL = window.URL || window.webkitURL || window;
+    
+      var svg = new Blob([data], {
+        type: 'image/svg+xml;charset=utf-8'
+      });
+      var url = DOMURL.createObjectURL(svg);
+    
+      $('#report-block .well').css({
+        'background-image': 'url(' + url + ')'
+      }); 
+  });
+    </script>

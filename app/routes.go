@@ -36,7 +36,9 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
     index := path.Join(dir, "index.html")
     layout := path.Join(dir, "layout.html")
     c := appengine.NewContext(r)
-    data := map[string]interface{}{}
+    data := map[string]interface{}{
+        "title": PageTitle,
+    }
 
     if popusers, err := memcache.Get(c, "popusers"); err == nil {
         var users []*VineUser
@@ -67,7 +69,7 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 func UserFetchHandler(w http.ResponseWriter, r *http.Request) {
 	dir := path.Join(os.Getenv("PWD"), "templates")
 	profile := path.Join(dir, "profile.html")
-	layout := path.Join(dir, "profileLayout.html")
+	layout := path.Join(dir, "layout.html")
 	vars := mux.Vars(r)
 	c := appengine.NewContext(r)
 
@@ -176,7 +178,7 @@ func UserStoreHandler(w http.ResponseWriter, r *http.Request) {
 func AboutHandler(w http.ResponseWriter, r *http.Request) {
 	dir := path.Join(os.Getenv("PWD"), "templates")
 	aboutPage := path.Join(dir, "about.html")
-	layout := path.Join(dir, "pageLayout.html")
+	layout := path.Join(dir, "layout.html")
 
 	db := DB{appengine.NewContext(r)}
 	totalUsers, _ := db.GetTotalUsers()
@@ -210,10 +212,14 @@ func DiscoverHandler(w http.ResponseWriter, r *http.Request) {
 			recentVerified = append(recentVerified, user.(StoredUserMeta))
 		}
 	}
-	data := map[string]interface{}{"recentUsers": recentUsers, "recentVerified": recentVerified}
+	data := map[string]interface{}{
+	    "recentUsers": recentUsers,
+	    "recentVerified": recentVerified,
+	    "title": "Discover - " + PageTitle,
+	}
 	dir := path.Join(os.Getenv("PWD"), "templates")
 	discover := path.Join(dir, "discover.html")
-	layout := path.Join(dir, "pageLayout.html")
+	layout := path.Join(dir, "layout.html")
 	page := mustache.RenderFileInLayout(discover, layout, data)
 	fmt.Fprint(w, page)
 }
@@ -224,8 +230,9 @@ func TopHandler(w http.ResponseWriter, r *http.Request) {
 
 	dir := path.Join(os.Getenv("PWD"), "templates")
 	top := path.Join(dir, "top.html")
-	layout := path.Join(dir, "pageLayout.html")
+	layout := path.Join(dir, "layout.html")
 	data := db.GetTop()
+	data["title"] = "Top - " + PageTitle
 	data["LastUpdated"] = db.GetLastUpdated()
 	page := mustache.RenderFileInLayout(top, layout, data)
 	fmt.Fprint(w, page)
@@ -255,10 +262,11 @@ func SearchHandler(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	dir := path.Join(os.Getenv("PWD"), "templates")
 	search := path.Join(dir, "search.html")
-	layout := path.Join(dir, "pageLayout.html")
+	layout := path.Join(dir, "layout.html")
 	data := map[string]interface{}{
 		"query": r.FormValue("q"),
 		"count": 0,
+		"title": "Search for \"" + r.FormValue("q") + "\" - " + PageTitle,
 	}
 	if len(r.FormValue("q")) > 0 {
 		results, err := SearchUsers(c, r.FormValue("q"))
@@ -301,7 +309,7 @@ func SearchHandler(w http.ResponseWriter, r *http.Request) {
 func DonateHandler(w http.ResponseWriter, r *http.Request) {
 	dir := path.Join(os.Getenv("PWD"), "templates")
 	donate := path.Join(dir, "donate.html")
-	layout := path.Join(dir, "pageLayout.html")
+	layout := path.Join(dir, "layout.html")
 	page := mustache.RenderFileInLayout(donate, layout, nil)
 	fmt.Fprint(w, page)
 }

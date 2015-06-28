@@ -1,85 +1,217 @@
 <div class="container">
-    <div class="content">
-        <div class="text-right text-muted">
-            Last Updated: <script type="text/javascript" charset="utf-8">document.write(new Date("{{lastUpdated}}").toLocaleString())</script>
-        </div>
-        <div class="col-md-12">
-            <h1>Top Overall Users  - <small>Most followers, most loops, and least following.</small></h1>
-            <table class="table table-hover">
-                {{#topOverall}}
-                    <tr>
-                        <td>
-                            <a data-user="{{UserId}}" data-vanity="{{VanityUrl}}">
-                                <img src="{{AvatarUrl}}" alt="{{Username}}'s avatar" class="img-responsive" width="75px" />
-                            </a>
-                        </td>
-                        <td style="vertical-align:middle">
-                            <a data-user="{{UserId}}" data-vanity="{{VanityUrl}}">{{Username}}</a>
-                        </td>
-                        <td style="vertical-align:middle">
-                            <span class="formatInt" data-format="0,0">{{Current.Followers}}</span> followers
-                        </td>
-                        <td style="vertical-align:middle">
-                            following <span class="formatInt" data-format="0,0">{{Current.Following}}</span>
-                        </td>
-                        <td style="vertical-align:middle">
-                            <span class="formatInt" data-format="0,0">{{Current.Loops}}</span> loops
-                        </td>
-                    </tr>
-                {{/topOverall}}
-            </table>
-        </div>
-        <div class="col-md-6">
-            <h1>Most Followed Users</h1>
-            <table class="table table-condensed table-hover">
-                {{#topFollowed}}
-                    <tr>
-                        <td>
-                            <a data-user="{{UserId}}" data-vanity="{{VanityUrl}}">{{Username}}</a>
-                        </td>
-                        <td class="formatInt" data-format="0,0">{{Current.Followers}}</td>
-                    </tr>
-                {{/topFollowed}}
-            </table>
-        </div>
-        <div class="col-md-6">
-            <h1>Most Watched Users</h1>
-            <table class="table table-condensed table-hover">
-                {{#topLooped}}
-                    <tr>
-                        <td>
-                            <a data-user="{{UserId}}" data-vanity="{{VanityUrl}}">{{Username}}</a>
-                        </td>
-                        <td class="formatInt" data-format="0,0">{{Current.Loops}}</td>
-                    </tr>
-                {{/topLooped}}
-            </table>
-        </div>
-        <div class="col-md-6">
-            <h2>Top Original Posters</h2>
-            <table class="table table-condensed table-hover">
-                {{#topPosts}}
-                    <tr>
-                        <td>
-                            <a data-user="{{UserId}}" data-vanity="{{VanityUrl}}">{{Username}}</a>
-                        </td>
-                        <td class="formatInt" data-format="0,0">{{Current.AuthoredPosts}}</td>
-                    </tr>
-                {{/topPosts}}
-            </table>
-        </div>
-        <div class="col-md-6">
-            <h2>Top Reviners</h2>
-            <table class="table table-condensed table-hover">
-                {{#topRevines}}
-                    <tr>
-                        <td>
-                            <a data-user="{{UserId}}" data-vanity="{{VanityUrl}}">{{Username}}</a>
-                        </td>
-                        <td class="formatInt" data-format="0,0">{{Current.Revines}}</td>
-                    </tr>
-                {{/topRevines}}
-            </table>
-        </div>
+    <div class="text-right text-muted">
+        Last Updated: <script type="text/javascript" charset="utf-8">document.write(new Date("{{lastUpdated}}").toLocaleString())</script>
+    </div>
+    <div class="col-md-12">
+        <h1>Top Overall Users  - <small>Most followers, most loops, and least following.</small></h1>
+        <table class="table table-hover">
+            {{#topOverall}}
+                <tr>
+                    <td>
+                        <a data-user="{{UserId}}" data-vanity="{{VanityUrl}}">
+                            <img src="{{AvatarUrl}}" alt="{{Username}}'s avatar" class="img-responsive" width="75px" />
+                        </a>
+                    </td>
+                    <td style="vertical-align:middle">
+                        <a data-user="{{UserId}}" data-vanity="{{VanityUrl}}">{{Username}}</a>
+                    </td>
+                    <td style="vertical-align:middle">
+                        <span class="formatInt" data-format="0,0">{{Current.Followers}}</span> followers
+                    </td>
+                    <td style="vertical-align:middle">
+                        following <span class="formatInt" data-format="0,0">{{Current.Following}}</span>
+                    </td>
+                    <td style="vertical-align:middle">
+                        <span class="formatInt" data-format="0,0">{{Current.Loops}}</span> loops
+                    </td>
+                </tr>
+            {{/topOverall}}
+        </table>
     </div>
 </div>
+<div class="jumbotron text-center" id="dataset-hero">
+    <div id="graphbg-cont" class="hidden"></div>
+    <h2>Want more detailed information?</h2>
+    <h4>Contact us to run custom queries against the Vine user dataset.</h4>
+    <form id="email-submit">
+        <div class="input-group" style="max-width: 300px;margin: 0 auto;">
+          <input type="email" name="email" class="form-control" placeholder="you@domain.com">
+          <span class="input-group-btn">
+            <button class="btn btn-default" type="button" style="border-left:0;background-color:#fff !important;">
+                <i class="fa fa-angle-double-right"></i>
+            </button>
+          </span>
+        </div> 
+    </form>
+</div>
+<div class="container">
+    <div class="col-md-6">
+        <h1>Most Followed Users</h1>
+        <table class="table table-condensed table-hover">
+            {{#topFollowed}}
+                <tr>
+                    <td>
+                        <a data-user="{{UserId}}" data-vanity="{{VanityUrl}}">{{Username}}</a>
+                    </td>
+                    <td class="formatInt" data-format="0,0">{{Current.Followers}}</td>
+                </tr>
+            {{/topFollowed}}
+        </table>
+    </div>
+    <div class="col-md-6">
+        <h1>Most Watched Users</h1>
+        <table class="table table-condensed table-hover">
+            {{#topLooped}}
+                <tr>
+                    <td>
+                        <a data-user="{{UserId}}" data-vanity="{{VanityUrl}}">{{Username}}</a>
+                    </td>
+                    <td class="formatInt" data-format="0,0">{{Current.Loops}}</td>
+                </tr>
+            {{/topLooped}}
+        </table>
+    </div>
+    <div class="col-md-6">
+        <h2>Top Original Posters</h2>
+        <table class="table table-condensed table-hover">
+            {{#topPosts}}
+                <tr>
+                    <td>
+                        <a data-user="{{UserId}}" data-vanity="{{VanityUrl}}">{{Username}}</a>
+                    </td>
+                    <td class="formatInt" data-format="0,0">{{Current.AuthoredPosts}}</td>
+                </tr>
+            {{/topPosts}}
+        </table>
+    </div>
+    <div class="col-md-6">
+        <h2>Top Reviners</h2>
+        <table class="table table-condensed table-hover">
+            {{#topRevines}}
+                <tr>
+                    <td>
+                        <a data-user="{{UserId}}" data-vanity="{{VanityUrl}}">{{Username}}</a>
+                    </td>
+                    <td class="formatInt" data-format="0,0">{{Current.Revines}}</td>
+                </tr>
+            {{/topRevines}}
+        </table>
+    </div>
+</div>
+<script type="text/javascript">
+var bgData = [], chartTypes = ["area", "areaspline", "line", "column", "spline", "scatter"];
+  while (bgData.length != 2) {
+    var arr = []
+    while (arr.length < 25) {
+      var randomnumber = Math.ceil(Math.random() * 150), found = false;
+      for (var i = 0; i < arr.length; i++) {
+        if (arr[i] == randomnumber) {
+          found = true;
+          break;
+        }
+      }
+      if (!found) arr[arr.length] = randomnumber;
+    }
+    bgData.push(arr);
+  }
+  var chartType = chartTypes[Math.floor(Math.random() * chartTypes.length)];
+  console.log("type is: " + chartType);
+      $(function(){
+     $('#graphbg-cont').highcharts({
+        chart: {
+        animation: false,
+        type: chartType,
+          backgroundColor: '#00bf8f',
+          events: {
+            load: function() {
+              this.yAxis[0].update({
+                labels: {
+                  enabled: false
+                },
+                title: {
+                  text: null
+                }
+              });
+            }
+          },
+          margin: 0,
+          spacing: [0, 0, 0, 0],
+          plotBorderWidth: 0,
+        },
+        exporting: {
+          enabled: false
+        },
+        colors: ['#00E7AD', '#168E70'],
+        title: {
+          text: false
+        },
+        legend: {
+          enabled: false
+        },
+        xAxis: {
+            type: 'datetime',
+          labels: {
+            enabled: false
+          },
+          tickLength: 0,
+          minPadding:0,
+        maxPadding:0
+        },
+        yAxis: {
+          lineWidth: 0,
+          minorGridLineWidth: 0,
+          lineColor: 'transparent',
+          gridLineColor: 'transparent',
+    
+          labels: {
+            enabled: false
+          },
+          minorTickLength: 0,
+          tickLength: 0
+        },
+        tooltip: {
+          enabled: false
+        },
+    
+        credits: {
+          enabled: false
+        },
+        plotOptions: {
+          areaspline: {
+            enableMouseTracking: false,
+            fillOpacity: 0.5
+          }
+        },
+        series: [{
+          data: bgData[0]
+        }, {
+          data: bgData[1]
+        }]
+      })
+      var data = $("#graphbg-cont").highcharts().getSVG({
+        exporting: {
+          sourceWidth: $('#dataset-hero').get(0).clientWidth,
+          sourceHeight: $('#dataset-hero').get(0).clientHeight
+        }
+      });
+      $("#graphbg-cont").remove();
+      var DOMURL = window.URL || window.webkitURL || window;
+    
+      var svg = new Blob([data], {
+        type: 'image/svg+xml;charset=utf-8'
+      });
+      var url = DOMURL.createObjectURL(svg);
+    
+      $('#dataset-hero').css({
+        'background-image': 'url(' + url + ')'
+      }); 
+      $("#email-submit").submit(function(e){
+          var formData = {};
+          $.each($(this).serializeArray(), function(_, kv) {
+              formData[kv.name] = kv.value;
+          });
+        console.log("TODO: Submit " + formData + " to self.");
+        e.preventDefault();
+      });
+  });
+</script>

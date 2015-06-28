@@ -187,14 +187,5 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/tinycolor/1.1.1/tinycolor.min.js"></script>
     <script src="/js/main.js"></script>
     <script src="/js/geopattern.min.js"></script>
-    <script type="text/javascript">
-        $(function(){
-            if ('{{profileBackground}}'.length != 0) {
-                $('.jumbotron, #user-banner').geopattern('{{username}}', {color: '#{{profileBackground}}'});
-            } else {
-                $('#head-link').css("color", "#00bf8f");
-            }
-        });
-    </script>
 </body>
 </html>
