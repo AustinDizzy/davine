@@ -1,5 +1,5 @@
 cron:
-- description: tri-hourly popular user fetch
+- description: hourly popular user fetch
   url: /cron/popular
-  schedule: every 3 hours
+  schedule: every 1 hours
   timezone: US/Eastern
