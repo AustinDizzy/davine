@@ -136,3 +136,7 @@ type ByRevines []StoredUserMeta
 type UserIndex struct {
 	Username, Location, Description, VanityUrl string
 }
+
+type FeaturedUser struct {
+    UserIDStr, VineID string
+}

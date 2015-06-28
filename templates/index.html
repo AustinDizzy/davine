@@ -50,35 +50,37 @@
                             </small>
                         </h2>
                     </div>
+                    {{#featuredUser}}
                     <div class="col-sm-12 col-md-9">
                         <div class="panel panel-default panel-card">
-                            <div class="panel-heading" data-name="Matt Bettiol" data-color="33ccbf">
-                                <a class="btn btn-default btn-sm" role="button" href="https://vine.co/u/mattbettiol">
-                                    <i class="fa fa-vine" style="color:#00bf8f"></i>
+                            <div class="panel-heading" data-color="{{ProfileBackground}}" data-name="{{Username}}">
+                                <a class="btn btn-default btn-sm" role="button" href="https://vine.co/u/{{UserIdStr}}">
+                                    <i class="fa fa-vine" style="color:#{{ProfileBackground}}"></i>
                                 </a>
                             </div>
                             <div class="panel-figure">
-                                <img class="img-responsive img-circle" src="https://v.cdn.vine.co/r/avatars/5D1601041D1004309641658019840_10bfc004b77.3.4_42I..96XwmxJxVzJzqe8CdK_W2kRwTsqnLgQHVIhlq6vHGlM36ljW2zI1f3tCcKZ.jpg?versionId=UICNrU2CBeGM8lRB95faZqX5Wn.ZWqMb" />
+                                <img class="img-responsive img-circle" src="{{AvatarUrl}}" />
                             </div>
                             <div class="panel-body text-center">
-                                <h4 class="panel-header">
-                                    <a href="http://davine.co/u/mattbettiol">Matt Bettiol</a>
-                                </h4>
-                                <small>What I if told you, you read this wrong.</small>
+                                 <h4 class="panel-header"><a href="/u/{{UserIdStr}}">{{Username}}</a></h4>
+                                 <small>{{Description}}</small>
                             </div>
                             <div class="panel-thumbnails">
                                 <div class="row">
-                                    <div class="col-xs-6 text-center">67 <i class="fa fa-users"></i>
-    
+                                    <div class="col-xs-6 text-center">
+                                        <span class="formatInt" data-format="0.0a">{{FollowerCount}}</span>
+                                        <i class="fa fa-users"></i>
                                     </div>
-                                    <div class="col-xs-6 text-center">4.5k <i class="fa fa-eye"></i>
-    
+                                    <div class="col-xs-6 text-center">
+                                        <span class="formatInt" data-format="0.0a">{{LoopCount}}</span>
+                                        <i class="fa fa-eye"></i>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <iframe class="clearfix" src="https://vine.co/v/OLv0FLJaDli/embed/simple" width="250" height="250" frameborder="0"></iframe>
+                    {{/featuredUser}}
+                    <iframe class="clearfix" src="https://vine.co/v/{{featuredPost}}/embed/simple" width="250" height="250" frameborder="0"></iframe>
                 </div>
                 <!--Featured Profile END-->
             </div>

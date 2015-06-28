@@ -63,6 +63,17 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
         c.Errorf("popusers memcache err: %v", err)
     }
 
+    if featuredUser, err := memcache.Get(c, "featuredUser"); err == nil {
+        var user *VineUser
+        r := strings.Split(string(featuredUser.Value[:]), ";")
+        u, _ := memcache.Get(c, r[0])
+        dec := gob.NewDecoder(bytes.NewReader(u.Value))
+        dec.Decode(&user)
+
+        data["featuredUser"] = user
+        data["featuredPost"] = r[1]
+    }
+
     fmt.Fprint(w, mustache.RenderFileInLayout(index, layout, data))
 }
 
@@ -431,7 +442,7 @@ func CronFetchHandler(w http.ResponseWriter, r *http.Request) {
 func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
 	dir := path.Join(os.Getenv("PWD"), "templates")
 	notFound := path.Join(dir, "404.html")
-	layout := path.Join(dir, "pageLayout.html")
+	layout := path.Join(dir, "layout.html")
 	data := map[string]string{"url": r.RequestURI}
 	page := mustache.RenderFileInLayout(notFound, layout, data)
 	w.WriteHeader(404)
@@ -472,30 +483,80 @@ func StartupHandler(w http.ResponseWriter, r *http.Request) {
 func AdminHandler(w http.ResponseWriter, r *http.Request) {
     c := appengine.NewContext(r)
     db := DB{c}
+    vineApi := VineRequest{c}
     adminUser := user.Current(c)
+    var err error
     if adminUser == nil {
         url, _ := user.LoginURL(c, "/admin/dashboard")
         http.Redirect(w, r, url, 301)
         return
+    } else if !adminUser.Admin {
+        w.WriteHeader(401)
+        return
     }
+
     if r.Method == "GET" {
         dir := path.Join(os.Getenv("PWD"), "templates")
-	    admin := path.Join(dir, "admin.html")
-	    data := map[string]interface{}{"user": adminUser.String(), "config": Config,}
-	    page := mustache.RenderFile(admin, data)
-	    fmt.Fprint(w, page)
+        admin := path.Join(dir, "admin.html")
+        layout := path.Join(dir, "layout.html")
+        data := map[string]interface{}{"user": adminUser.String(), "config": Config,}
+        page := mustache.RenderFileInLayout(admin, layout, data)
+        fmt.Fprint(w, page)
     } else if r.Method == "POST" {
-        if len(r.FormValue("v")) == 0 {
-            return
-        }
         switch r.FormValue("op") {
+            case "TaskUsers":
+                for _, user := range strings.Split(r.FormValue("v"), "\n") {
+                    u := strings.Split(user, ",")
+                    t := taskqueue.NewPOSTTask("/cron/fetch", map[string][]string{
+                        "id": {strings.TrimSpace(u[0])},
+                        "n": {strings.TrimSpace(u[1])},
+                    })
+                    t.Name = u[0] + "-0"
+                    t.Delay, err = time.ParseDuration(strings.TrimSpace(u[2]))
+
+                    if err != nil {
+                        c.Errorf("Error parsing task delay %v: %v", u, err)
+                        continue;
+                    }
+
+                    if _, err = taskqueue.Add(c, t, ""); err != nil {
+                        c.Errorf("Error adding user %s to taskqueue: %v", u[0], err)
+                    }
+                }
             case "UnqueueUser":
-                db.Context.Infof("unqueuing %v", r.FormValue("v"))
+                c.Infof("unqueuing %v", r.FormValue("v"))
                 db.UnqueueUser(r.FormValue("v"))
             case "BatchUsers":
                 users := strings.Split(r.FormValue("v"), ",")
+                c.Infof("queueing users: %v", users)
                 for _, v := range users {
-                    QueueUser(v, c)
+                    QueueUser(strings.TrimSpace(v), c)
+                }
+            case "FeaturedUser":
+                if user, err := vineApi.GetUser(r.FormValue("user")); err == nil {
+                    key := datastore.NewKey(c, "Misc", "featuredUser", 0, nil)
+                    featuredUser := &FeaturedUser{user.UserIdStr, r.FormValue("vine")}
+                    if _, err := datastore.Put(c, key, featuredUser); err != nil {
+                        http.Error(w, err.Error(), 500)
+                        return
+                    } else {
+                        items := []*memcache.Item{&memcache.Item{
+                            Key: "featuredUser",
+                            Value: []byte(user.UserIdStr + ";" + r.FormValue("vine")),
+                        }}
+                        var d bytes.Buffer
+                        enc := gob.NewEncoder(&d)
+                        user.ProfileBackground = strings.TrimPrefix(user.ProfileBackground, "0x")
+                        enc.Encode(user)
+                        items = append(items, &memcache.Item{
+                            Key: user.UserIdStr,
+                            Value: d.Bytes(),
+                        })
+                        memcache.AddMulti(c, items)
+                    }
+                } else {
+                    http.Error(w, err.Error(), 500)
+                    return
                 }
         }
         fmt.Fprintf(w, "{\"op\":\"%v\",\"success\":true}", r.FormValue("op"))

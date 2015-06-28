@@ -1,3 +1,158 @@
-<h1>Welcome, {{user}}</h1>
-<hr>
-<span>Currently loaded config: {{{config}}}</span>
+<div class="container">
+    <div class="content">
+        <div class="page-header">
+            <h2>Administration Dashboard</h2>
+        </div>
+        <div class="row">
+            <span class="col-md-8">
+                <h3>Weekly Report Users <small>users who have signed up for a weekly email report</small></h3>
+                <table class="table table-hover">
+                    <tr>
+                        <th>User</th>
+                        <th>Email</th>
+                        <th>Registered</th>>
+                    </tr>
+                    {{#reportUsers}}
+                    <tr>
+                        <td>{{User}}</td>
+                        <td>{{Email}}</td>
+                        <td>{{Registered}}</td>
+                    </tr>
+                    {{/reportUsers}}
+                </table>
+            </span>
+            <span class="col-md-4 text-center">
+                <h3>Tools</h3>
+                <button class="btn btn-default" data-toggle="modal" data-target="#batchTask">Batch Task Users</button>
+                <button class="btn btn-default" data-toggle="modal" data-target="#sendReport">Send User Report</button>
+                <button class="btn btn-default" data-toggle="modal" data-target="#batchQueue">Batch Queue Users</button>
+                <div class="modal fade" id="batchTask" tabindex="-1" role="dialog">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="gridSystemModalLabel">Batch Task Users</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="container-fluid">
+                                    <span class="text-muted">
+                                        Record format: UserID,n,delay. One record per line.<br>
+                                        Record ex: 987656789876,15m
+                                    </span>
+                                    <form class="text-center">
+                                        <textarea name="v" class="form-control form-group" rows="8"></textarea>
+                                        <input type="hidden" name="op" value="TaskUsers">
+                                        <input type="submit" class="btn btn-lg btn-primary" value="Submit">
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="batchQueue" tabindex="-1" role="dialog">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="gridSystemModalLabel">Batch Queue Users</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="container-fluid">
+                                    <span class="text-muted">
+                                        Comma delimited vanity and/or user ID list.
+                                    </span>
+                                    <form class="text-center">
+                                        <textarea name="v" class="form-control form-group" rows="8"></textarea>
+                                        <input type="hidden" name="op" value="BatchUsers">
+                                        <input type="submit" class="btn btn-lg btn-primary" value="Submit">
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="sendReport" tabindex="-1" role="dialog">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="gridSystemModalLabel">Send User Report</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="container-fluid">
+                                    <form class="text-center">
+                                        <div class="form-group">
+                                            <label>User ID</label>
+                                            <input type="text" class="form-control" name="user" placeholder="User ID (ex: 907787504051171328)">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Email</label>
+                                            <input type="email" class="form-control" name="email" placeholder="email@domain.com">
+                                        </div>
+                                        <input type="hidden" name="op" value="TaskUsers">
+                                        <input type="submit" class="btn btn-lg btn-primary" value="Submit">
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </span>
+        </div>
+        <div class="row">
+            <span class="col-md-6">
+                <h3>Enterprise Users <small>users who have shown interest in running custom queries</small></h3>
+                <table class="table table-hover">
+                    <tr>
+                        <th>Email</th>
+                        <th>Submitted</th>
+                    </tr>
+                    {{#enterpriseUsers}}
+                    <tr>
+                        <td>{{Email}}</td>
+                        <td>{{Submitted}}</td>
+                    </tr>
+                    {{/enterpriseUsers}}
+                </table>
+            </span>
+            <span class="col-md-4 col-md-offset-2 text-center">
+                <h3>Set Featured User</h3>
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-md-2">User:</label>
+                        <div class="col-md-10">
+                            <input type="text" name="user" class="form-control" placeholder="user ID">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2">Vine:</label>
+                        <div class="col-md-10">
+                            <input type="text" name="vine" class="form-control" placeholder="Vine post ID">
+                        </div>
+                    </div>
+                    <input type="hidden" name="op" value="FeaturedUser">
+                    <input type="submit" value="Submit" class="btn btn-primary">
+                </form>
+            </span>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function(){
+        $('form').submit(function(e){
+            e.preventDefault();
+            var formData = {};
+            $.each($(this).serializeArray(), function(_, kv) {
+                formData[kv.name] = kv.value;
+            });
+            $.post(window.location, formData, function(d){
+                alert("Success. Check app logs for more details, if necessary.");
+            });
+        });
+    });
+</script>
+<style type="text/css" media="all">
+button[data-toggle="modal"] {
+    margin-top: 10px;
+}
+</style>
