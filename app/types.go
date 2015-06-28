@@ -89,8 +89,8 @@ type PopularPage struct {
 }
 
 type PopularRecord struct {
-    UserId   int64 `json:"userId"`
-    UserIdStr string `json:"userIdStr"`
+	UserId    int64  `json:"userId"`
+	UserIdStr string `json:"userIdStr"`
 }
 
 type StoredUserDelta struct {
@@ -138,5 +138,5 @@ type UserIndex struct {
 }
 
 type FeaturedUser struct {
-    UserIDStr, VineID string
+	UserIDStr, VineID string
 }
