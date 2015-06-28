@@ -347,7 +347,7 @@ func ExportHandler(w http.ResponseWriter, r *http.Request) {
 		data := map[string]string{"username": user.Username, "userId": vars["user"], "captcha": Config["captchaPublic"]}
 		dir := path.Join(os.Getenv("PWD"), "templates")
 		export := path.Join(dir, "export.html")
-		layout := path.Join(dir, "pageLayout.html")
+		layout := path.Join(dir, "layout.html")
 		page := mustache.RenderFileInLayout(export, layout, data)
 		fmt.Fprint(w, page)
 	} else if r.Method == "POST" {
