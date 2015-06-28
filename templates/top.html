@@ -36,6 +36,7 @@
     <form id="email-submit">
         <div class="input-group" style="max-width: 300px;margin: 0 auto;">
           <input type="email" name="email" class="form-control" placeholder="you@domain.com">
+          <input type="hidden" name="type" value="enterprise">
           <span class="input-group-btn">
             <button class="btn btn-default" type="button" style="border-left:0;background-color:#fff !important;">
                 <i class="fa fa-angle-double-right"></i>
@@ -115,7 +116,6 @@ var bgData = [], chartTypes = ["area", "areaspline", "line", "column", "spline",
     bgData.push(arr);
   }
   var chartType = chartTypes[Math.floor(Math.random() * chartTypes.length)];
-  console.log("type is: " + chartType);
       $(function(){
      $('#graphbg-cont').highcharts({
         chart: {
@@ -210,7 +210,10 @@ var bgData = [], chartTypes = ["area", "areaspline", "line", "column", "spline",
           $.each($(this).serializeArray(), function(_, kv) {
               formData[kv.name] = kv.value;
           });
-        console.log("TODO: Submit " + formData + " to self.");
+        $.post("/sign-up", formData, function(data){
+            $("#email-submit").html("<span>Thanks! We'll be in touch.</span>");
+            console.log(data);
+        });
         e.preventDefault();
       });
   });

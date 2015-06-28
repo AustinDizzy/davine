@@ -24,6 +24,7 @@ func init() {
 	router.HandleFunc("/random/user", RandomHandler).Methods("GET")
 	router.HandleFunc("/donate", DonateHandler).Methods("GET")
 	router.HandleFunc("/x/{user}", ExportHandler).Methods("GET", "POST")
+	router.HandleFunc("/sign-up", SignUpHandler).Methods("GET", "POST")
 	router.NotFoundHandler = http.HandlerFunc(NotFoundHandler)
 
 	router.HandleFunc("/admin/dashboard", AdminHandler).Methods("GET", "POST")

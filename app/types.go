@@ -140,3 +140,12 @@ type UserIndex struct {
 type FeaturedUser struct {
 	UserIDStr, VineID string
 }
+
+type AppUser struct {
+	Email      string
+	Type       string
+	Active     bool
+	UserIdStr  string
+	Key        string
+	Discovered time.Time
+}

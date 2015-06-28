@@ -145,3 +145,25 @@ func SearchUsers(c appengine.Context, query string) ([]StoredUserMeta, error) {
 
 	return users, nil
 }
+
+func GetAppUsers(c appengine.Context) ([]*AppUser, []*AppUser, error) {
+	var enterpriseUsers []*AppUser
+	var emailReportUsers []*AppUser
+	q := datastore.NewQuery("AppUser").KeysOnly()
+	keys, _ := q.GetAll(c, nil)
+
+	for _, v := range keys {
+		u := new(AppUser)
+		if err := datastore.Get(c, v, u); err == nil {
+			if u.Type == "enterprise" {
+				enterpriseUsers = append(enterpriseUsers, u)
+			} else if u.Type == "email-report" {
+				emailReportUsers = append(emailReportUsers, u)
+			}
+		} else {
+			c.Errorf("got err: %v", err)
+			return enterpriseUsers, emailReportUsers, err
+		}
+	}
+	return enterpriseUsers, emailReportUsers, nil
+}

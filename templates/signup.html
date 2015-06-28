@@ -1,0 +1,126 @@
+<div class="container">
+    <div class="jumbotron text-center" id="signup-hero">
+            <div id="graphbg-cont" class="hidden"></div>
+            <h1>Sign Up</h1>
+            <h3>A weekly report of how your Vine profile is growing, straight to your inbox.</h3>
+            <button class="btn btn-default">View Example</button>
+    </div>
+    <div class="content">
+    </div>
+</div>
+<script type="text/javascript">
+    var bgData = [];
+    while (bgData.length != 2) {
+    var arr = []
+    while (arr.length < 25) {
+      var randomnumber = Math.ceil(Math.random() * 150), found = false;
+      for (var i = 0; i < arr.length; i++) {
+        if (arr[i] == randomnumber) {
+          found = true;
+          break;
+        }
+      }
+      if (!found) arr[arr.length] = randomnumber;
+    }
+    bgData.push(arr);
+  }
+    $(function(){
+     $('#graphbg-cont').highcharts({
+        chart: {
+        animation: false,
+        type: "areaspline",
+          backgroundColor: '#00bf8f',
+          events: {
+            load: function() {
+              this.yAxis[0].update({
+                labels: {
+                  enabled: false
+                },
+                title: {
+                  text: null
+                }
+              });
+            }
+          },
+          margin: 0,
+          spacing: [0, 0, 0, 0],
+          plotBorderWidth: 0,
+        },
+        exporting: {
+          enabled: false
+        },
+        colors: ['#00E7AD', '#168E70'],
+        title: {
+          text: false
+        },
+        legend: {
+          enabled: false
+        },
+        xAxis: {
+            type: 'datetime',
+          labels: {
+            enabled: false
+          },
+          tickLength: 0,
+          minPadding:0,
+        maxPadding:0
+        },
+        yAxis: {
+          lineWidth: 0,
+          minorGridLineWidth: 0,
+          lineColor: 'transparent',
+          gridLineColor: 'transparent',
+    
+          labels: {
+            enabled: false
+          },
+          minorTickLength: 0,
+          tickLength: 0
+        },
+        tooltip: {
+          enabled: false
+        },
+    
+        credits: {
+          enabled: false
+        },
+        plotOptions: {
+          areaspline: {
+            enableMouseTracking: false,
+            fillOpacity: 0.5
+          }
+        },
+        series: [{
+          data: bgData[0]
+        }, {
+          data: bgData[1]
+        }]
+      })
+      var data = $("#graphbg-cont").highcharts().getSVG({
+        exporting: {
+          sourceWidth: $('#signup-hero').get(0).clientWidth,
+          sourceHeight: $('#signup-hero').get(0).clientHeight
+        }
+      });
+      $("#graphbg-cont").remove();
+      var DOMURL = window.URL || window.webkitURL || window;
+    
+      var svg = new Blob([data], {
+        type: 'image/svg+xml;charset=utf-8'
+      });
+      var url = DOMURL.createObjectURL(svg);
+    
+      $('#signup-hero').css({
+        'background-image': 'url(' + url + ')'
+      });
+    });
+</script>
+<style type="text/css" media="all">
+    #signup-hero {
+        color: white;
+        font-family: 'Roboto';
+        box-shadow: inset 0 0 0 1000px rgba(0,0,0,.25);
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+    }    
+</style>

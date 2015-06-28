@@ -480,6 +480,75 @@ func StartupHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func SignUpHandler(w http.ResponseWriter, r *http.Request) {
+	c := appengine.NewContext(r)
+	vineApi := VineRequest{c}
+	data := map[string]interface{}{}
+	if r.Method == "GET" {
+		dir := path.Join(os.Getenv("PWD"), "templates")
+		admin := path.Join(dir, "signup.html")
+		layout := path.Join(dir, "layout.html")
+		page := mustache.RenderFileInLayout(admin, layout)
+		fmt.Fprint(w, page)
+	} else if r.Method == "POST" {
+		var appUser *AppUser
+		key := datastore.NewKey(c, "AppUser", r.FormValue("email"), 0, nil)
+		if r.FormValue("type") == "enterprise" {
+			appUser = &AppUser{
+				Email:      r.FormValue("email"),
+				Type:       "enterprise",
+				Active:     true,
+				Discovered: time.Now(),
+			}
+			if _, err := datastore.Put(c, key, appUser); err != nil {
+				data["success"] = false
+				data["error"] = err.Error()
+			} else {
+				data["success"] = true
+			}
+		} else if r.FormValue("type") == "email-report" {
+			slug := GenSlug()
+			_, err := GetQueuedUser(r.FormValue("user"), c)
+			if err != nil {
+				data["success"] = false
+				data["error"] = err.Error()
+			} else {
+				appUser = &AppUser{
+					Email:      r.FormValue("email"),
+					Type:       "email-report",
+					Active:     false,
+					UserIdStr:  r.FormValue("user"),
+					Key:        slug + ";" + GenKey(),
+					Discovered: time.Now(),
+				}
+				if _, err := datastore.Put(c, key, appUser); err != nil {
+					data["success"] = true
+					data["code"] = slug
+				}
+			}
+		} else if r.FormValue("type") == "email-ping" {
+			if err := datastore.Get(c, key, appUser); err != nil {
+				if u, err := vineApi.GetUser(appUser.UserIdStr); err != nil {
+					data["success"] = false
+					data["error"] = err.Error()
+				} else {
+					if strings.Contains(u.Description, strings.Split(appUser.Key, ";")[0]) {
+						data["success"] = true
+						appUser.Active = true
+						if _, err := datastore.Put(c, key, appUser); err != nil {
+							data["success"] = false
+							data["error"] = err.Error()
+						}
+					} else {
+						data["success"] = false
+					}
+				}
+			}
+		}
+		json.NewEncoder(w).Encode(data)
+	}
+}
+
 func AdminHandler(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	db := DB{c}
@@ -499,7 +568,12 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 		dir := path.Join(os.Getenv("PWD"), "templates")
 		admin := path.Join(dir, "admin.html")
 		layout := path.Join(dir, "layout.html")
-		data := map[string]interface{}{"user": adminUser.String(), "config": Config}
+		enterprise, reports, _ := GetAppUsers(c)
+		data := map[string]interface{}{
+			"config":          Config,
+			"enterpriseUsers": enterprise,
+			"reportUsers":     reports,
+		}
 		page := mustache.RenderFileInLayout(admin, layout, data)
 		fmt.Fprint(w, page)
 	} else if r.Method == "POST" {

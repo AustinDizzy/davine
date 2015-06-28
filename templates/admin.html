@@ -10,13 +10,17 @@
                     <tr>
                         <th>User</th>
                         <th>Email</th>
-                        <th>Registered</th>>
+                        <th>Active</th>
+                        <th>Registered</th>
+                        <th>Key</th>
                     </tr>
                     {{#reportUsers}}
                     <tr>
-                        <td>{{User}}</td>
+                        <td>{{UserIdStr}}</td>
                         <td>{{Email}}</td>
-                        <td>{{Registered}}</td>
+                        <td>{{Active}}</td>
+                        <td>{{Discovered}}</td>
+                        <td>{{Key}}</td>
                     </tr>
                     {{/reportUsers}}
                 </table>
@@ -110,7 +114,7 @@
                     {{#enterpriseUsers}}
                     <tr>
                         <td>{{Email}}</td>
-                        <td>{{Submitted}}</td>
+                        <td>{{Discovered}}</td>
                     </tr>
                     {{/enterpriseUsers}}
                 </table>
@@ -137,6 +141,7 @@
         </div>
     </div>
 </div>
+<span class="hidden">{{.}}</span>
 <script type="text/javascript">
     $(function(){
         $('form').submit(function(e){

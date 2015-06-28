@@ -146,11 +146,12 @@ $(function() {
     html: true
   });
   $('.panel-heading').each(function(){
+      var color = ($(this).data("color") === "" ? "00bf8f" : $(this).data("color"));
       $(this).parent().find(".panel-header a, .fa-vine").css({
-          "color": "#" + $(this).data("color")
+          "color": "#" + color
       });
       $(this).geopattern($(this).data("name"), {
-          color: "#" + $(this).data("color")
+          color: "#" + color
       });
   });
   if ($(window).width() < 768) {
