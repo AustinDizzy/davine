@@ -288,6 +288,16 @@
     text-indent: 0;
     margin-left: 5em;
 }
+.message {
+    display:none;
+    text-align: center;
+    color: white;
+}
+.msg-err {
+    background-color: #a94442;
+    color: white;
+    text-align: center;
+}
   </style>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 </head>
@@ -323,14 +333,18 @@
     <div class="container">
       <div class="row">
         <div class="col-sm-6 col-sm-offset-3">
-          <div class="input-group stylish-input-group">
-            <input type="text" class="form-control" placeholder="link to Vine profile">
-            <span class="input-group-addon">
-              <button type="submit">
-                <span class="fa fa-sitemap"></span>
-              </button>
-            </span>
-          </div>
+            <p class="message"></p>
+            <form id="user-submit">
+              <div class="input-group stylish-input-group">
+                <input type="text" name="user-link" class="form-control" placeholder="link to Vine profile">
+                <span class="input-group-addon">
+                  <button type="submit">
+                    <span class="fa fa-sitemap"></span>
+                  </button>
+                </span>
+              </div>
+              <div class="text-center" style="color:white">or jump to a <a href="/random/user?" style="color:white;font-weight:bold">random user</a></div>
+            </form>
         </div>
       </div>
     </div>
