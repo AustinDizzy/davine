@@ -161,6 +161,7 @@ func UserStoreHandler(w http.ResponseWriter, r *http.Request) {
 
 	if err == datastore.ErrNoSuchEntity || u == nil {
 		if apiErr != nil {
+		    c.Infof("Got apiErr: %v", apiErr)
 			data["exists"] = false
 			data["queued"] = false
 		} else {
@@ -521,9 +522,13 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 					Key:        slug + ";" + GenKey(),
 					Discovered: time.Now(),
 				}
-				if _, err := datastore.Put(c, key, appUser); err != nil {
+				if _, err := datastore.Put(c, key, &appUser); err != nil {
+				    //TODO: Investigate why AppEngine isn't storing appUser
+				    c.Infof("appUser store success")
 					data["success"] = true
 					data["code"] = slug
+				} else {
+				    c.Errorf("got appUser store err: %v", err)
 				}
 			}
 		} else if r.FormValue("type") == "email-ping" {

@@ -1,126 +1,227 @@
 <div class="container">
     <div class="jumbotron text-center" id="signup-hero">
-            <div id="graphbg-cont" class="hidden"></div>
-            <h1>Sign Up</h1>
-            <h3>A weekly report of how your Vine profile is growing, straight to your inbox.</h3>
-            <button class="btn btn-default">View Example</button>
+        <div id="graphbg-cont" class="hidden"></div>
+         <h1>Sign Up</h1>
+
+         <h3>A weekly report of how your Vine profile is growing, sent straight to your inbox.</h3>
+
+        <button class="btn btn-default">View Example</button>
     </div>
     <div class="content">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                 <h3>Step 1. Enter the following information.</h3>
+                <form id="register-form">
+                    <div class="form-group col-md-8">
+                        <label>What email would you like to receive your weekly report?</label>
+                        <input type="text" class="form-control" name="email" placeholder="user@example.com">
+                    </div>
+                    <div class="col-md-4">
+                        <p>It does not have to be the same as your Vine profile's email.</p>
+                    </div>
+                    <div class="form-group col-md-8">
+                        <label>Please enter a link to your vine profile.</label>
+                        <input type="text" class="form-control" name="email">
+                    </div>
+                    <div class="col-md-4">
+                        <p>These are all valid formats:</p>
+                        <ul>
+                            <li>https://vine.co/SpaceX</li>
+                            <li>https://vine.co/u/1167773680030359552</li>
+                            <li>https://davine.co/u/SpaceX</li>
+                            <li>https://davine.co/u/1167773680030359552</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-8 text-center">
+                        <input type="hidden" name="type" value="email-report">
+                        <input type="submit" class="btn btn-primary btn-lg" value="Next">
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                 <h3 class="text-muted">Step 2. Verify ownership of your Vine profile.</h3>
+                <div id="step2">
+                    <div class="col-md-8">
+                         <h4>Enter the following code anywhere in your profile description: <span class="label label-default"></span>.</h4>
+                        Then, click "Check" below.
+                        <span class="clearfix"></span>
+                        <div class="text-center">
+                            <form>
+                                <input type="hidden" name="email" id="ping-email">
+                                <input type="hidden" name="type" value="email-ping">
+                                <button type="submit" class="btn btn-default btn-lg">
+                                     Check <i class="fa fa-refresh"></i>
+                                 </button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <p>Can't edit your profile right now? No problem, save the code and do it later. Revisit this page and enter in the same information above.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                 <h3 class="text-muted">Step 3. Configure your subscription (optional).</h3>
+
+                <div class="col-md-8" id="step3">The Davine newsletter notifies you of new features, announcements, updates, etc. We promise to never spam you or hand out your email address.
+                    <form>
+                        <div class="form-group">
+                            <label>Davine Newsletter (<i>optional</i>)&nbsp;</label>
+                            <input type="checkbox" value="true">
+                        </div>
+                        <div class="form-group text-center">
+                            <input type="submit" value="FInish" class="btn btn-primary btn-lg">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 <script type="text/javascript">
     var bgData = [];
     while (bgData.length != 2) {
-    var arr = []
-    while (arr.length < 25) {
-      var randomnumber = Math.ceil(Math.random() * 150), found = false;
-      for (var i = 0; i < arr.length; i++) {
-        if (arr[i] == randomnumber) {
-          found = true;
-          break;
-        }
-      }
-      if (!found) arr[arr.length] = randomnumber;
-    }
-    bgData.push(arr);
-  }
-    $(function(){
-     $('#graphbg-cont').highcharts({
-        chart: {
-        animation: false,
-        type: "areaspline",
-          backgroundColor: '#00bf8f',
-          events: {
-            load: function() {
-              this.yAxis[0].update({
-                labels: {
-                  enabled: false
-                },
-                title: {
-                  text: null
+        var arr = []
+        while (arr.length < 25) {
+            var randomnumber = Math.ceil(Math.random() * 150),
+                found = false;
+            for (var i = 0; i < arr.length; i++) {
+                if (arr[i] == randomnumber) {
+                    found = true;
+                    break;
                 }
-              });
             }
-          },
-          margin: 0,
-          spacing: [0, 0, 0, 0],
-          plotBorderWidth: 0,
-        },
-        exporting: {
-          enabled: false
-        },
-        colors: ['#00E7AD', '#168E70'],
-        title: {
-          text: false
-        },
-        legend: {
-          enabled: false
-        },
-        xAxis: {
-            type: 'datetime',
-          labels: {
-            enabled: false
-          },
-          tickLength: 0,
-          minPadding:0,
-        maxPadding:0
-        },
-        yAxis: {
-          lineWidth: 0,
-          minorGridLineWidth: 0,
-          lineColor: 'transparent',
-          gridLineColor: 'transparent',
-    
-          labels: {
-            enabled: false
-          },
-          minorTickLength: 0,
-          tickLength: 0
-        },
-        tooltip: {
-          enabled: false
-        },
-    
-        credits: {
-          enabled: false
-        },
-        plotOptions: {
-          areaspline: {
-            enableMouseTracking: false,
-            fillOpacity: 0.5
-          }
-        },
-        series: [{
-          data: bgData[0]
-        }, {
-          data: bgData[1]
-        }]
-      })
-      var data = $("#graphbg-cont").highcharts().getSVG({
-        exporting: {
-          sourceWidth: $('#signup-hero').get(0).clientWidth,
-          sourceHeight: $('#signup-hero').get(0).clientHeight
+            if (!found) arr[arr.length] = randomnumber;
         }
-      });
-      $("#graphbg-cont").remove();
-      var DOMURL = window.URL || window.webkitURL || window;
-    
-      var svg = new Blob([data], {
-        type: 'image/svg+xml;charset=utf-8'
-      });
-      var url = DOMURL.createObjectURL(svg);
-    
-      $('#signup-hero').css({
-        'background-image': 'url(' + url + ')'
-      });
+        bgData.push(arr);
+    }
+    $(function() {
+        $('#graphbg-cont').highcharts({
+            chart: {
+                animation: false,
+                type: "areaspline",
+                backgroundColor: '#00bf8f',
+                events: {
+                    load: function() {
+                        this.yAxis[0].update({
+                            labels: {
+                                enabled: false
+                            },
+                            title: {
+                                text: null
+                            }
+                        });
+                    }
+                },
+                margin: 0,
+                spacing: [0, 0, 0, 0],
+                plotBorderWidth: 0,
+            },
+            exporting: {
+                enabled: false
+            },
+            colors: ['#00E7AD', '#168E70'],
+            title: {
+                text: false
+            },
+            legend: {
+                enabled: false
+            },
+            xAxis: {
+                type: 'datetime',
+                labels: {
+                    enabled: false
+                },
+                tickLength: 0,
+                minPadding: 0,
+                maxPadding: 0
+            },
+            yAxis: {
+                lineWidth: 0,
+                minorGridLineWidth: 0,
+                lineColor: 'transparent',
+                gridLineColor: 'transparent',
+
+                labels: {
+                    enabled: false
+                },
+                minorTickLength: 0,
+                tickLength: 0
+            },
+            tooltip: {
+                enabled: false
+            },
+
+            credits: {
+                enabled: false
+            },
+            plotOptions: {
+                areaspline: {
+                    enableMouseTracking: false,
+                    fillOpacity: 0.5
+                }
+            },
+            series: [{
+                data: bgData[0]
+            }, {
+                data: bgData[1]
+            }]
+        })
+        var data = $("#graphbg-cont").highcharts().getSVG({
+            exporting: {
+                sourceWidth: $('#signup-hero').get(0).clientWidth,
+                sourceHeight: $('#signup-hero').get(0).clientHeight
+            }
+        });
+        $("#graphbg-cont").remove();
+        var DOMURL = window.URL || window.webkitURL || window;
+
+        var svg = new Blob([data], {
+            type: 'image/svg+xml;charset=utf-8'
+        });
+        var url = DOMURL.createObjectURL(svg);
+
+        $('#signup-hero').css({
+            'background-image': 'url(' + url + ')'
+        });
+
+        $('form').submit(function(e) {
+            var formData = {};
+            $.each($(this).serializeArray(), function(_, kv) {
+                formData[kv.name] = kv.value;
+            });
+            $.post(document.location, formData, function(d) {
+                var data = JSON.parse(d);
+                if(data.success) {
+                    $("#step2").prev().removeClass("text-muted");
+                    $("#step2").slideDown();
+                    $("#step2").find(".label").text(data.code);
+                } else {
+                    alert("Error: " + data.error + "\nIf you experience this error again, please contact us.");
+                }
+            });
+            e.preventDefault();
+        });
+        $("#register-form").submit(function(e){
+            e.preventDefault();
+            $("#ping-email").val($("#register-form input[name='email']").val());
+            console.log($("#ping-email").val());
+        });
     });
 </script>
 <style type="text/css" media="all">
     #signup-hero {
         color: white;
-        font-family: 'Roboto';
-        box-shadow: inset 0 0 0 1000px rgba(0,0,0,.25);
+        font-family:'Roboto';
+        box-shadow: inset 0 0 0 1000px rgba(0, 0, 0, .25);
         border-bottom-right-radius: 0;
         border-bottom-left-radius: 0;
-    }    
+    }
+    #step2, #step3 {
+        display: none;
+    }
 </style>
