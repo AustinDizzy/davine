@@ -43,6 +43,45 @@ type VineUser struct {
 	Description       string   `json:"description"`
 }
 
+type UserRecord struct {
+    UserId            string
+	Username          string `datastore:",noindex"`
+	Vanity            string
+	Description       string `datastore:",noindex"`
+	Location          string `datastore:",noindex"`
+	ProfileBackground string `datastore:",noindex"`
+	AvatarUrl         string `datastore:",noindex"`
+	FollowerCount     int64  `datastore:",noindex"`
+	FollowingCount    int64  `datastore:",noindex"`
+	LoopCount         int64  `datastore:",noindex"`
+	PostCount         int64  `datastore:",noindex"`
+	RevineCount       int64  `datastore:",noindex"`
+	LikeCount         int64  `datastore:",noindex"`
+	Private           bool   `datastore:",noindex"`
+	Verified          bool
+	Explicit          bool
+	userData          []*UserData `datastore:"-"`
+	userMeta          []*UserMeta `datastore:"-"`
+}
+
+type UserData struct {
+    UserId        int64
+    Recorded      time.Time `datastore:",noindex"`
+    Followers     int64     `datastore:",noindex"`
+	Following     int64     `datastore:",noindex"`
+	Loops         int64     `datastore:",noindex"`
+	Posts         int64     `datastore:",noindex"`
+	Revines       int64     `datastore:",noindex"`
+	Likes         int64     `datastore:",noindex"`
+}
+
+type UserMeta struct {
+    UserId  int64
+    Record  string    `datastore:",noindex"`
+    Value   string    `datastore:",noindex"`
+    Updated time.Time `datastore:",noindex"`
+}
+
 type StoredUserMeta struct {
 	Username, UserId string
 	Location         string `datastore:",noindex"`
@@ -93,14 +132,6 @@ type PopularRecord struct {
 	UserIdStr string `json:"userIdStr"`
 }
 
-type StoredUserDelta struct {
-	Followers         []int64 `datastore:",noindex"`
-	Following         []int64 `datastore:",noindex"`
-	Loops             []int64 `datastore:",noindex"`
-	AuthoredPostCount []int64 `datastore:",noindex"`
-	PostCount         []int64 `datastore:",noindex"`
-	Likes             []int64 `datastore:",noindex"`
-}
 
 type PreviousUsername struct {
 	Username string    `datastore:",noindex"`
