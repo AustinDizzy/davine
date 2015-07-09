@@ -21,6 +21,11 @@ indexes:
   - name: Recorded
 
 - kind: UserMeta
+  properties:
+  - name: UserId
+  - name: Updated
+
+- kind: UserMeta
   ancestor: yes
   properties:
   - name: Updated
