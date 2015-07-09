@@ -17,23 +17,18 @@ type Export struct {
 	Context appengine.Context
 }
 
-func (x *Export) User(user string, w http.ResponseWriter) {
+func (x *Export) User(userIdStr string, w http.ResponseWriter) {
 	db := DB{x.Context}
-	userId, _ := strconv.ParseInt(user, 10, 64)
-
-	userMetaTemp, err := db.GetUserMeta(userId)
-	userMeta, _ := json.MarshalIndent(userMetaTemp.(StoredUserMeta), "", "  ")
+	userId, _ := strconv.ParseInt(userIdStr, 10, 64)
+	
+	user, err := db.GetUser(userId)
 	if err != nil {
 		x.Context.Errorf("got err on export: %v", err)
 		return
 	}
-
-	userDataTemp, err := db.GetUserData(userId)
-	userData, _ := json.MarshalIndent(userDataTemp.(StoredUserData), "", "  ")
-	if err != nil {
-		x.Context.Errorf("got err on export: %v", err)
-		return
-	}
+	
+	userMeta, _ := json.MarshalIndent(user.UserMeta, "", "  ")
+	userData, _ := json.MarshalIndent(user.UserData, "", "  ")
 
 	w.Header().Add("Content-Type", "application/zip")
 	zipWriter := zip.NewWriter(w)
@@ -116,14 +111,14 @@ func GetQueuedUser(userId string, c appengine.Context) (user *QueuedUser, err er
 	return
 }
 
-func SearchUsers(c appengine.Context, query string) ([]StoredUserMeta, error) {
+func SearchUsers(c appengine.Context, query string) ([]UserRecord, error) {
 	db := DB{c}
 	index, err := search.Open("users")
 	if err != nil {
 		return nil, err
 	}
 
-	var users []StoredUserMeta
+	var users []UserRecord
 
 	opts := &search.SearchOptions{
 		Limit:   100,
@@ -138,9 +133,11 @@ func SearchUsers(c appengine.Context, query string) ([]StoredUserMeta, error) {
 			return nil, err
 		}
 		id, _ := strconv.ParseInt(key, 10, 64)
-		userMeta, err := db.GetUserMeta(id)
-
-		users = append(users, userMeta.(StoredUserMeta))
+		userRecord, err := db.GetUserRecord(id)
+        if err != nil {
+            return users, err   
+        }
+		users = append(users, *userRecord)
 	}
 
 	return users, nil

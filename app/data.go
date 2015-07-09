@@ -88,7 +88,7 @@ func (db *DB) FetchUser(userId string) {
         }
     }
 
-    userRecord := &UserRecord{
+    userRecord := UserRecord{
         UserId: vineUser.UserIdStr,
         Username: vineUser.Username,
         Description: vineUser.Description,
@@ -113,7 +113,7 @@ func (db *DB) FetchUser(userId string) {
     }
 
     dataKey := datastore.NewIncompleteKey(db.Context, "UserData", recordKey)
-    userData := &UserData{
+    userData := UserData{
         UserId: vineUser.UserId,
         Recorded: time.Now(),
         Followers: vineUser.FollowerCount,
@@ -131,21 +131,26 @@ func (db *DB) FetchUser(userId string) {
 func (db *DB) GetUser(userId int64) (user *UserRecord, err error) {
     user, err = db.GetUserRecord(userId)
     if err != nil {
+        db.Context.Infof("error with userRecord")
         return
     }
-    user.userData, err = db.GetUserData(userId)
+    user.UserData, err = db.GetUserData(userId)
 
     if err != nil {
+        db.Context.Infof("error with userData")
         return
     }
 
-    user.userMeta, err = db.GetUserMeta(userId)
+    user.UserMeta, err = db.GetUserMeta(userId)
+    if err != nil {
+        db.Context.Infof("error with userMeta")   
+    }
     return
 }
 
 func (db *DB) GetUserRecord(userId int64) (*UserRecord, error) {
 
-    user := new(UserRecord)
+    user := UserRecord{}
 
     recordKey := datastore.NewKey(db.Context, "UserRecord", "", userId, nil)
     err := datastore.Get(db.Context, recordKey, &user)
@@ -153,14 +158,13 @@ func (db *DB) GetUserRecord(userId int64) (*UserRecord, error) {
     if err != nil {
         return nil, err
     } else {
-        return user, nil
+        return &user, nil
     }
 }
 
 func (db *DB) GetUserData(userId int64) (userData []*UserData, err error) {
 
-    record := datastore.NewKey(db.Context, "UserRecord", "", userId, nil)
-	dataQuery := datastore.NewQuery("UserData").Ancestor(record).Order("Recorded")
+	dataQuery := datastore.NewQuery("UserData").Filter("UserId =", userId).Order("Recorded")
 
 	_, err = dataQuery.GetAll(db.Context, &userData)
 	return
@@ -168,10 +172,9 @@ func (db *DB) GetUserData(userId int64) (userData []*UserData, err error) {
 
 func (db *DB) GetUserMeta(userId int64) (userMeta []*UserMeta, err error) {
 
-    record := datastore.NewKey(db.Context, "UserRecord", "", userId, nil)
-	dataQuery := datastore.NewQuery("UserMeta").Ancestor(record).Order("Recorded")
+	dataQuery := datastore.NewQuery("UserMeta").Filter("UserId =", userId).Order("Updated")
 
-	_, err = dataQuery.GetAll(db.Context, &userData)
+	_, err = dataQuery.GetAll(db.Context, &userMeta)
 	return
 }
 
@@ -187,7 +190,7 @@ func (db *DB) GetTotalUsers() (int, error) {
 
 func (db *DB) GetTop() (data map[string]interface{}) {
 
-	var topOverall, topFollowed, topLooped, topPosts, topRevines []StoredUserMeta
+	var topOverall, topFollowed, topLooped, topPosts, topRevines []UserRecord
 
 	//top overall
 	q := datastore.NewQuery("UserMeta").Order("-Current.Followers").Limit(10)
@@ -227,31 +230,31 @@ func (db *DB) GetTop() (data map[string]interface{}) {
 func (a ByOverall) Len() int      { return len(a) }
 func (a ByOverall) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
 func (a ByOverall) Less(i, j int) bool {
-	return a[i].Current.Followers > a[j].Current.Followers && a[i].Current.Loops > a[j].Current.Loops && a[i].Current.Following < a[j].Current.Following
+	return a[i].FollowerCount > a[j].FollowerCount && a[i].LoopCount > a[j].LoopCount && a[i].FollowingCount < a[j].FollowingCount
 }
 
 func (a ByFollowers) Len() int      { return len(a) }
 func (a ByFollowers) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
 func (a ByFollowers) Less(i, j int) bool {
-	return a[i].Current.Followers > a[j].Current.Followers
+	return a[i].FollowerCount > a[j].FollowerCount
 }
 
 func (a ByLoops) Len() int      { return len(a) }
 func (a ByLoops) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
 func (a ByLoops) Less(i, j int) bool {
-	return a[i].Current.Loops > a[j].Current.Loops
+	return a[i].LoopCount > a[j].LoopCount
 }
 
 func (a ByPosts) Len() int      { return len(a) }
 func (a ByPosts) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
 func (a ByPosts) Less(i, j int) bool {
-	return a[i].Current.AuthoredPosts > a[j].Current.AuthoredPosts
+	return a[i].PostCount > a[j].PostCount
 }
 
 func (a ByRevines) Len() int      { return len(a) }
 func (a ByRevines) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
 func (a ByRevines) Less(i, j int) bool {
-	return a[i].Current.Revines > a[j].Current.Revines
+	return a[i].RevineCount > a[j].RevineCount
 }
 
 func (db *DB) GetLastUpdatedUser() *StoredUserData {

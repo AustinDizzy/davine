@@ -45,41 +45,44 @@ type VineUser struct {
 
 type UserRecord struct {
     UserId            string
+    Discovered        time.Time `datastore:",noindex"`
 	Username          string `datastore:",noindex"`
 	Vanity            string
 	Description       string `datastore:",noindex"`
 	Location          string `datastore:",noindex"`
 	ProfileBackground string `datastore:",noindex"`
 	AvatarUrl         string `datastore:",noindex"`
-	FollowerCount     int64  `datastore:",noindex"`
-	FollowingCount    int64  `datastore:",noindex"`
-	LoopCount         int64  `datastore:",noindex"`
-	PostCount         int64  `datastore:",noindex"`
-	RevineCount       int64  `datastore:",noindex"`
-	LikeCount         int64  `datastore:",noindex"`
-	Private           bool   `datastore:",noindex"`
+	FollowerCount     int64 `datastore:",noindex"`
+	FollowingCount    int64 `datastore:",noindex"`
+	LoopCount         int64 `datastore:",noindex"`
+	PostCount         int64 `datastore:",noindex"`
+	RevineCount       int64 `datastore:",noindex"`
+	LikeCount         int64 `datastore:",noindex"`
+	Private           bool `datastore:",noindex"`
 	Verified          bool
 	Explicit          bool
-	userData          []*UserData `datastore:"-"`
-	userMeta          []*UserMeta `datastore:"-"`
+	UserData          []*UserData `datastore:"-"`
+	UserMeta          []*UserMeta `datastore:"-"`
+	UserDataJsonStr   string `datastore:"-"`
+	UserMetaJsonStr   string `datastore:"-"`
 }
 
 type UserData struct {
     UserId        int64
-    Recorded      time.Time `datastore:",noindex"`
-    Followers     int64     `datastore:",noindex"`
-	Following     int64     `datastore:",noindex"`
-	Loops         int64     `datastore:",noindex"`
-	Posts         int64     `datastore:",noindex"`
-	Revines       int64     `datastore:",noindex"`
-	Likes         int64     `datastore:",noindex"`
+    Recorded      time.Time
+    Followers     int64
+	Following     int64 `datastore:",noindex"`
+	Loops         int64
+	Posts         int64
+	Revines       int64
+	Likes         int64
 }
 
 type UserMeta struct {
     UserId  int64
-    Record  string    `datastore:",noindex"`
+    Record  string
     Value   string    `datastore:",noindex"`
-    Updated time.Time `datastore:",noindex"`
+    Updated time.Time
 }
 
 type StoredUserMeta struct {
@@ -158,11 +161,11 @@ type MetaStats struct {
 	Timestamp time.Time `datastore:"timestamp"`
 }
 
-type ByOverall []StoredUserMeta
-type ByFollowers []StoredUserMeta
-type ByLoops []StoredUserMeta
-type ByPosts []StoredUserMeta
-type ByRevines []StoredUserMeta
+type ByOverall []UserRecord
+type ByFollowers []UserRecord
+type ByLoops []UserRecord
+type ByPosts []UserRecord
+type ByRevines []UserRecord
 
 type UserIndex struct {
 	Username, Location, Description, VanityUrl string
