@@ -16,7 +16,7 @@ type VineRequest struct {
 }
 
 var (
-	ErrUserDoesntExist = errors.New("That record does not exist.")
+	ErrUserDoesntExist = "That record does not exist."
 )
 
 const (

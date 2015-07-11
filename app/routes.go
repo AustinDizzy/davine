@@ -86,22 +86,19 @@ func UserFetchHandler(w http.ResponseWriter, r *http.Request) {
 
 	db := DB{c}
 	match, _ := regexp.MatchString("^[0-9]+$", vars["user"])
+	var userRecord *UserRecord
 	var err error
-	var userMetaTemp interface{}
-	var storedUserData interface{}
 	var data string
 
 	if match {
 		userId, _ := strconv.ParseInt(vars["user"], 10, 64)
-		userMetaTemp, err = db.GetUserMeta(userId)
-		storedUserData, _ = db.GetUserData(userId)
+		userRecord, err = db.GetUser(userId)
 	} else {
-		temp := []StoredUserMeta{}
-		q := datastore.NewQuery("UserMeta").Filter("VanityUrl =", strings.ToLower(vars["user"])).Limit(1)
-		k, _ := q.GetAll(c, &temp)
+		temp := []UserRecord{}
+		q := datastore.NewQuery("UserRecord").Filter("Vanity", strings.ToLower(vars["user"])).Limit(1)
+		_, err = q.GetAll(c, &temp)
 		if len(temp) > 0 {
-			userMetaTemp = temp[0]
-			storedUserData, _ = db.GetUserData(k[0].IntID())
+			userRecord = &temp[0]
 		} else {
 			user404 := path.Join(dir, "user404.html")
 			userData := map[string]string{"user": vars["user"]}
@@ -116,28 +113,26 @@ func UserFetchHandler(w http.ResponseWriter, r *http.Request) {
 		data = mustache.RenderFileInLayout(user404, layout, userData)
 		w.WriteHeader(http.StatusNotFound)
 	} else if err != nil {
+	    c.Errorf("got error on fetching user %s: %v", vars["user"], err)
 		fmt.Fprint(w, err.Error())
-	} else if userMetaTemp != nil {
+	} else if userRecord != nil {
 
-		userMeta := userMetaTemp.(StoredUserMeta)
+		userData := userRecord
 
-		userData := map[string]interface{}{
-			"username":    userMeta.Username,
-			"userId":      userMeta.UserId,
-			"description": userMeta.Description,
-			"location":    userMeta.Location,
-			"avatarUrl":   userMeta.AvatarUrl,
-			"loops":       strconv.FormatInt(userMeta.Current.Loops, 10),
-			"followers":   strconv.FormatInt(userMeta.Current.Followers, 10),
-			"data":        storedUserData,
-			"previous":    userMeta.Previous,
-		}
-
-		if userMeta.Background != "" {
-			color := strings.SplitAfterN(userMeta.Background, "0x", 2)
-			userData["profileBackground"] = color[1]
+		if userData.ProfileBackground != "" {
+			color := strings.SplitAfterN(userData.ProfileBackground, "0x", 2)
+			userData.ProfileBackground = color[1]
 		} else {
-			userData["profileBackground"] = "00BF8F"
+			userData.ProfileBackground = "00BF8F"
+		}
+		
+		jsonStr, err := json.Marshal(userData.UserData)
+		if err == nil {
+		    userData.UserDataJsonStr = string(jsonStr)
+		}
+		jsonStr, err = json.Marshal(userData.UserMeta)
+		if err == nil {
+		    userData.UserMetaJsonStr = string(jsonStr)
 		}
 
 		data = mustache.RenderFileInLayout(profile, layout, userData)
@@ -173,7 +168,7 @@ func UserStoreHandler(w http.ResponseWriter, r *http.Request) {
 		data["stored"] = false
 
 	} else {
-		_, err := db.GetUserMeta(user.UserId)
+		_, err := db.GetUserRecord(user.UserId)
 		if err == datastore.ErrNoSuchEntity {
 			data["stored"] = false
 		} else {
@@ -195,7 +190,6 @@ func AboutHandler(w http.ResponseWriter, r *http.Request) {
 	db := DB{appengine.NewContext(r)}
 	totalUsers, _ := db.GetTotalUsers()
 	stats := map[string]interface{}{"users": totalUsers}
-	stats["lastUpdated"] = db.GetLastUpdated()
 	data := mustache.RenderFileInLayout(aboutPage, layout, stats)
 
 	fmt.Fprint(w, data)
@@ -203,27 +197,13 @@ func AboutHandler(w http.ResponseWriter, r *http.Request) {
 
 func DiscoverHandler(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
-	vineApi := VineRequest{c}
-	db := DB{c}
-	var recentUsers []*VineUser
-	var recentVerified []StoredUserMeta
+	var recentUsers []UserRecord
+	var recentVerified []UserRecord
 
-	recent := datastore.NewQuery("Queue").Order("-Discovered").Limit(5).KeysOnly()
-	k, _ := recent.GetAll(c, nil)
-	for i, _ := range k {
-		user, err := vineApi.GetUser(strconv.FormatInt(k[i].IntID(), 10))
-		if err == nil {
-			recentUsers = append(recentUsers, user)
-		}
-	}
-	verified := datastore.NewQuery("UserMeta").Filter("Verified =", true).Limit(5).KeysOnly()
-	k, _ = verified.GetAll(c, nil)
-	for i, _ := range k {
-		user, err := db.GetUserMeta(k[i].IntID())
-		if err == nil {
-			recentVerified = append(recentVerified, user.(StoredUserMeta))
-		}
-	}
+	recent := datastore.NewQuery("UserRecord").Order("-Discovered").Limit(5)
+	recent.GetAll(c, &recentUsers)
+	verified := datastore.NewQuery("UserRecord").Filter("Verified =", true).Order("-Discovered").Limit(5)
+	verified.GetAll(c, &recentVerified)
 	data := map[string]interface{}{
 		"recentUsers":    recentUsers,
 		"recentVerified": recentVerified,
@@ -245,7 +225,6 @@ func TopHandler(w http.ResponseWriter, r *http.Request) {
 	layout := path.Join(dir, "layout.html")
 	data := db.GetTop()
 	data["title"] = "Top - " + PageTitle
-	data["LastUpdated"] = db.GetLastUpdated()
 	page := mustache.RenderFileInLayout(top, layout, data)
 	fmt.Fprint(w, page)
 }
@@ -339,13 +318,12 @@ func ExportHandler(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, "/404", 301)
 			return
 		}
-		userMeta, err := db.GetUserMeta(userId)
+		userRecord, err := db.GetUserRecord(userId)
 		if err == datastore.ErrNoSuchEntity {
 			http.Redirect(w, r, "/404", 301)
 			return
 		}
-		user := userMeta.(StoredUserMeta)
-		data := map[string]string{"username": user.Username, "userId": vars["user"], "captcha": Config["captchaPublic"]}
+		data := map[string]string{"username": userRecord.Username, "userId": userRecord.UserId, "captcha": Config["captchaPublic"]}
 		dir := path.Join(os.Getenv("PWD"), "templates")
 		export := path.Join(dir, "export.html")
 		layout := path.Join(dir, "layout.html")

@@ -15,160 +15,163 @@ type DB struct {
 	Context appengine.Context
 }
 
-func (db *DB) FetchUser(user string) {
+func (db *DB) FetchUser(userId string) {
+    //Step 1. Get Vine user's data from the Vine API
 	vineApi := VineRequest{db.Context}
-	data, err := vineApi.GetUser(user)
+	vineUser, err := vineApi.GetUser(userId)
 
 	if err != nil {
-		if err.Error() == ErrUserDoesntExist.Error() {
-			db.UnqueueUser(user)
+		if err.Error() == ErrUserDoesntExist {
+			db.UnqueueUser(userId)
+		} else {
+		    db.Context.Errorf("got error getting user %s from vine: %v", userId, err)
 		}
 		return
-	} else if data == nil {
-		db.Context.Errorf("failed fetch on user %v. got err %v", user, err)
+	} else if vineUser == nil {
+		db.Context.Errorf("failed fetch on user %v. got err %v", userId, err)
 		return
-	} else if data.Private == 1 {
+	} else if vineUser.Private == 1 {
+	    db.Context.Infof("user %s is private", userId)
 		return
 	}
 
-	var userMeta StoredUserMeta
-	var userData StoredUserData
+	recordKey := datastore.NewKey(db.Context, "UserRecord", "", vineUser.UserId, nil)
 
-	userId := data.UserId
-
-	userIndex := &UserIndex{
-		Username:    data.Username,
-		Location:    data.Location,
-		Description: data.Description,
+    //Step 2. Add user to user search index.
+    userIndex := &UserIndex{
+		Username:    vineUser.Username,
+		Location:    vineUser.Location,
+		Description: vineUser.Description,
 	}
 
-	if len(data.VanityUrls) != 0 {
-		userIndex.VanityUrl = strings.ToLower(data.VanityUrls[0])
+	if len(vineUser.VanityUrls) != 0 {
+		userIndex.VanityUrl = strings.ToLower(vineUser.VanityUrls[0])
 	}
-
-	userMetaTemp, err := db.GetUserMeta(userId)
-
-	if err == datastore.ErrNoSuchEntity {
-		userMeta = StoredUserMeta{
-			Username:    data.Username,
-			UserId:      data.UserIdStr,
-			Location:    data.Location,
-			Description: data.Description,
-			Verified:    data.Verified == 1,
-			AvatarUrl:   data.AvatarUrl,
-			Background:  data.ProfileBackground,
-		}
-		if len(data.VanityUrls) != 0 {
-			userMeta.VanityUrl = strings.ToLower(data.VanityUrls[0])
-		}
-
-		if userMeta.Verified {
-			userMeta.VerifiedDate = time.Now()
-		}
-
-		userData = StoredUserData{
-			LastUpdated:   time.Now(),
-			Followers:     []int64{data.FollowerCount},
-			Following:     []int64{data.FollowingCount},
-			Loops:         []int64{data.LoopCount},
-			AuthoredPosts: []int64{data.AuthoredPostCount},
-			Revines:       []int64{data.PostCount - data.AuthoredPostCount},
-			Likes:         []int64{data.LikeCount},
-			Updated:       []time.Time{time.Now()},
-		}
-
-	} else {
-
-		userMeta = userMetaTemp.(StoredUserMeta)
-
-		if userMeta.UserId == "" {
-			userMeta.UserId = data.UserIdStr
-		}
-
-		if userMeta.Location != data.Location {
-			userMeta.Previous.Location = append(userMeta.Previous.Location, PreviousLocation{userMeta.Location, time.Now()})
-			userMeta.Location = data.Location
-		}
-
-		if userMeta.Username != data.Username {
-			userMeta.Previous.Username = append(userMeta.Previous.Username, PreviousUsername{userMeta.Username, time.Now()})
-			userMeta.Username = data.Username
-		}
-
-		if userMeta.Description != data.Description {
-			userMeta.Previous.Description = append(userMeta.Previous.Description, PreviousDescription{userMeta.Description, time.Now()})
-			userMeta.Description = data.Description
-		}
-
-		if userMeta.Background != data.ProfileBackground {
-			userMeta.Previous.Background = append(userMeta.Previous.Background, PreviousBackground{userMeta.Background, time.Now()})
-			userMeta.Background = data.ProfileBackground
-		}
-
-		userDataTemp, err := db.GetUserData(userId)
-		userData = userDataTemp.(StoredUserData)
-
-		if err != datastore.ErrNoSuchEntity {
-			userData.LastUpdated = time.Now()
-			userData.Followers = append(userData.Followers, data.FollowerCount)
-			userData.Following = append(userData.Following, data.FollowingCount)
-			userData.Loops = append(userData.Loops, data.LoopCount)
-			userData.AuthoredPosts = append(userData.AuthoredPosts, data.AuthoredPostCount)
-			userData.Revines = append(userData.Revines, data.PostCount-data.AuthoredPostCount)
-			userData.Likes = append(userData.Likes, data.LikeCount)
-			userData.Updated = append(userData.Updated, time.Now())
-		}
-	}
-
-	userMeta.Current = StoredUserMetaCurrent{
-		Followers:     data.FollowerCount,
-		Following:     data.FollowingCount,
-		Loops:         data.LoopCount,
-		AuthoredPosts: data.AuthoredPostCount,
-		Revines:       data.PostCount - data.AuthoredPostCount,
-		Likes:         data.LikeCount,
-	}
-
-	dataKey := datastore.NewKey(db.Context, "UserData", "", userId, nil)
-	metaKey := datastore.NewKey(db.Context, "UserMeta", "", userId, nil)
 
 	index, err := search.Open("users")
 	if err != nil {
 		db.Context.Errorf(err.Error())
 	} else {
-		index.Put(db.Context, data.UserIdStr, userIndex)
+		index.Put(db.Context, vineUser.UserIdStr, userIndex)
 	}
 
-	datastore.Put(db.Context, dataKey, &userData)
-	datastore.Put(db.Context, metaKey, &userMeta)
+    //Step 3. Write records (user {meta, record, data}).
+    if userRecord, err := db.GetUserRecord(vineUser.UserId); err == nil {
+        var userMeta []*UserMeta
+
+        if vineUser.Username != userRecord.Username {
+            userMeta = append(userMeta, &UserMeta{vineUser.UserId, "username", userRecord.Username, time.Now()})
+        }
+
+        if vineUser.Location != userRecord.Location {
+            userMeta = append(userMeta, &UserMeta{vineUser.UserId, "location", userRecord.Location, time.Now()})
+        }
+
+        if vineUser.Description != userRecord.Description {
+            userMeta = append(userMeta, &UserMeta{vineUser.UserId, "description", userRecord.Description, time.Now()})
+        }
+
+        if (vineUser.Verified != 0) != userRecord.Verified {
+            userMeta = append(userMeta, &UserMeta{vineUser.UserId, "verified", strconv.FormatBool(userRecord.Verified), time.Now()})
+        }
+
+        var metaKey *datastore.Key
+        for _, m := range userMeta {
+            metaKey = datastore.NewIncompleteKey(db.Context, "UserMeta", recordKey)
+            if key, err := datastore.Put(db.Context, metaKey, m); err != nil {
+                db.Context.Errorf("got error storing user meta %s - %v: %v", userId, key, err)
+            }
+        }
+    }
+
+    userRecord := UserRecord{
+        UserId: vineUser.UserIdStr,
+        Username: vineUser.Username,
+        Description: vineUser.Description,
+        Location: vineUser.Location,
+        ProfileBackground: vineUser.ProfileBackground,
+        AvatarUrl: vineUser.AvatarUrl,
+        FollowerCount: vineUser.FollowerCount,
+        FollowingCount: vineUser.FollowingCount,
+        LoopCount: vineUser.LoopCount,
+        PostCount: vineUser.AuthoredPostCount,
+        RevineCount: (vineUser.PostCount - vineUser.AuthoredPostCount),
+        LikeCount: vineUser.LikeCount,
+        Private: (vineUser.Private != 0),
+        Verified: (vineUser.Verified != 0),
+        Explicit: (vineUser.ExplicitContent != 0),
+    }
+    if len(vineUser.VanityUrls) != 0 {
+        userRecord.Vanity = strings.ToLower(vineUser.VanityUrls[0])
+    }
+    if _, err := datastore.Put(db.Context, recordKey, &userRecord); err != nil {
+        db.Context.Errorf("got error storing user record %s: %v", userId, err)
+    }
+
+    dataKey := datastore.NewIncompleteKey(db.Context, "UserData", recordKey)
+    userData := UserData{
+        UserId: vineUser.UserId,
+        Recorded: time.Now(),
+        Followers: vineUser.FollowerCount,
+        Following: vineUser.FollowingCount,
+        Loops: vineUser.LoopCount,
+        Posts: vineUser.AuthoredPostCount,
+        Revines: (vineUser.PostCount - vineUser.AuthoredPostCount),
+        Likes: vineUser.LikeCount,
+    }
+    if key, err := datastore.Put(db.Context, dataKey, &userData); err != nil {
+        db.Context.Errorf("got error storing user data %s - %v: %v", userId, key, err)
+    }
 }
 
-func (db *DB) GetUserData(user int64) (interface{}, error) {
+func (db *DB) GetUser(userId int64) (user *UserRecord, err error) {
+    user, err = db.GetUserRecord(userId)
+    if err != nil {
+        db.Context.Infof("error with userRecord")
+        return
+    }
+    user.UserData, err = db.GetUserData(userId)
 
-	data := StoredUserData{}
+    if err != nil {
+        db.Context.Infof("error with userData")
+        return
+    }
 
-	key := datastore.NewKey(db.Context, "UserData", "", user, nil)
-	err := datastore.Get(db.Context, key, &data)
-
-	if err != nil {
-		return nil, err
-	} else {
-		return data, nil
-	}
+    user.UserMeta, err = db.GetUserMeta(userId)
+    if err != nil {
+        db.Context.Infof("error with userMeta")   
+    }
+    return
 }
 
-func (db *DB) GetUserMeta(user int64) (interface{}, error) {
+func (db *DB) GetUserRecord(userId int64) (*UserRecord, error) {
 
-	meta := StoredUserMeta{}
+    user := UserRecord{}
 
-	key := datastore.NewKey(db.Context, "UserMeta", "", user, nil)
-	err := datastore.Get(db.Context, key, &meta)
+    recordKey := datastore.NewKey(db.Context, "UserRecord", "", userId, nil)
+    err := datastore.Get(db.Context, recordKey, &user)
 
-	if err != nil {
-		return nil, err
-	} else {
-		return meta, nil
-	}
+    if err != nil {
+        return nil, err
+    } else {
+        return &user, nil
+    }
+}
+
+func (db *DB) GetUserData(userId int64) (userData []*UserData, err error) {
+
+	dataQuery := datastore.NewQuery("UserData").Filter("UserId =", userId).Order("Recorded")
+
+	_, err = dataQuery.GetAll(db.Context, &userData)
+	return
+}
+
+func (db *DB) GetUserMeta(userId int64) (userMeta []*UserMeta, err error) {
+
+	dataQuery := datastore.NewQuery("UserMeta").Filter("UserId =", userId).Order("Updated")
+
+	_, err = dataQuery.GetAll(db.Context, &userMeta)
+	return
 }
 
 func (db *DB) GetTotalUsers() (int, error) {
@@ -183,31 +186,29 @@ func (db *DB) GetTotalUsers() (int, error) {
 
 func (db *DB) GetTop() (data map[string]interface{}) {
 
-	var topOverall, topFollowed, topLooped, topPosts, topRevines []StoredUserMeta
+	var topOverall, topFollowed, topLooped, topPosts, topRevines []UserRecord
 
 	//top overall
-	q := datastore.NewQuery("UserMeta").Order("-Current.Followers").Limit(10)
+	q := datastore.NewQuery("UserRecord").Order("-FollowerCount").Limit(10)
 	q.GetAll(db.Context, &topOverall)
 
 	sort.Sort(ByOverall(topOverall))
 
 	//top followed
-	q = datastore.NewQuery("UserMeta").Order("-Current.Followers").Limit(10)
+	q = datastore.NewQuery("UserRecord").Order("-FollowerCount").Limit(10)
 	q.GetAll(db.Context, &topFollowed)
 
 	//top looped
-	q = datastore.NewQuery("UserMeta").Order("-Current.Loops").Limit(10)
+	q = datastore.NewQuery("UserRecord").Order("-LoopCount").Limit(10)
 	q.GetAll(db.Context, &topLooped)
 
 	//top posts
-	q = datastore.NewQuery("UserMeta").Order("-Current.AuthoredPosts").Limit(5)
+	q = datastore.NewQuery("UserRecord").Order("-PostCount").Limit(5)
 	q.GetAll(db.Context, &topPosts)
 
 	//top Revines
-	q = datastore.NewQuery("UserMeta").Order("-Current.Revines").Limit(5)
+	q = datastore.NewQuery("UserRecord").Order("-RevineCount").Limit(5)
 	q.GetAll(db.Context, &topRevines)
-
-	lastUpdated := db.GetLastUpdated()
 
 	data = map[string]interface{}{
 		"topOverall":  topOverall,
@@ -215,7 +216,6 @@ func (db *DB) GetTop() (data map[string]interface{}) {
 		"topLooped":   topLooped,
 		"topPosts":    topPosts,
 		"topRevines":  topRevines,
-		"lastUpdated": lastUpdated,
 	}
 	return
 }
@@ -223,51 +223,31 @@ func (db *DB) GetTop() (data map[string]interface{}) {
 func (a ByOverall) Len() int      { return len(a) }
 func (a ByOverall) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
 func (a ByOverall) Less(i, j int) bool {
-	return a[i].Current.Followers > a[j].Current.Followers && a[i].Current.Loops > a[j].Current.Loops && a[i].Current.Following < a[j].Current.Following
+	return a[i].FollowerCount > a[j].FollowerCount && a[i].LoopCount > a[j].LoopCount && a[i].FollowingCount < a[j].FollowingCount
 }
 
 func (a ByFollowers) Len() int      { return len(a) }
 func (a ByFollowers) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
 func (a ByFollowers) Less(i, j int) bool {
-	return a[i].Current.Followers > a[j].Current.Followers
+	return a[i].FollowerCount > a[j].FollowerCount
 }
 
 func (a ByLoops) Len() int      { return len(a) }
 func (a ByLoops) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
 func (a ByLoops) Less(i, j int) bool {
-	return a[i].Current.Loops > a[j].Current.Loops
+	return a[i].LoopCount > a[j].LoopCount
 }
 
 func (a ByPosts) Len() int      { return len(a) }
 func (a ByPosts) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
 func (a ByPosts) Less(i, j int) bool {
-	return a[i].Current.AuthoredPosts > a[j].Current.AuthoredPosts
+	return a[i].PostCount > a[j].PostCount
 }
 
 func (a ByRevines) Len() int      { return len(a) }
 func (a ByRevines) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
 func (a ByRevines) Less(i, j int) bool {
-	return a[i].Current.Revines > a[j].Current.Revines
-}
-
-func (db *DB) GetLastUpdatedUser() *StoredUserData {
-	var lastUpdatedUser []*StoredUserData
-	q := datastore.NewQuery("UserData").Order("-LastUpdated").Limit(1)
-	q.GetAll(db.Context, &lastUpdatedUser)
-	if len(lastUpdatedUser) == 0 {
-		return nil
-	} else {
-		return lastUpdatedUser[0]
-	}
-}
-
-func (db *DB) GetLastUpdated() time.Time {
-	lastUpdatedUser := db.GetLastUpdatedUser()
-	if lastUpdatedUser == nil {
-		return time.Date(1, 1, 1, 0, 0, 0, 0, time.UTC)
-	} else {
-		return lastUpdatedUser.LastUpdated
-	}
+	return a[i].RevineCount > a[j].RevineCount
 }
 
 func (db *DB) UnqueueUser(user string) {
