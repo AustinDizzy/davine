@@ -132,10 +132,12 @@ $(function() {
         );
         $(this).attr('href', '/u/' + url);
     });
-    $('#head-hero').geopattern(document.title, {
-        'color': "#00bf8f",
-        'generator': 'squares'
-    });
+    if(!document.location.pathname.startsWith("/u/")) {
+        $('#head-hero').geopattern(document.title, {
+            'color': "#00bf8f",
+            'generator': 'squares'
+        });
+    }
     $('[data-toggle="tooltip"]').tooltip({
         delay: {
             "show": 0,
