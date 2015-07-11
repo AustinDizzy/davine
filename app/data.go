@@ -71,10 +71,6 @@ func (db *DB) FetchUser(userId string) {
             userMeta = append(userMeta, &UserMeta{vineUser.UserId, "description", userRecord.Description, time.Now()})
         }
 
-        if vineUser.Location != userRecord.Location {
-            userMeta = append(userMeta, &UserMeta{vineUser.UserId, "location", userRecord.Location, time.Now()})
-        }
-
         if (vineUser.Verified != 0) != userRecord.Verified {
             userMeta = append(userMeta, &UserMeta{vineUser.UserId, "verified", strconv.FormatBool(userRecord.Verified), time.Now()})
         }
