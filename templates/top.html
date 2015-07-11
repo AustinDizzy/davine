@@ -8,21 +8,21 @@
             {{#topOverall}}
                 <tr>
                     <td>
-                        <a data-user="{{UserId}}" data-vanity="{{VanityUrl}}">
+                        <a data-user="{{UserId}}" data-vanity="{{Vanity}}">
                             <img src="{{AvatarUrl}}" alt="{{Username}}'s avatar" class="img-responsive" width="75px" />
                         </a>
                     </td>
                     <td style="vertical-align:middle">
-                        <a data-user="{{UserId}}" data-vanity="{{VanityUrl}}">{{Username}}</a>
+                        <a data-user="{{UserId}}" data-vanity="{{Vanity}}">{{Username}}</a>
                     </td>
                     <td style="vertical-align:middle">
-                        <span class="formatInt" data-format="0,0">{{Current.Followers}}</span> followers
+                        <span class="formatInt" data-format="0,0">{{FollowerCount}}</span> followers
                     </td>
                     <td style="vertical-align:middle">
-                        following <span class="formatInt" data-format="0,0">{{Current.Following}}</span>
+                        following <span class="formatInt" data-format="0,0">{{FollowingCount}}</span>
                     </td>
                     <td style="vertical-align:middle">
-                        <span class="formatInt" data-format="0,0">{{Current.Loops}}</span> loops
+                        <span class="formatInt" data-format="0,0">{{LoopCount}}</span> loops
                     </td>
                 </tr>
             {{/topOverall}}
@@ -52,9 +52,9 @@
             {{#topFollowed}}
                 <tr>
                     <td>
-                        <a data-user="{{UserId}}" data-vanity="{{VanityUrl}}">{{Username}}</a>
+                        <a data-user="{{UserId}}" data-vanity="{{Vanity}}">{{Username}}</a>
                     </td>
-                    <td class="formatInt" data-format="0,0">{{Current.Followers}}</td>
+                    <td class="formatInt" data-format="0,0">{{FollowerCount}}</td>
                 </tr>
             {{/topFollowed}}
         </table>
@@ -65,9 +65,9 @@
             {{#topLooped}}
                 <tr>
                     <td>
-                        <a data-user="{{UserId}}" data-vanity="{{VanityUrl}}">{{Username}}</a>
+                        <a data-user="{{UserId}}" data-vanity="{{Vanity}}">{{Username}}</a>
                     </td>
-                    <td class="formatInt" data-format="0,0">{{Current.Loops}}</td>
+                    <td class="formatInt" data-format="0,0">{{LoopCount}}</td>
                 </tr>
             {{/topLooped}}
         </table>
@@ -78,9 +78,9 @@
             {{#topPosts}}
                 <tr>
                     <td>
-                        <a data-user="{{UserId}}" data-vanity="{{VanityUrl}}">{{Username}}</a>
+                        <a data-user="{{UserId}}" data-vanity="{{Vanity}}">{{Username}}</a>
                     </td>
-                    <td class="formatInt" data-format="0,0">{{Current.AuthoredPosts}}</td>
+                    <td class="formatInt" data-format="0,0">{{PostCount}}</td>
                 </tr>
             {{/topPosts}}
         </table>
@@ -91,9 +91,9 @@
             {{#topRevines}}
                 <tr>
                     <td>
-                        <a data-user="{{UserId}}" data-vanity="{{VanityUrl}}">{{Username}}</a>
+                        <a data-user="{{UserId}}" data-vanity="{{Vanity}}">{{Username}}</a>
                     </td>
-                    <td class="formatInt" data-format="0,0">{{Current.Revines}}</td>
+                    <td class="formatInt" data-format="0,0">{{RevineCount}}</td>
                 </tr>
             {{/topRevines}}
         </table>

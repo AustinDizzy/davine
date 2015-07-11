@@ -29,3 +29,9 @@ indexes:
   ancestor: yes
   properties:
   - name: Updated
+
+- kind: UserRecord
+  properties:
+  - name: Verified
+  - name: Discovered
+    direction: desc

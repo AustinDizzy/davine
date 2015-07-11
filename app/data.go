@@ -189,25 +189,25 @@ func (db *DB) GetTop() (data map[string]interface{}) {
 	var topOverall, topFollowed, topLooped, topPosts, topRevines []UserRecord
 
 	//top overall
-	q := datastore.NewQuery("UserMeta").Order("-Current.Followers").Limit(10)
+	q := datastore.NewQuery("UserRecord").Order("-FollowerCount").Limit(10)
 	q.GetAll(db.Context, &topOverall)
 
 	sort.Sort(ByOverall(topOverall))
 
 	//top followed
-	q = datastore.NewQuery("UserMeta").Order("-Current.Followers").Limit(10)
+	q = datastore.NewQuery("UserRecord").Order("-FollowerCount").Limit(10)
 	q.GetAll(db.Context, &topFollowed)
 
 	//top looped
-	q = datastore.NewQuery("UserMeta").Order("-Current.Loops").Limit(10)
+	q = datastore.NewQuery("UserRecord").Order("-LoopCount").Limit(10)
 	q.GetAll(db.Context, &topLooped)
 
 	//top posts
-	q = datastore.NewQuery("UserMeta").Order("-Current.AuthoredPosts").Limit(5)
+	q = datastore.NewQuery("UserRecord").Order("-PostCount").Limit(5)
 	q.GetAll(db.Context, &topPosts)
 
 	//top Revines
-	q = datastore.NewQuery("UserMeta").Order("-Current.Revines").Limit(5)
+	q = datastore.NewQuery("UserRecord").Order("-RevineCount").Limit(5)
 	q.GetAll(db.Context, &topRevines)
 
 	data = map[string]interface{}{

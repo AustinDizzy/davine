@@ -45,20 +45,20 @@ type VineUser struct {
 
 type UserRecord struct {
     UserId            string
-    Discovered        time.Time `datastore:",noindex"`
+    Discovered        time.Time
 	Username          string `datastore:",noindex"`
 	Vanity            string
 	Description       string `datastore:",noindex"`
 	Location          string `datastore:",noindex"`
 	ProfileBackground string `datastore:",noindex"`
 	AvatarUrl         string `datastore:",noindex"`
-	FollowerCount     int64 `datastore:",noindex"`
-	FollowingCount    int64 `datastore:",noindex"`
-	LoopCount         int64 `datastore:",noindex"`
-	PostCount         int64 `datastore:",noindex"`
-	RevineCount       int64 `datastore:",noindex"`
-	LikeCount         int64 `datastore:",noindex"`
-	Private           bool `datastore:",noindex"`
+	FollowerCount     int64
+	FollowingCount    int64
+	LoopCount         int64
+	PostCount         int64
+	RevineCount       int64
+	LikeCount         int64
+	Private           bool
 	Verified          bool
 	Explicit          bool
 	UserData          []*UserData `datastore:"-"`
@@ -71,7 +71,7 @@ type UserData struct {
     UserId        int64
     Recorded      time.Time
     Followers     int64
-	Following     int64 `datastore:",noindex"`
+	Following     int64
 	Loops         int64
 	Posts         int64
 	Revines       int64
