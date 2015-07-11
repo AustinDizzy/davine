@@ -196,18 +196,11 @@ func AboutHandler(w http.ResponseWriter, r *http.Request) {
 
 func DiscoverHandler(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
-	vineApi := VineRequest{c}
-	var recentUsers []*VineUser
+	var recentUsers []UserRecord
 	var recentVerified []UserRecord
 
-	recent := datastore.NewQuery("UserRecord").Order("-Discovered").Limit(5).KeysOnly()
-	k, _ := recent.GetAll(c, nil)
-	for i, _ := range k {
-		user, err := vineApi.GetUser(strconv.FormatInt(k[i].IntID(), 10))
-		if err == nil {
-			recentUsers = append(recentUsers, user)
-		}
-	}
+	recent := datastore.NewQuery("UserRecord").Order("-Discovered").Limit(5)
+	recent.GetAll(c, &recentUsers)
 	verified := datastore.NewQuery("UserRecord").Filter("Verified =", true).Order("-Discovered").Limit(5)
 	verified.GetAll(c, &recentVerified)
 	data := map[string]interface{}{

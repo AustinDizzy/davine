@@ -10,7 +10,7 @@
                             <img src="{{AvatarUrl}}" class="img-responsive" width="75px" />
                         </td>
                         <td style="vertical-align:middle">
-                            <a href="//vine.co/u/{{UserIdStr}}">{{Username}}</a>
+                            <a href="//vine.co/u/{{UserId}}">{{Username}}</a>
                         </td>
                     </tr>
                 {{/recentUsers}}
@@ -26,9 +26,6 @@
                             </td>
                             <td style="vertical-align:middle">
                                 <a data-user="{{UserId}}" data-vanity="{{VanityUrl}}">{{Username}}</a>
-                            </td>
-                            <td>
-                                Verified on <script type="text/javascript">document.write(new Date("{{VerifiedDate}}").toLocaleString())</script>
                             </td>
                         </tr>
                     {{/recentVerified}}
