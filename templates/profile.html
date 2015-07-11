@@ -139,54 +139,30 @@
             <h3>Miscellaneous <small>Other statistics gathered</small></h3>
         </div>
         <div class="col-md-6">
-            <table class="table table-bordered">
+            <table class="table table-bordered" id="meta-location">
                 <caption>Previous Locations</caption>
                 <th>Location</th><th>Modified Date</th>
-                {{#previous.Location}}
-                    <tr>
-                        <td>{{Location}}</td>
-                        <td>{{Modified}}</td>
-                    </tr>
-                {{/previous.Location}}
-                {{^previous.Location}}
-                    <tr>
-                        <td colspan="2" class="text-center">No Previous Data Available</td>
-                    </tr>
-                {{/previous.Location}}
+                <tr class="no-data-msg">
+                    <td colspan="2" class="text-center">No Previous Data Available</td>
+                </tr>
             </table>
         </div>
         <div class="col-md-6">
-            <table class="table table-bordered">
+            <table class="table table-bordered" id="meta-username">
                 <caption>Previous Usernames</caption>
                 <th>Username</th><th>Modified Date</th>
-                {{#previous.Username}}
-                    <tr>
-                        <td>{{Username}}</td>
-                        <td>{{Modified}}</td>
-                    </tr>
-                {{/previous.Username}}
-                {{^previous.Username}}
-                    <tr>
-                        <td colspan="2" class="text-center">No Previous Data Available</td>
-                    </tr>
-                {{/previous.Username}}
+                <tr class="no-data-msg">
+                    <td colspan="2" class="text-center">No Previous Data Available</td>
+                </tr>
             </table>
         </div>
         <div class="col-md-12">
-            <table class="table table-bordered">
+            <table class="table table-bordered" id="meta-description">
                 <caption>Previous Descriptions</caption>
                 <th>Description</th><th>Modified Date</th>
-                {{#previous.Description}}
-                    <tr>
-                        <td>{{Description}}</td>
-                        <td>{{Modified}}</td>
-                    </tr>
-                {{/previous.Description}}
-                {{^previous.Description}}
-                    <tr>
-                        <td colspan="2" class="text-center">No Previous Data Available</td>
-                    </tr>
-                {{/previous.Description}}
+                <tr class="no-data-msg">
+                    <td colspan="2" class="text-center">No Previous Data Available</td>
+                </tr>
             </table>
         </div>
         <div class="col-md-12 text-center lead">
@@ -206,6 +182,16 @@
         likes:[],
         firstUpdated: userData[0].Recorded
     };
+
+    for(var i = 0; !(userMeta == null) && i < userMeta.length; i++) {
+        var validOpts = ["username","location","description"];
+        if(validOpts.indexOf(userMeta[i].Record) > -1) {
+            var msg = $("#meta-" + userMeta[i].Record + " .no-data-msg");
+            if(msg.length) msg.remove();
+            var elm = "<tr><td>" + userMeta[i].Value + "</td><td>" + userMeta[i].Updated + "</td><tr>";
+            $("#meta-" + userMeta[i].Record).append(elm);
+        }
+    }
 
     for(var i = 0; i < userData.length; i++) {
         chartData.posts.push([userData[i].Recorded, userData[i].Posts]);
