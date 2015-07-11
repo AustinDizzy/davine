@@ -75,11 +75,6 @@ func QueueUser(userId string, c appengine.Context) {
 			"n":  {"0"},
 		})
 		t.Name = user.UserIdStr + "-0"
-		if appengine.IsDevAppServer() {
-			t.Delay = 10 * time.Minute
-		} else {
-			t.Delay = 24 * time.Hour
-		}
 
 		if _, err = taskqueue.Add(c, t, ""); err != nil {
 			c.Errorf("Error adding user %s to taskqueue: %v", user.UserIdStr, err)
