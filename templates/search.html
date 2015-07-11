@@ -42,10 +42,10 @@
         {{#results}}
             <tr>
                 <td style="vertical-align:middle" class="text-left">
-                    <a data-user="{{UserId}}" data-vanity="{{VanityUrl}}">
+                    <a data-user="{{UserId}}" data-vanity="{{Vanity}}">
                         <img src="{{AvatarUrl}}" alt="{{Username}}'s avatar" width="75px" class="user-avatar" />
                     </a>
-                    <a data-user="{{UserId}}" data-vanity="{{VanityUrl}}" class="searchable">{{Username}}</a>
+                    <a data-user="{{UserId}}" data-vanity="{{Vanity}}" class="searchable">{{Username}}</a>
                 </td>
                 <td style="vertical-align:middle" class="text-center searchable">
                     {{Description}}
@@ -54,9 +54,9 @@
                     {{Location}}
                 </td>
                 <td style="vertical-align:middle" class="text-center">
-                    <span class="formatInt" data-format="0,0">{{Current.Followers}}</span> followers <br>
-                    following <span class="formatInt" data-format="0,0">{{Current.Following}}</span> <br>
-                    <span class="formatInt" data-format="0,0">{{Current.Loops}}</span> loops
+                    <span class="formatInt" data-format="0,0">{{FollowerCount}}</span> followers <br>
+                    following <span class="formatInt" data-format="0,0">{{FollowingCount}}</span> <br>
+                    <span class="formatInt" data-format="0,0">{{LoopCount}}</span> loops
                 </td>
             </tr>
         {{/results}}
