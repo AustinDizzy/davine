@@ -210,15 +210,12 @@ func (db *DB) GetTop() (data map[string]interface{}) {
 	q = datastore.NewQuery("UserMeta").Order("-Current.Revines").Limit(5)
 	q.GetAll(db.Context, &topRevines)
 
-	lastUpdated := db.GetLastUpdated()
-
 	data = map[string]interface{}{
 		"topOverall":  topOverall,
 		"topFollowed": topFollowed,
 		"topLooped":   topLooped,
 		"topPosts":    topPosts,
 		"topRevines":  topRevines,
-		"lastUpdated": lastUpdated,
 	}
 	return
 }
@@ -251,26 +248,6 @@ func (a ByRevines) Len() int      { return len(a) }
 func (a ByRevines) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
 func (a ByRevines) Less(i, j int) bool {
 	return a[i].RevineCount > a[j].RevineCount
-}
-
-func (db *DB) GetLastUpdatedUser() *StoredUserData {
-	var lastUpdatedUser []*StoredUserData
-	q := datastore.NewQuery("UserData").Order("-LastUpdated").Limit(1)
-	q.GetAll(db.Context, &lastUpdatedUser)
-	if len(lastUpdatedUser) == 0 {
-		return nil
-	} else {
-		return lastUpdatedUser[0]
-	}
-}
-
-func (db *DB) GetLastUpdated() time.Time {
-	lastUpdatedUser := db.GetLastUpdatedUser()
-	if lastUpdatedUser == nil {
-		return time.Date(1, 1, 1, 0, 0, 0, 0, time.UTC)
-	} else {
-		return lastUpdatedUser.LastUpdated
-	}
 }
 
 func (db *DB) UnqueueUser(user string) {

@@ -189,7 +189,6 @@ func AboutHandler(w http.ResponseWriter, r *http.Request) {
 	db := DB{appengine.NewContext(r)}
 	totalUsers, _ := db.GetTotalUsers()
 	stats := map[string]interface{}{"users": totalUsers}
-	stats["lastUpdated"] = db.GetLastUpdated()
 	data := mustache.RenderFileInLayout(aboutPage, layout, stats)
 
 	fmt.Fprint(w, data)
@@ -232,7 +231,6 @@ func TopHandler(w http.ResponseWriter, r *http.Request) {
 	layout := path.Join(dir, "layout.html")
 	data := db.GetTop()
 	data["title"] = "Top - " + PageTitle
-	data["LastUpdated"] = db.GetLastUpdated()
 	page := mustache.RenderFileInLayout(top, layout, data)
 	fmt.Fprint(w, page)
 }
