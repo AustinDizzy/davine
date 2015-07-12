@@ -29,6 +29,8 @@ func (x *Export) User(userIdStr string, w http.ResponseWriter) {
 
 	userMeta, _ := json.MarshalIndent(user.UserMeta, "", "  ")
 	userData, _ := json.MarshalIndent(user.UserData, "", "  ")
+	user.UserMeta, user.UserData = nil, nil
+	userJson, _ := json.MarshalIndent(user, "", "  ")
 
 	w.Header().Add("Content-Type", "application/zip")
 	zipWriter := zip.NewWriter(w)
@@ -36,8 +38,9 @@ func (x *Export) User(userIdStr string, w http.ResponseWriter) {
 	var files = []struct {
 		Name, Data string
 	}{
-		{"UserMeta.json", string(userMeta)},
+		{"UserRecord.json", string(userJson)},
 		{"UserData.json", string(userData)},
+		{"UserMeta.json", string(userMeta)},
 	}
 	for _, file := range files {
 		f, err := zipWriter.Create(file.Name)
