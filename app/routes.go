@@ -1,9 +1,9 @@
 package main
 
 import (
+	"app/config"
 	"appengine"
 	"appengine/datastore"
-	"appengine/file"
 	"appengine/memcache"
 	"appengine/taskqueue"
 	"appengine/urlfetch"
@@ -14,11 +14,6 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/hoisie/mustache"
-	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/google"
-	"google.golang.org/cloud"
-	"google.golang.org/cloud/storage"
-	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
@@ -309,6 +304,7 @@ func ExportHandler(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	db := DB{c}
 	vars := mux.Vars(r)
+	cnfg := config.Load(c)
 
 	if r.Method == "GET" {
 		StartupHandler(w, r)
@@ -323,7 +319,7 @@ func ExportHandler(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, "/404", 301)
 			return
 		}
-		data := map[string]string{"username": userRecord.Username, "userId": userRecord.UserId, "captcha": Config["captchaPublic"]}
+		data := map[string]string{"username": userRecord.Username, "userId": userRecord.UserId, "captcha": cnfg["captchaPublic"]}
 		dir := path.Join(os.Getenv("PWD"), "templates")
 		export := path.Join(dir, "export.html")
 		layout := path.Join(dir, "layout.html")
@@ -331,7 +327,7 @@ func ExportHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, page)
 	} else if r.Method == "POST" {
 		client := urlfetch.Client(c)
-		url := "https://www.google.com/recaptcha/api/siteverify?secret=" + Config["captchaPrivate"]
+		url := "https://www.google.com/recaptcha/api/siteverify?secret=" + cnfg["captchaPrivate"]
 		url += "&response=" + r.FormValue("g-recaptcha-response") + "&remoteip=" + r.RemoteAddr
 		req, _ := http.NewRequest("GET", url, nil)
 		resp, err := client.Do(req)
@@ -429,34 +425,8 @@ func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func StartupHandler(w http.ResponseWriter, r *http.Request) {
-	if len(Config) == 0 {
-		c := appengine.NewContext(r)
-		client := &http.Client{
-			Transport: &oauth2.Transport{
-				Source: google.AppEngineTokenSource(c, storage.ScopeReadOnly),
-				Base: &urlfetch.Transport{
-					Context: c,
-				},
-			},
-		}
-		bucket, _ := file.DefaultBucketName(c)
-		ctx := cloud.NewContext("davine-web", client)
-		rc, err := storage.NewReader(ctx, bucket, "config.yaml")
-		if err != nil {
-			c.Errorf("error reading config: %v", err.Error())
-			return
-		}
-		configFile, err := ioutil.ReadAll(rc)
-		rc.Close()
-		if err != nil {
-			c.Errorf("error reading config: %v", err.Error())
-			return
-		}
-
-		c.Infof("loaded config file: %v", configFile)
-		yaml.Unmarshal(configFile, &Config)
-		c.Infof("loaded config struct: %v", Config)
-	}
+	c := appengine.NewContext(r)
+	c.Infof("new instance at %v", time.Now())
 }
 
 func SignUpHandler(w http.ResponseWriter, r *http.Request) {
@@ -558,7 +528,7 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 		layout := path.Join(dir, "layout.html")
 		enterprise, reports, _ := GetAppUsers(c)
 		data := map[string]interface{}{
-			"config":          Config,
+			"config":          config.Load(c),
 			"enterpriseUsers": enterprise,
 			"reportUsers":     reports,
 		}

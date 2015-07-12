@@ -1,16 +1,9 @@
 package main
 
 import (
-	"appengine"
 	"github.com/gorilla/mux"
-	"gopkg.in/yaml.v2"
-	"io/ioutil"
 	"net/http"
-	"os"
-	"path"
 )
-
-var Config map[string]string
 
 func init() {
 	router := mux.NewRouter()
@@ -31,11 +24,6 @@ func init() {
 
 	router.HandleFunc("/cron/fetch", CronFetchHandler).Methods("POST")
 	router.HandleFunc("/cron/popular", PopularFetchHandler).Methods("GET")
-
-	if appengine.IsDevAppServer() {
-		configFile, _ := ioutil.ReadFile(path.Join(os.Getenv("PWD"), "config.yaml"))
-		yaml.Unmarshal(configFile, &Config)
-	}
 
 	router.HandleFunc("/_ah/start", StartupHandler).Methods("GET")
 	router.HandleFunc("/_ah/warmup", StartupHandler).Methods("GET")
