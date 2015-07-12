@@ -11,17 +11,17 @@
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
                  <h3>Step 1. Enter the following information.</h3>
-                <form id="register-form">
+                <form id="register-form-1">
                     <div class="form-group col-md-8">
                         <label>What email would you like to receive your weekly report?</label>
-                        <input type="text" class="form-control" name="email" placeholder="user@example.com">
+                        <input type="email" class="form-control" name="email" placeholder="user@example.com">
                     </div>
                     <div class="col-md-4">
                         <p>It does not have to be the same as your Vine profile's email.</p>
                     </div>
                     <div class="form-group col-md-8">
                         <label>Please enter a link to your vine profile.</label>
-                        <input type="text" class="form-control" name="email">
+                        <input type="url" class="form-control" name="user">
                     </div>
                     <div class="col-md-4">
                         <p>These are all valid formats:</p>
@@ -48,7 +48,7 @@
                         Then, click "Check" below.
                         <span class="clearfix"></span>
                         <div class="text-center">
-                            <form>
+                            <form id="register-form-2">
                                 <input type="hidden" name="email" id="ping-email">
                                 <input type="hidden" name="type" value="email-ping">
                                 <button type="submit" class="btn btn-default btn-lg">
@@ -58,27 +58,18 @@
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <p>Can't edit your profile right now? No problem, save the code and do it later. Revisit this page and enter in the same information above.</p>
+                        <p>Can't edit your profile right now? No problem, close this page and do it later. This code will change each time you attempt to sign up.</p>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                 <h3 class="text-muted">Step 3. Configure your subscription (optional).</h3>
-
-                <div class="col-md-8" id="step3">The Davine newsletter notifies you of new features, announcements, updates, etc. We promise to never spam you or hand out your email address.
-                    <form>
-                        <div class="form-group">
-                            <label>Davine Newsletter (<i>optional</i>)&nbsp;</label>
-                            <input type="checkbox" value="true">
-                        </div>
-                        <div class="form-group text-center">
-                            <input type="submit" value="FInish" class="btn btn-primary btn-lg">
-                        </div>
-                    </form>
-                </div>
-            </div>
+        <div style="display:none;">
+            <h2 class="text-center">Success! You should receive an email shortly.</h2>
+            <p>If you do not receive an email, please try adding "no-reply@davine.co" to your address book.
+            Please also be sure to check your spam folder. If you still receive no email, please try signing up again. If you experience any errors,
+                or still cannot receive any email, please <a href="/about#contact">Contact Us</a>.
+            </p>
+            <p>Davine is still in its infancy, so please bear with us!</p>
         </div>
     </div>
 </div>
@@ -188,30 +179,64 @@
         $('#signup-hero').css({
             'background-image': 'url(' + url + ')'
         });
-
-        $('form').submit(function(e) {
-            var formData = {};
-            $.each($(this).serializeArray(), function(_, kv) {
-                formData[kv.name] = kv.value;
-            });
-            $.post(document.location, formData, function(d) {
-                var data = JSON.parse(d);
+        $("form[id*=register-form]").submit(function(e){
+            e.preventDefault();
+            var id = $(this).attr("id");
+            $("#ping-email").val($("#register-form-1 input[name='email']").val());
+            submitForm($(this).serializeArray(), function(data){
                 if(data.success) {
-                    $("#step2").prev().removeClass("text-muted");
-                    $("#step2").slideDown();
-                    $("#step2").find(".label").text(data.code);
+                    switch (id) {
+                        case 'register-form-1':
+                            $("#step2").find(".label").text(data.code);
+                            $("#step2").prev().removeClass("text-muted");
+                            $("#step2").slideDown();
+                            break;
+                        case 'register-form-2':
+                            $(".content div.row").hide();
+                            $(".content > div[class!='row']").show();
+                            break;
+                    }
                 } else {
-                    alert("Error: " + data.error + "\nIf you experience this error again, please contact us.");
+                    alert("Error: " + data.error + "\nPlease try again. If this error persists, please contact us.");
                 }
             });
-            e.preventDefault();
         });
-        $("#register-form").submit(function(e){
-            e.preventDefault();
-            $("#ping-email").val($("#register-form input[name='email']").val());
-            console.log($("#ping-email").val());
-        });
+
     });
+
+    function submitForm(arr, callback) {
+        var formData = {}, err = false;
+        $.each(arr, function(_, kv) {
+            if(kv.name == "user") {
+                if(getVineUser(kv.value)){
+                    formData[kv.name] = getVineUser(kv.value);
+                } else {
+                    alert("Error: \"" + kv.value + "\" is not a valid Vine profile URL. Please fix your URL and try again.");
+                    err = true;
+                }
+            } else {
+                formData[kv.name] = kv.value;
+            }
+        });
+        if(err) return;
+        $.post(document.location, formData, function(d) {
+            callback(JSON.parse(d));
+        });
+    }
+
+    function getVineUser(profileLink) {
+        profileLink = profileLink.trim();
+        var r, m;
+        if(profileLink.includes("davine")) {
+            r = /^(?:https?\:\/\/(?:www\.)?davine.co\/u\/([a-zA-Z0-9\.]*$))/;
+        } else if(profileLink.includes("/u/")) {
+            r = /^(?:https?\:\/\/vine.co\/u\/([0-9]*$))/;
+        } else {
+            r = /^(?:https?\:\/\/vine.co\/([a-zA-Z0-9\.]*$))/
+        }
+        m = profileLink.match(r);
+        return (m ? m[1] : null);
+    }
 </script>
 <style type="text/css" media="all">
     #signup-hero {

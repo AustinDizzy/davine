@@ -106,6 +106,13 @@ func GetQueuedUser(userId string, c appengine.Context) (user *QueuedUser, err er
 	return
 }
 
+func UserQueueExist(userId int64, c appengine.Context) bool {
+    k := datastore.NewKey(c, "Queue", "", userId, nil)
+    q := datastore.NewQuery("Queue").Filter("__key__ =", k).Limit(1).KeysOnly()
+    keys, _ := q.GetAll(c, nil)
+    return len(keys) > 0
+}
+
 func SearchUsers(c appengine.Context, query string) ([]UserRecord, error) {
 	db := DB{c}
 	index, err := search.Open("users")

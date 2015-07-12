@@ -2,23 +2,28 @@ package main
 
 import (
 	"crypto/rand"
-	mr "math/rand"
-	"time"
 )
 
-var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
+func genRand(dict string, n int) string {
+    var bytes = make([]byte, n)
+    rand.Read(bytes)
+    for k, v := range bytes {
+        bytes[k] = dict[v%byte(len(dict))]
+    }
+
+    return string(bytes)
+}
 
 func GenKey() string {
-	k := make([]byte, 32)
-	rand.Read(k)
-	return string(k[:])
+	dict := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	dict += "abcdefghijklmnopqrstuvwxyz"
+	dict += "1234567890=+~-"
+	return genRand(dict, 64)
 }
 
 func GenSlug() string {
-	b := make([]rune, 5)
-	mr.Seed(time.Now().UTC().UnixNano())
-	for i := range b {
-		b[i] = letters[mr.Intn(len(letters))]
-	}
-	return string(b[:])
+	dict := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	dict += "1234567890"
+	dict += "abcdefghijklmnopqrstuvwxyz"
+	return genRand(dict, 6)
 }

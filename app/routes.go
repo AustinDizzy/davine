@@ -470,7 +470,7 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 		page := mustache.RenderFileInLayout(admin, layout)
 		fmt.Fprint(w, page)
 	} else if r.Method == "POST" {
-		var appUser *AppUser
+		appUser := new(AppUser)
 		key := datastore.NewKey(c, "AppUser", r.FormValue("email"), 0, nil)
 		if r.FormValue("type") == "enterprise" {
 			appUser = &AppUser{
@@ -486,23 +486,24 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 				data["success"] = true
 			}
 		} else if r.FormValue("type") == "email-report" {
-			slug := GenSlug()
-			_, err := GetQueuedUser(r.FormValue("user"), c)
+		    vineUser, err := vineApi.GetUser(r.FormValue("user"))
 			if err != nil {
 				data["success"] = false
 				data["error"] = err.Error()
+			} else if !UserQueueExist(vineUser.UserId, c) {
+			    data["success"] = false
+			    data["error"] = "That user doesn't appear to exist in Davine's database yet. Please submit it to us first."
 			} else {
+			    slug := GenSlug()
 				appUser = &AppUser{
 					Email:      r.FormValue("email"),
 					Type:       "email-report",
 					Active:     false,
 					UserIdStr:  r.FormValue("user"),
-					Key:        slug + ";" + GenKey(),
+					AuthKey:    slug + ";" + GenKey(),
 					Discovered: time.Now(),
 				}
-				if _, err := datastore.Put(c, key, &appUser); err != nil {
-				    //TODO: Investigate why AppEngine isn't storing appUser
-				    c.Infof("appUser store success")
+				if _, err := datastore.Put(c, key, appUser); err == nil {
 					data["success"] = true
 					data["code"] = slug
 				} else {
@@ -510,12 +511,13 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 		} else if r.FormValue("type") == "email-ping" {
-			if err := datastore.Get(c, key, appUser); err != nil {
+		    err := datastore.Get(c, key, appUser);
+			if err == nil {
 				if u, err := vineApi.GetUser(appUser.UserIdStr); err != nil {
 					data["success"] = false
 					data["error"] = err.Error()
 				} else {
-					if strings.Contains(u.Description, strings.Split(appUser.Key, ";")[0]) {
+					if strings.Contains(u.Description, strings.Split(appUser.AuthKey, ";")[0]) {
 						data["success"] = true
 						appUser.Active = true
 						if _, err := datastore.Put(c, key, appUser); err != nil {
@@ -526,6 +528,9 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 						data["success"] = false
 					}
 				}
+			} else {
+			    data["success"] = false
+			    data["error"] = err.Error()
 			}
 		}
 		json.NewEncoder(w).Encode(data)

@@ -122,6 +122,6 @@ type AppUser struct {
 	Type       string
 	Active     bool
 	UserIdStr  string
-	Key        string
+	AuthKey        string
 	Discovered time.Time
 }
