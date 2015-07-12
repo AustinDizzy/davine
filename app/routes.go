@@ -113,7 +113,7 @@ func UserFetchHandler(w http.ResponseWriter, r *http.Request) {
 		data = mustache.RenderFileInLayout(user404, layout, userData)
 		w.WriteHeader(http.StatusNotFound)
 	} else if err != nil {
-	    c.Errorf("got error on fetching user %s: %v", vars["user"], err)
+		c.Errorf("got error on fetching user %s: %v", vars["user"], err)
 		fmt.Fprint(w, err.Error())
 	} else if userRecord != nil {
 
@@ -125,14 +125,14 @@ func UserFetchHandler(w http.ResponseWriter, r *http.Request) {
 		} else {
 			userData.ProfileBackground = "00BF8F"
 		}
-		
+
 		jsonStr, err := json.Marshal(userData.UserData)
 		if err == nil {
-		    userData.UserDataJsonStr = string(jsonStr)
+			userData.UserDataJsonStr = string(jsonStr)
 		}
 		jsonStr, err = json.Marshal(userData.UserMeta)
 		if err == nil {
-		    userData.UserMetaJsonStr = string(jsonStr)
+			userData.UserMetaJsonStr = string(jsonStr)
 		}
 
 		data = mustache.RenderFileInLayout(profile, layout, userData)
@@ -156,7 +156,7 @@ func UserStoreHandler(w http.ResponseWriter, r *http.Request) {
 
 	if err == datastore.ErrNoSuchEntity || u == nil {
 		if apiErr != nil {
-		    c.Infof("Got apiErr: %v", apiErr)
+			c.Infof("Got apiErr: %v", apiErr)
 			data["exists"] = false
 			data["queued"] = false
 		} else {
@@ -486,15 +486,15 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 				data["success"] = true
 			}
 		} else if r.FormValue("type") == "email-report" {
-		    vineUser, err := vineApi.GetUser(r.FormValue("user"))
+			vineUser, err := vineApi.GetUser(r.FormValue("user"))
 			if err != nil {
 				data["success"] = false
 				data["error"] = err.Error()
 			} else if !UserQueueExist(vineUser.UserId, c) {
-			    data["success"] = false
-			    data["error"] = "That user doesn't appear to exist in Davine's database yet. Please submit it to us first."
+				data["success"] = false
+				data["error"] = "That user doesn't appear to exist in Davine's database yet. Please submit it to us first."
 			} else {
-			    slug := GenSlug()
+				slug := GenSlug()
 				appUser = &AppUser{
 					Email:      r.FormValue("email"),
 					Type:       "email-report",
@@ -507,11 +507,11 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 					data["success"] = true
 					data["code"] = slug
 				} else {
-				    c.Errorf("got appUser store err: %v", err)
+					c.Errorf("got appUser store err: %v", err)
 				}
 			}
 		} else if r.FormValue("type") == "email-ping" {
-		    err := datastore.Get(c, key, appUser);
+			err := datastore.Get(c, key, appUser)
 			if err == nil {
 				if u, err := vineApi.GetUser(appUser.UserIdStr); err != nil {
 					data["success"] = false
@@ -529,8 +529,8 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 					}
 				}
 			} else {
-			    data["success"] = false
-			    data["error"] = err.Error()
+				data["success"] = false
+				data["error"] = err.Error()
 			}
 		}
 		json.NewEncoder(w).Encode(data)

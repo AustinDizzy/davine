@@ -20,13 +20,13 @@ type Export struct {
 func (x *Export) User(userIdStr string, w http.ResponseWriter) {
 	db := DB{x.Context}
 	userId, _ := strconv.ParseInt(userIdStr, 10, 64)
-	
+
 	user, err := db.GetUser(userId)
 	if err != nil {
 		x.Context.Errorf("got err on export: %v", err)
 		return
 	}
-	
+
 	userMeta, _ := json.MarshalIndent(user.UserMeta, "", "  ")
 	userData, _ := json.MarshalIndent(user.UserData, "", "  ")
 
@@ -107,10 +107,10 @@ func GetQueuedUser(userId string, c appengine.Context) (user *QueuedUser, err er
 }
 
 func UserQueueExist(userId int64, c appengine.Context) bool {
-    k := datastore.NewKey(c, "Queue", "", userId, nil)
-    q := datastore.NewQuery("Queue").Filter("__key__ =", k).Limit(1).KeysOnly()
-    keys, _ := q.GetAll(c, nil)
-    return len(keys) > 0
+	k := datastore.NewKey(c, "Queue", "", userId, nil)
+	q := datastore.NewQuery("Queue").Filter("__key__ =", k).Limit(1).KeysOnly()
+	keys, _ := q.GetAll(c, nil)
+	return len(keys) > 0
 }
 
 func SearchUsers(c appengine.Context, query string) ([]UserRecord, error) {
@@ -136,9 +136,9 @@ func SearchUsers(c appengine.Context, query string) ([]UserRecord, error) {
 		}
 		id, _ := strconv.ParseInt(key, 10, 64)
 		userRecord, err := db.GetUserRecord(id)
-        if err != nil {
-            return users, err   
-        }
+		if err != nil {
+			return users, err
+		}
 		users = append(users, *userRecord)
 	}
 

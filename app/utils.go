@@ -5,13 +5,13 @@ import (
 )
 
 func genRand(dict string, n int) string {
-    var bytes = make([]byte, n)
-    rand.Read(bytes)
-    for k, v := range bytes {
-        bytes[k] = dict[v%byte(len(dict))]
-    }
+	var bytes = make([]byte, n)
+	rand.Read(bytes)
+	for k, v := range bytes {
+		bytes[k] = dict[v%byte(len(dict))]
+	}
 
-    return string(bytes)
+	return string(bytes)
 }
 
 func GenKey() string {

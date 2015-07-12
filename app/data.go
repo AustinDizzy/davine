@@ -16,7 +16,7 @@ type DB struct {
 }
 
 func (db *DB) FetchUser(userId string) {
-    //Step 1. Get Vine user's data from the Vine API
+	//Step 1. Get Vine user's data from the Vine API
 	vineApi := VineRequest{db.Context}
 	vineUser, err := vineApi.GetUser(userId)
 
@@ -24,21 +24,21 @@ func (db *DB) FetchUser(userId string) {
 		if err.Error() == ErrUserDoesntExist {
 			db.UnqueueUser(userId)
 		} else {
-		    db.Context.Errorf("got error getting user %s from vine: %v", userId, err)
+			db.Context.Errorf("got error getting user %s from vine: %v", userId, err)
 		}
 		return
 	} else if vineUser == nil {
 		db.Context.Errorf("failed fetch on user %v. got err %v", userId, err)
 		return
 	} else if vineUser.Private == 1 {
-	    db.Context.Infof("user %s is private", userId)
+		db.Context.Infof("user %s is private", userId)
 		return
 	}
 
 	recordKey := datastore.NewKey(db.Context, "UserRecord", "", vineUser.UserId, nil)
 
-    //Step 2. Add user to user search index.
-    userIndex := &UserIndex{
+	//Step 2. Add user to user search index.
+	userIndex := &UserIndex{
 		Username:    vineUser.Username,
 		Location:    vineUser.Location,
 		Description: vineUser.Description,
@@ -55,107 +55,107 @@ func (db *DB) FetchUser(userId string) {
 		index.Put(db.Context, vineUser.UserIdStr, userIndex)
 	}
 
-    //Step 3. Write records (user {meta, record, data}).
-    if userRecord, err := db.GetUserRecord(vineUser.UserId); err == nil {
-        var userMeta []*UserMeta
+	//Step 3. Write records (user {meta, record, data}).
+	if userRecord, err := db.GetUserRecord(vineUser.UserId); err == nil {
+		var userMeta []*UserMeta
 
-        if vineUser.Username != userRecord.Username {
-            userMeta = append(userMeta, &UserMeta{vineUser.UserId, "username", userRecord.Username, time.Now()})
-        }
+		if vineUser.Username != userRecord.Username {
+			userMeta = append(userMeta, &UserMeta{vineUser.UserId, "username", userRecord.Username, time.Now()})
+		}
 
-        if vineUser.Location != userRecord.Location {
-            userMeta = append(userMeta, &UserMeta{vineUser.UserId, "location", userRecord.Location, time.Now()})
-        }
+		if vineUser.Location != userRecord.Location {
+			userMeta = append(userMeta, &UserMeta{vineUser.UserId, "location", userRecord.Location, time.Now()})
+		}
 
-        if vineUser.Description != userRecord.Description {
-            userMeta = append(userMeta, &UserMeta{vineUser.UserId, "description", userRecord.Description, time.Now()})
-        }
+		if vineUser.Description != userRecord.Description {
+			userMeta = append(userMeta, &UserMeta{vineUser.UserId, "description", userRecord.Description, time.Now()})
+		}
 
-        if (vineUser.Verified != 0) != userRecord.Verified {
-            userMeta = append(userMeta, &UserMeta{vineUser.UserId, "verified", strconv.FormatBool(userRecord.Verified), time.Now()})
-        }
+		if (vineUser.Verified != 0) != userRecord.Verified {
+			userMeta = append(userMeta, &UserMeta{vineUser.UserId, "verified", strconv.FormatBool(userRecord.Verified), time.Now()})
+		}
 
-        var metaKey *datastore.Key
-        for _, m := range userMeta {
-            metaKey = datastore.NewIncompleteKey(db.Context, "UserMeta", recordKey)
-            if key, err := datastore.Put(db.Context, metaKey, m); err != nil {
-                db.Context.Errorf("got error storing user meta %s - %v: %v", userId, key, err)
-            }
-        }
-    }
+		var metaKey *datastore.Key
+		for _, m := range userMeta {
+			metaKey = datastore.NewIncompleteKey(db.Context, "UserMeta", recordKey)
+			if key, err := datastore.Put(db.Context, metaKey, m); err != nil {
+				db.Context.Errorf("got error storing user meta %s - %v: %v", userId, key, err)
+			}
+		}
+	}
 
-    userRecord := UserRecord{
-        UserId: vineUser.UserIdStr,
-        Username: vineUser.Username,
-        Description: vineUser.Description,
-        Location: vineUser.Location,
-        ProfileBackground: vineUser.ProfileBackground,
-        AvatarUrl: vineUser.AvatarUrl,
-        FollowerCount: vineUser.FollowerCount,
-        FollowingCount: vineUser.FollowingCount,
-        LoopCount: vineUser.LoopCount,
-        PostCount: vineUser.AuthoredPostCount,
-        RevineCount: (vineUser.PostCount - vineUser.AuthoredPostCount),
-        LikeCount: vineUser.LikeCount,
-        Private: (vineUser.Private != 0),
-        Verified: (vineUser.Verified != 0),
-        Explicit: (vineUser.ExplicitContent != 0),
-    }
-    if len(vineUser.VanityUrls) != 0 {
-        userRecord.Vanity = strings.ToLower(vineUser.VanityUrls[0])
-    }
-    if _, err := datastore.Put(db.Context, recordKey, &userRecord); err != nil {
-        db.Context.Errorf("got error storing user record %s: %v", userId, err)
-    }
+	userRecord := UserRecord{
+		UserId:            vineUser.UserIdStr,
+		Username:          vineUser.Username,
+		Description:       vineUser.Description,
+		Location:          vineUser.Location,
+		ProfileBackground: vineUser.ProfileBackground,
+		AvatarUrl:         vineUser.AvatarUrl,
+		FollowerCount:     vineUser.FollowerCount,
+		FollowingCount:    vineUser.FollowingCount,
+		LoopCount:         vineUser.LoopCount,
+		PostCount:         vineUser.AuthoredPostCount,
+		RevineCount:       (vineUser.PostCount - vineUser.AuthoredPostCount),
+		LikeCount:         vineUser.LikeCount,
+		Private:           (vineUser.Private != 0),
+		Verified:          (vineUser.Verified != 0),
+		Explicit:          (vineUser.ExplicitContent != 0),
+	}
+	if len(vineUser.VanityUrls) != 0 {
+		userRecord.Vanity = strings.ToLower(vineUser.VanityUrls[0])
+	}
+	if _, err := datastore.Put(db.Context, recordKey, &userRecord); err != nil {
+		db.Context.Errorf("got error storing user record %s: %v", userId, err)
+	}
 
-    dataKey := datastore.NewIncompleteKey(db.Context, "UserData", recordKey)
-    userData := UserData{
-        UserId: vineUser.UserId,
-        Recorded: time.Now(),
-        Followers: vineUser.FollowerCount,
-        Following: vineUser.FollowingCount,
-        Loops: vineUser.LoopCount,
-        Posts: vineUser.AuthoredPostCount,
-        Revines: (vineUser.PostCount - vineUser.AuthoredPostCount),
-        Likes: vineUser.LikeCount,
-    }
-    if key, err := datastore.Put(db.Context, dataKey, &userData); err != nil {
-        db.Context.Errorf("got error storing user data %s - %v: %v", userId, key, err)
-    }
+	dataKey := datastore.NewIncompleteKey(db.Context, "UserData", recordKey)
+	userData := UserData{
+		UserId:    vineUser.UserId,
+		Recorded:  time.Now(),
+		Followers: vineUser.FollowerCount,
+		Following: vineUser.FollowingCount,
+		Loops:     vineUser.LoopCount,
+		Posts:     vineUser.AuthoredPostCount,
+		Revines:   (vineUser.PostCount - vineUser.AuthoredPostCount),
+		Likes:     vineUser.LikeCount,
+	}
+	if key, err := datastore.Put(db.Context, dataKey, &userData); err != nil {
+		db.Context.Errorf("got error storing user data %s - %v: %v", userId, key, err)
+	}
 }
 
 func (db *DB) GetUser(userId int64) (user *UserRecord, err error) {
-    user, err = db.GetUserRecord(userId)
-    if err != nil {
-        db.Context.Infof("error with userRecord")
-        return
-    }
-    user.UserData, err = db.GetUserData(userId)
+	user, err = db.GetUserRecord(userId)
+	if err != nil {
+		db.Context.Infof("error with userRecord")
+		return
+	}
+	user.UserData, err = db.GetUserData(userId)
 
-    if err != nil {
-        db.Context.Infof("error with userData")
-        return
-    }
+	if err != nil {
+		db.Context.Infof("error with userData")
+		return
+	}
 
-    user.UserMeta, err = db.GetUserMeta(userId)
-    if err != nil {
-        db.Context.Infof("error with userMeta")   
-    }
-    return
+	user.UserMeta, err = db.GetUserMeta(userId)
+	if err != nil {
+		db.Context.Infof("error with userMeta")
+	}
+	return
 }
 
 func (db *DB) GetUserRecord(userId int64) (*UserRecord, error) {
 
-    user := UserRecord{}
+	user := UserRecord{}
 
-    recordKey := datastore.NewKey(db.Context, "UserRecord", "", userId, nil)
-    err := datastore.Get(db.Context, recordKey, &user)
+	recordKey := datastore.NewKey(db.Context, "UserRecord", "", userId, nil)
+	err := datastore.Get(db.Context, recordKey, &user)
 
-    if err != nil {
-        return nil, err
-    } else {
-        return &user, nil
-    }
+	if err != nil {
+		return nil, err
+	} else {
+		return &user, nil
+	}
 }
 
 func (db *DB) GetUserData(userId int64) (userData []*UserData, err error) {

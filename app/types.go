@@ -44,8 +44,8 @@ type VineUser struct {
 }
 
 type UserRecord struct {
-    UserId            string
-    Discovered        time.Time
+	UserId            string
+	Discovered        time.Time
 	Username          string `datastore:",noindex"`
 	Vanity            string
 	Description       string `datastore:",noindex"`
@@ -63,26 +63,26 @@ type UserRecord struct {
 	Explicit          bool
 	UserData          []*UserData `datastore:"-"`
 	UserMeta          []*UserMeta `datastore:"-"`
-	UserDataJsonStr   string `datastore:"-"`
-	UserMetaJsonStr   string `datastore:"-"`
+	UserDataJsonStr   string      `datastore:"-"`
+	UserMetaJsonStr   string      `datastore:"-"`
 }
 
 type UserData struct {
-    UserId        int64
-    Recorded      time.Time
-    Followers     int64
-	Following     int64
-	Loops         int64
-	Posts         int64
-	Revines       int64
-	Likes         int64
+	UserId    int64
+	Recorded  time.Time
+	Followers int64
+	Following int64
+	Loops     int64
+	Posts     int64
+	Revines   int64
+	Likes     int64
 }
 
 type UserMeta struct {
-    UserId  int64
-    Record  string
-    Value   string    `datastore:",noindex"`
-    Updated time.Time
+	UserId  int64
+	Record  string
+	Value   string `datastore:",noindex"`
+	Updated time.Time
 }
 
 type PopularPage struct {
@@ -96,7 +96,6 @@ type PopularRecord struct {
 	UserId    int64  `json:"userId"`
 	UserIdStr string `json:"userIdStr"`
 }
-
 
 type MetaStats struct {
 	Count     int       `datastore:"count"`
@@ -122,6 +121,6 @@ type AppUser struct {
 	Type       string
 	Active     bool
 	UserIdStr  string
-	AuthKey        string
+	AuthKey    string
 	Discovered time.Time
 }
