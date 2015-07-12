@@ -21,9 +21,6 @@ type ConfigData map[string]string
 
 func Load(c ...appengine.Context) ConfigData {
 	if Config != nil {
-		if len(c) > 0 {
-			c[0].Debugf("loaded config from memory: %v", Config)
-		}
 		return Config
 	}
 	var configFile []byte
