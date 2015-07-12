@@ -16,6 +16,7 @@ install:
     - ./go_appengine/goapp get golang.org/x/oauth2/google
     - ./go_appengine/goapp get google.golang.org/cloud
     - ./go_appengine/goapp get google.golang.org/cloud/storage
+    - ./go_appengine/goapp get github.com/stathat/go
 
 script:
     - ./go_appengine/goapp build ./davine/app/*

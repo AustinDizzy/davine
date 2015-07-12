@@ -399,6 +399,7 @@ func CronFetchHandler(w http.ResponseWriter, r *http.Request) {
 	db.FetchUser(r.FormValue("id"))
 
 	finish := time.Since(start)
+	PostValue(c, "cron fetch", finish.Seconds()*1000.0)
 
 	if appengine.IsDevAppServer() {
 		t.Delay = (10 * time.Minute) - finish
@@ -426,7 +427,7 @@ func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
 
 func StartupHandler(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
-	c.Infof("new instance at %v", time.Now())
+	PostCount(c, "new instance", 1)
 }
 
 func SignUpHandler(w http.ResponseWriter, r *http.Request) {
