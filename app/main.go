@@ -24,6 +24,7 @@ func init() {
 
 	router.HandleFunc("/cron/fetch", CronFetchHandler).Methods("POST")
 	router.HandleFunc("/cron/popular", PopularFetchHandler).Methods("GET")
+	router.HandleFunc("/cron/explore", CronExploreHandler).Methods("GET", "POST")
 
 	router.HandleFunc("/_ah/start", StartupHandler).Methods("GET")
 	router.HandleFunc("/_ah/warmup", StartupHandler).Methods("GET")

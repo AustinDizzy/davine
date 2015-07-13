@@ -385,6 +385,46 @@ func PopularFetchHandler(w http.ResponseWriter, r *http.Request) {
 	c.Infof("queueing popular users: %v w/ err %v. Took %s", users, err, finish)
 }
 
+func CronExploreHandler(w http.ResponseWriter, r *http.Request) {
+	c := appengine.NewContext(r)
+	if r.Method == "GET" {
+		feeds := []*taskqueue.Task{
+			taskqueue.NewPOSTTask("/cron/explore", map[string][]string{
+				"feed": {"/timelines/popular"},
+			}),
+			taskqueue.NewPOSTTask("/cron/explore", map[string][]string{
+				"feed": {"/timelines/promoted"},
+			}),
+		}
+		for i := 1; !appengine.IsDevAppServer() && i <= 17; i++ {
+			feeds = append(feeds, []*taskqueue.Task{
+				taskqueue.NewPOSTTask("/cron/explore", map[string][]string{
+					"feed": {fmt.Sprintf("/timelines/channels/%d/popular", i)},
+				}),
+				taskqueue.NewPOSTTask("/cron/explore", map[string][]string{
+					"feed": {fmt.Sprintf("/timelines/channels/%d/recent", i)},
+				}),
+			}...)
+		}
+		if _, err := taskqueue.AddMulti(c, feeds, "explore"); err != nil {
+			c.Errorf("error tasking explore: %v", err)
+		}
+	} else if r.Method == "POST" {
+		vineApi := VineRequest{c}
+		userIDs, err := vineApi.ScrapeUserIDs(r.FormValue("feed"))
+		if err != nil {
+			c.Errorf("Error scraping %s: %v", r.FormValue("feed"), err)
+		} else {
+			c.Infof("%d users", len(userIDs))
+			for _, u := range userIDs {
+				if _, err := GetQueuedUser(u, c); err == datastore.ErrNoSuchEntity {
+					QueueUser(u, c)
+				}
+			}
+		}
+	}
+}
+
 func CronFetchHandler(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	db := DB{c}
@@ -412,7 +452,6 @@ func CronFetchHandler(w http.ResponseWriter, r *http.Request) {
 		c.Errorf("Error adding user %s to taskqueue: %v", r.FormValue("id"), err)
 	}
 
-	c.Infof("Finished cron fetch, took %s", finish)
 	w.WriteHeader(200)
 }
 

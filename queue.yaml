@@ -1,4 +1,7 @@
 queue:
 - name: default
-  rate: 100/s
-  bucket_size: 250
+  rate: 10/s
+  bucket_size: 50
+- name: explore
+  rate: 5/s
+  bucket_size: 5

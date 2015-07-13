@@ -82,3 +82,18 @@ func (v *VineRequest) IsVanity(user string) bool {
 	match, _ := regexp.MatchString("^[0-9]+$", user)
 	return !match
 }
+
+func (v *VineRequest) ScrapeUserIDs(feed string) ([]string, error) {
+	v.Context.Infof("scraping %s", feed)
+	resp, err := v.get(feed)
+	if err != nil {
+		return nil, err
+	} else {
+		users := []string{}
+		regex := regexp.MustCompile(`(?:\"userId\"\: )([0-9]*)(?:,)`)
+		for _, u := range regex.FindAllStringSubmatch(string(resp), -1) {
+			users = append(users, u[1])
+		}
+		return RemoveDuplicates(users), nil
+	}
+}
