@@ -26,7 +26,9 @@
             <span class="col-md-4 text-center">
                 <h3>Tools</h3>
                 <button class="btn btn-default" data-toggle="modal" data-target="#batchTask">Batch Task Users</button>
+                <button class="btn btn-default" data-toggle="modal" data-target="#downloadData">Download Data</button>
                 <button class="btn btn-default" data-toggle="modal" data-target="#sendReport">Send User Report</button>
+                <button class="btn btn-default" data-toggle="modal" data-target="#loadData">Load Data</button>
                 <button class="btn btn-default" data-toggle="modal" data-target="#batchQueue">Batch Queue Users</button>
                 <div class="modal fade" id="batchTask" tabindex="-1" role="dialog">
                     <div class="modal-dialog">
@@ -47,6 +49,43 @@
                                         <input type="submit" class="btn btn-lg btn-primary" value="Submit">
                                     </form>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="downloadData" tabindex="-1" role="dialog">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="gridSystemModalLabel">Download Vine datasets</h4>
+                            </div>
+                            <div class="modal-body">
+                                <form class="text-center no-ajax form-group" method="POST">
+                                    <input type="hidden" name="op" value="DumpKind">
+                                    <input type="hidden" name="v" value="Queue">
+                                    <input type="submit" class="btn btn-default" value="Queue">
+                                </form>
+                                <form class="text-center no-ajax form-group" method="POST">
+                                    <input type="hidden" name="op" value="DumpKind">
+                                    <input type="hidden" name="v" value="UserData">
+                                    <input type="submit" class="btn btn-default" value="UserData">
+                                </form>
+                                <form class="text-center no-ajax form-group" method="POST">
+                                    <input type="hidden" name="op" value="DumpKind">
+                                    <input type="hidden" name="v" value="UserMeta">
+                                    <input type="submit" class="btn btn-default" value="UserMeta">
+                                </form>
+                                <div class="text-center text-muted">or</div>
+                                <form class="text-center no-ajax" method="POST">
+                                    <div class="input-group col-md-8 col-md-offset-2">
+                                        <input type="text" class="form-control" name="v" placeholder="Entity kind...">
+                                        <span class="input-group-btn">
+                                            <input type="submit" class="btn btn-default" value="Download">
+                                        </span>
+                                    </div>
+                                    <input type="hidden" name="op" value="DumpKind">
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -99,6 +138,37 @@
                         </div>
                     </div>
                 </div>
+                <div class="modal fade" id="loadData" tabindex="-1" role="dialog">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="gridSystemModalLabel">Load Data into Davine</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="container-fluid">
+                                    <p class="text-muted">
+                                        <b class="label label-danger">DANGER:</b> This injects data directly into the datastore.
+                                    </p>
+                                    <form class="text-center no-ajax form-horizontal">
+                                      <div class="form-group">
+                                        <label class="col-sm-2 control-label">Entity Kind</label>
+                                        <div class="col-sm-8">
+                                          <input type="text" class="form-control" name="v">
+                                        </div>
+                                      </div>
+                                        <div class="form-group">
+                                          <label class="col-md-2">Valid JSON file</label>
+                                          <input type="file" name="file">
+                                        </div>
+                                        <input type="hidden" name="op" value="LoadData">
+                                        <input type="submit" class="btn btn-lg btn-primary" value="Submit">
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </span>
         </div>
         <div class="row">
@@ -142,7 +212,7 @@
 <span class="hidden">{{.}}</span>
 <script type="text/javascript">
     $(function(){
-        $('form').submit(function(e){
+        $('form:not(".no-ajax")').submit(function(e){
             e.preventDefault();
             var formData = {};
             $.each($(this).serializeArray(), function(_, kv) {
@@ -151,6 +221,22 @@
             $.post(window.location, formData, function(d){
                 alert("Success. Check app logs for more details, if necessary.");
             });
+        });
+        $('#loadData form').on('submit', function(e){
+           e.preventDefault(); 
+           var formData = new FormData(this);
+           $.ajax({
+               url: window.location,
+               type: 'POST',
+               data: formData,
+               success: function(d){
+                  console.log(d);
+                  alert("Success. Please check app log for error(s).");
+               },
+               cache: false,
+               contentType: false,
+               processData: false
+           });
         });
     });
 </script>

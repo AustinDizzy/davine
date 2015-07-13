@@ -1,6 +1,7 @@
 package main
 
 import (
+	"app/admin"
 	"app/config"
 	"appengine"
 	"appengine/datastore"
@@ -513,7 +514,6 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 	db := DB{c}
 	vineApi := VineRequest{c}
 	adminUser := user.Current(c)
-	var err error
 	if adminUser == nil {
 		url, _ := user.LoginURL(c, "/admin/dashboard")
 		http.Redirect(w, r, url, 301)
@@ -538,24 +538,7 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 	} else if r.Method == "POST" {
 		switch r.FormValue("op") {
 		case "TaskUsers":
-			for _, user := range strings.Split(r.FormValue("v"), "\n") {
-				u := strings.Split(user, ",")
-				t := taskqueue.NewPOSTTask("/cron/fetch", map[string][]string{
-					"id": {strings.TrimSpace(u[0])},
-					"n":  {strings.TrimSpace(u[1])},
-				})
-				t.Name = u[0] + "-0"
-				t.Delay, err = time.ParseDuration(strings.TrimSpace(u[2]))
-
-				if err != nil {
-					c.Errorf("Error parsing task delay %v: %v", u, err)
-					continue
-				}
-
-				if _, err = taskqueue.Add(c, t, ""); err != nil {
-					c.Errorf("Error adding user %s to taskqueue: %v", u[0], err)
-				}
-			}
+			admin.NewTask(c).BatchTaskUsers(strings.Split(r.FormValue("v"), "\n")...)
 		case "UnqueueUser":
 			c.Infof("unqueuing %v", r.FormValue("v"))
 			db.UnqueueUser(r.FormValue("v"))
@@ -590,6 +573,18 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 			} else {
 				http.Error(w, err.Error(), 500)
 				return
+			}
+		case "DumpKind":
+			admin.NewTask(c).DumpData(r.FormValue("v"), w)
+			return
+		case "LoadData":
+			file, _, err := r.FormFile("file")
+			if err != nil {
+				c.Errorf("error loading file: %v", err)
+				return
+			}
+			if err := admin.NewTask(c).LoadData(r.FormValue("v"), file); err != nil {
+				c.Errorf("Error loading data: %v", err)
 			}
 		}
 		fmt.Fprintf(w, "{\"op\":\"%v\",\"success\":true}", r.FormValue("op"))
