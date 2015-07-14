@@ -90,11 +90,11 @@ func UserFetchHandler(w http.ResponseWriter, r *http.Request) {
 		userId, _ := strconv.ParseInt(vars["user"], 10, 64)
 		userRecord, err = db.GetUser(userId)
 	} else {
-		temp := []UserRecord{}
-		q := datastore.NewQuery("UserRecord").Filter("Vanity", strings.ToLower(vars["user"])).Limit(1)
-		_, err = q.GetAll(c, &temp)
-		if len(temp) > 0 {
-			userRecord = &temp[0]
+		q := datastore.NewQuery("UserRecord").Filter("Vanity =", strings.ToLower(vars["user"])).KeysOnly().Limit(1)
+		k, _ := q.GetAll(c, nil)
+
+		if len(k) > 0 {
+			userRecord, _ = db.GetUser(k[0].IntID())
 		} else {
 			user404 := path.Join(dir, "user404.html")
 			userData := map[string]string{"user": vars["user"]}

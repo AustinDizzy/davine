@@ -180,7 +180,7 @@
         posts:[],
         revines:[],
         likes:[],
-        firstUpdated: userData[0].Recorded
+        firstUpdated: userData == null ? null : userData[0].Recorded
     };
 
     for(var i = 0; !(userMeta == null) && i < userMeta.length; i++) {
@@ -193,7 +193,7 @@
         }
     }
 
-    for(var i = 0; i < userData.length; i++) {
+    for(var i = 0; !(userData == null) && i < userData.length; i++) {
         chartData.posts.push([userData[i].Recorded, userData[i].Posts]);
         chartData.revines.push([userData[i].Recorded, userData[i].Revines]);
         chartData.followers.push([userData[i].Recorded, userData[i].Followers]);

@@ -131,7 +131,6 @@ func (db *DB) GetUser(userId int64) (user *UserRecord, err error) {
 		return
 	}
 	user.UserData, err = db.GetUserData(userId)
-
 	if err != nil {
 		db.Context.Infof("error with userData")
 		return
