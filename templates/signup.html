@@ -190,6 +190,9 @@
                             $("#step2").find(".label").text(data.code);
                             $("#step2").prev().removeClass("text-muted");
                             $("#step2").slideDown();
+                            $('html, body').animate({
+                              scrollTop: $("#step2").offset().top
+                            }, 800);
                             break;
                         case 'register-form-2':
                             $(".content div.row").hide();

@@ -3,6 +3,7 @@ package main
 import (
 	"app/admin"
 	"app/config"
+	"app/email"
 	"appengine"
 	"appengine/datastore"
 	"appengine/memcache"
@@ -474,14 +475,36 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	vineApi := VineRequest{c}
 	data := map[string]interface{}{}
+	appUser := new(AppUser)
 	if r.Method == "GET" {
-		dir := path.Join(os.Getenv("PWD"), "templates")
-		admin := path.Join(dir, "signup.html")
-		layout := path.Join(dir, "layout.html")
-		page := mustache.RenderFileInLayout(admin, layout)
-		fmt.Fprint(w, page)
+		if r.FormValue("type") == "activate" && len(r.FormValue("key")) > 0 && len(r.FormValue("email")) > 0 {
+			key := datastore.NewKey(c, "AppUser", r.FormValue("email"), 0, nil)
+			if err := datastore.Get(c, key, appUser); err != nil {
+				c.Infof("error activating user %s: %v\ndata: %v", r.FormValue("email"), err, r.Form)
+			} else {
+				if strings.Split(appUser.AuthKey, ";")[1] == r.FormValue("key") {
+					appUser.Active = true
+					if _, err := datastore.Put(c, key, appUser); err != nil {
+						c.Errorf("error saving activated user %s: %v", r.FormValue("email"), err)
+						return
+					} else {
+						fmt.Fprintf(w, "Your email subscription is now activated. You may close this page.")
+						return
+					}
+				} else {
+					c.Infof("authKey: %s\nsuppliedKey: %s", strings.Split(appUser.AuthKey, ";")[1], r.FormValue("key"))
+					http.Error(w, "The supplied key did not match with our records.", http.StatusBadRequest)
+					return
+				}
+			}
+		} else {
+			dir := path.Join(os.Getenv("PWD"), "templates")
+			admin := path.Join(dir, "signup.html")
+			layout := path.Join(dir, "layout.html")
+			page := mustache.RenderFileInLayout(admin, layout)
+			fmt.Fprint(w, page)
+		}
 	} else if r.Method == "POST" {
-		appUser := new(AppUser)
 		key := datastore.NewKey(c, "AppUser", r.FormValue("email"), 0, nil)
 		if r.FormValue("type") == "enterprise" {
 			appUser = &AppUser{
@@ -528,10 +551,19 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 					data["success"] = false
 					data["error"] = err.Error()
 				} else {
-					if strings.Contains(u.Description, strings.Split(appUser.AuthKey, ";")[0]) {
+					authKey := strings.Split(appUser.AuthKey, ";")
+					if strings.Contains(u.Description, authKey[0]) {
 						data["success"] = true
-						appUser.Active = true
-						if _, err := datastore.Put(c, key, appUser); err != nil {
+						emailData := map[string]string{
+							"username": u.Username,
+							"id":       u.UserIdStr,
+							"link":     fmt.Sprintf("https://%s/sign-up?type=activate&key=%s&email=%s", appengine.DefaultVersionHostname(c), authKey[1], r.FormValue("email")),
+						}
+						msg := email.New()
+						msg.LoadTemplate(0, emailData)
+						msg.To = []string{r.FormValue("email")}
+						if err := msg.Send(c); err != nil {
+							c.Errorf("error sending %s email to %s: %v", u.UserIdStr, msg.To[0], err)
 							data["success"] = false
 							data["error"] = err.Error()
 						}
