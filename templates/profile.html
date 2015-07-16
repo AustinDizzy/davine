@@ -4,114 +4,166 @@
         padding-right: 15px;
     }
     .user-name {
-        margin-left: 0.5em;
-        font-size: 50px;
         font-weight: bold;
-        margin-top: -1.25em;
-        height: auto;
-        position: absolute;
         color: white;
-        display: inline-block;
-    }
-    .profile-text {
-        margin-left: 0.5em;
-        padding: 15px;
+        white-space: nowrap;
     }
     #user-banner {
         width: 100%;
         height: 200px;
+        border-top-right-radius: 6px;
+        border-top-left-radius: 6px;
         background-color: #{{ProfileBackground}};
     }
     .list-block {
-            display: table;
-            width: 100%;
-            border-collapse: collapse;
-            border: none;
+        display: table;
+        width: 100%;
+        border-collapse: collapse;
+        border: none;
+    }
+    .list-block ul {
+        display: table-row;
+    }
+    .list-block li {
+        display: table-cell;
+        margin: 0;
+    }
+    .legend > li{
+        color: white;
+        background-color:#{{ProfileBackground}};
+    }
+    .legend li:not(:first-child) {
+        border-left: 1px solid #fff;
+    }
+    #profile-nav a {
+        color: #{{ProfileBackground}};
+        padding: 20px 16px;
+        border: 0;
+        font-weight: bold;
+    }
+    #profile-nav li {
+        text-align: center;
+        list-style: none;
+    }
+    .profile-buttons > a {
+        margin-right: 5px;
+    }
+    #profile-content {
+        background-color:#fff;
+        border: 1px solid rgb(231,231,231);
+        border-top-right-radius: 6px;
+        border-top-left-radius: 6px;
+        padding: 0;
+        border-top: 0;
+    }
+    @media(min-width:768px){
+        .user-avatar {
+            margin-top: -100px;
         }
-        .list-block ul {
-            display: table-row;
+        .user-name {
+            margin-top: -1.45em;
+            font-size: 50px;
         }
-        .list-block li {
-            display: table-cell;
-            margin: 0;
+    }
+    @media(max-width:767px){
+        .user-avatar {
+            margin-top: -275px;
         }
-        .legend > li{
-	        color: white;
-	        background-color:#{{ProfileBackground}};
+        .user-name {
+            margin-top: -85px;
+            text-align: center;
+            font-size: 13vw;
         }
-        .legend li:not(:first-child) {
-            border-left: 1px solid #fff;
+        .profile-buttons {
+            text-align: center;
         }
-        #profile-nav a {
-            color: #{{ProfileBackground}};
-            padding: 20px 16px;
+        #badges {
+            text-align: center;
+        }
+        #profile-content, #user-banner {
             border: 0;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
         }
-        .profile-buttons > a {
-            margin-right: 5px;
-        }
-        #profile-content {
-            background-color:#fff;
-            border: 1px solid rgb(231,231,231);
-            padding: 0;
-            margin-top: -30px;
-            border-top: 0;
-        }
+    }
+    .label-nsfw {
+        color: #d9534f;
+        background-color: #333;
+    }
+    .label-verified {
+        background-color: #00bf8f;
+    }
 </style>
-<div class="hidden">{{.}}</div>
 <div class="container" id="profile-content">
-      <div id="user-banner"></div>
-    <div class="profile-content">
-        <img src={{AvatarUrl}} height="200" class="img-thumbnail user-avatar" style="margin-top: -100px;float: left;">
-        <span class="user-name">{{Username}}</span>
-        <div class="col-md-4 profile-text">
-            {{Description}}
-            <br>
-            <i>{{Location}}</i>
-            <div class="profile-buttons">
-                <a href="//vine.co/u/{{UserId}}" class="btn btn-default">
-                    Open in <i class="fa fa-vine"></i>
-                </a>
-                <a href="/x/{{UserId}}" class="btn btn-default">
-                    <i class="fa fa-download"></i> Download
-                </a>
+    <div id="user-banner"></div>
+    <div class="profile-content row">
+        <div class="col-md-6 col-sm-8">
+            <div class="col-md-5 col-sm-4 col-xs-6 col-xs-offset-3 col-sm-offset-0">
+                <img src="{{AvatarUrl}}" height="200" class="img-thumbnail user-avatar">
+            </div>
+            <div class="clearfix visible-xs-block"></div>
+            <div class="col-md-7 col-sm-7 col-xs-12 profile-text">
+                <div class="user-name">
+                    {{Username}}
+                </div>
+                <div id="badges">
+                    {{#Explicit}}
+                        <span class="label label-nsfw">NSFW</span>&nbsp;
+                    {{/Explicit}}
+                    {{#Verified}}
+                        <span class="label label-verified">&check; Verified</span>
+                    {{/Verified}}
+                </div>
+                <p>
+                    {{Description}}<br><i>{{Location}}</i>
+                </p>
+                <div class="profile-buttons">
+                    <a href="//vine.co/u/{{UserId}}" class="btn btn-default">Open in</a>
+                    <a href="/x/{{UserId}}" class="btn btn-default">Download</a>
+                </div>
             </div>
         </div>
-        <div style="padding-top: 15px;" class="col-md-3 col-md-offset-2">
+        <div style="padding-top: 15px;" class="col-md-3 col-md-offset-2 col-sm-4 col-sm-offset-0 col-xs-8 col-xs-offset-2">
             <div class="list-block">
                 <ul class="text-center legend">
                     <li style="width: 50%;">
                         <h3>
-                            <b class="formatInt" title="{{FollowerCount}} followers" data-format="0.0 a">
-                                {{FollowerCount}}
-                            </b>
+                            <b class="formatInt" title="{{FollowerCount}} followers" data-format="0.0 a">{{FollowerCount}}</b>
                         </h3>
                         Followers
                     </li>
                     <li style="width: 50%;">
                         <h3>
-                            <b class="formatInt" title="{{LoopCount}} loops" data-format="0 a">
-                                {{LoopCount}}
-                            </b>
+                            <b class="formatInt" title="{{LoopCount}} loops" data-format="0 a">{{LoopCount}}</b>
                         </h3>
                         Loops
                     </li>
                 </ul>
             </div>
-        </div>           
+        </div>
     </div>
     <br>
     <span class="col-md-12 text-center lead">Jump to section:</span>
     <div id="profile-nav">
-        <ul class="nav">
-            <div class="profile-section-nav btn-group btn-group-lg btn-group-justified" role="group">
-                <a href="#loops" role="navigation" class="btn btn-default">Loops</a>
-                <a href="#followers" role="navigation" class="btn btn-default">Followers</a>
-                <a href="#posts" role="navigation" class="btn btn-default">Posts</a>
-                <a href="#following" role="navigation" class="btn btn-default">Following</a>
-                <a href="#likes" role="navigation" class="btn btn-default">Likes</a>
-                <a href="#misc" role="navigation" class="btn btn-default">Other</a>
-            </div>
+        <ul class="row">
+            <li class="col-sm-2 col-xs-4">
+                <a href="#loops" role="navigation" class="btn">Loops</a>
+            </li>
+            <li class="col-sm-2 col-xs-4">
+                <a href="#followers" role="navigation" class="btn">Followers</a>
+            </li>
+            <li class="col-sm-2 col-xs-4">
+                <a href="#posts" role="navigation" class="btn">Posts</a>
+            </li>
+            <li class="col-sm-2 col-xs-4">
+                <a href="#following" role="navigation" class="btn">Following</a>
+            </li>
+            <li class="col-sm-2 col-xs-4">
+                <a href="#likes" role="navigation" class="btn">Likes</a>
+            </li>
+            <li class="col-sm-2 col-xs-4">
+                <a href="#misc" role="navigation" class="btn">Other</a>
+            </li>
         </ul>
     </div>
     <div class="col-md-12">
@@ -141,16 +193,22 @@
         <div class="col-md-6">
             <table class="table table-bordered" id="meta-location">
                 <caption>Previous Locations</caption>
-                <th>Location</th><th>Modified Date</th>
+                <tr>
+                    <th>Location</th>
+                    <th>Modified Date</th>
+                </tr>
                 <tr class="no-data-msg">
                     <td colspan="2" class="text-center">No Previous Data Available</td>
-                </tr>
+              </tr>
             </table>
         </div>
         <div class="col-md-6">
             <table class="table table-bordered" id="meta-username">
                 <caption>Previous Usernames</caption>
-                <th>Username</th><th>Modified Date</th>
+                <tr>
+                    <th>Username</th>
+                    <th>Modified Date</th>
+                </tr>
                 <tr class="no-data-msg">
                     <td colspan="2" class="text-center">No Previous Data Available</td>
                 </tr>
@@ -159,15 +217,16 @@
         <div class="col-md-12">
             <table class="table table-bordered" id="meta-description">
                 <caption>Previous Descriptions</caption>
-                <th>Description</th><th>Modified Date</th>
+                <tr>
+                    <th>Description</th>
+                    <th>Modified Date</th>
+                </tr>
                 <tr class="no-data-msg">
                     <td colspan="2" class="text-center">No Previous Data Available</td>
                 </tr>
             </table>
         </div>
-        <div class="col-md-12 text-center lead">
-            more data to come...
-        </div>
+        <div class="col-md-12 text-center lead"> more data to come... </div>
     </div>
 </div>
 <script type="text/javascript">
@@ -466,5 +525,17 @@
         if ('{{ProfileBackground}}'.length != 0) {
             $('#head-hero, #user-banner').geopattern('{{Username}}', {color: '#{{ProfileBackground}}'});
         }
+
+        function fitText() {
+            if($(window).width() < 768 && typeof jQuery.fitText == "undefined") {
+                var url = "//cdnjs.cloudflare.com/ajax/libs/FitText.js/1.1/jquery.fittext.min.js";
+                $.getScript((window.location.protocol == "https:" ? "https:" : "http:") + url, function(){
+                  $(".user-name").fitText();
+                });
+            }
+        }
+
+        fitText();
+        $(window).resize(fitText);
     });
 </script>
