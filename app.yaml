@@ -28,6 +28,7 @@ handlers:
   
 inbound_services:
 - warmup
+- mail
 
 admin_console:
   pages:
