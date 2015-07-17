@@ -44,6 +44,7 @@ func (e *Email) LoadTemplate(id int, data map[string]string) {
 		templates = map[int][]string{
 			0: []string{"confirm.email", "Email Confirmation"},
 			1: []string{"report.email", "Your weekly Vine user report."},
+			2: []string{"shareuser.email", "User Submission Confirmation"},
 		}
 		dir = path.Join(os.Getenv("PWD"), "templates")
 	)

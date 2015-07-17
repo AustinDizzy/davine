@@ -1,0 +1,16 @@
+Hello,
+
+
+{{#stored}}
+    The user you submitted ({{id}}) has already been crawled by our service.
+{{/stored}}
+{{^stored}}
+    This is an email confirming your submission of user {{id}} to our Vine database.
+{{/stored}}
+
+    View your profile now on Davine: https://www.davine.co/u/{{id}}
+    
+Have a wonderful day!
+
+Davine
+Plant your vines, we'll watch them grow.
