@@ -253,12 +253,12 @@
     }
 
     for(var i = 0; !(userData == null) && i < userData.length; i++) {
-        chartData.posts.push([userData[i].Recorded, userData[i].Posts]);
-        chartData.revines.push([userData[i].Recorded, userData[i].Revines]);
-        chartData.followers.push([userData[i].Recorded, userData[i].Followers]);
-        chartData.following.push([userData[i].Recorded, userData[i].Following]);
-        chartData.loops.push([userData[i].Recorded, userData[i].Loops]);
-        chartData.likes.push([userData[i].Recorded, userData[i].Likes]);
+        chartData.posts.push([Date.parse(userData[i].Recorded), userData[i].Posts]);
+        chartData.revines.push([Date.parse(userData[i].Recorded), userData[i].Revines]);
+        chartData.followers.push([Date.parse(userData[i].Recorded), userData[i].Followers]);
+        chartData.following.push([Date.parse(userData[i].Recorded), userData[i].Following]);
+        chartData.loops.push([Date.parse(userData[i].Recorded), userData[i].Loops]);
+        chartData.likes.push([Date.parse(userData[i].Recorded), userData[i].Likes]);
     }
     $(function(){
        $('#postsChartContainer').highcharts({
