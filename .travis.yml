@@ -18,6 +18,7 @@ install:
     - ./go_appengine/goapp get google.golang.org/cloud/storage
     - ./go_appengine/goapp get github.com/stathat/go
     - ./go_appengine/goapp get github.com/ronoaldo/aetools
+    - ./go_appengine/goapp get github.com/jhillyerd/go.enmime
 
 script:
     - ./go_appengine/goapp build ./davine/app/*
