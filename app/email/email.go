@@ -5,6 +5,9 @@ import (
 	"appengine"
 	"appengine/mail"
 	"github.com/hoisie/mustache"
+	"github.com/jhillyerd/go.enmime"
+	"io"
+	netmail "net/mail"
 	"os"
 	"path"
 )
@@ -15,6 +18,22 @@ const (
 	ConfirmEmail = iota
 	EmailReport  = iota
 )
+
+type IncomingEmail struct {
+	Header netmail.Header
+	Body   *enmime.MIMEBody
+}
+
+func Read(r io.Reader) (IncomingEmail, error) {
+	var incomingMsg IncomingEmail
+	msg, err := netmail.ReadMessage(r)
+	if err != nil {
+		return incomingMsg, err
+	}
+	incomingMsg = IncomingEmail{Header: msg.Header}
+	incomingMsg.Body, err = enmime.ParseMIMEBody(msg)
+	return incomingMsg, err
+}
 
 func New() *Email {
 	return new(Email)
