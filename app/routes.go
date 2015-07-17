@@ -471,6 +471,47 @@ func StartupHandler(w http.ResponseWriter, r *http.Request) {
 	PostCount(c, "new instance", 1)
 }
 
+func EmailShareHandler(w http.ResponseWriter, r *http.Request) {
+	c := appengine.NewContext(r)
+	if msg, err := email.Read(r.Body); err != nil {
+		c.Errorf("err reading email: %v", err)
+	} else {
+		switch strings.Split(msg.Header.Get("To"), "@")[0] {
+		case "share":
+			regex := regexp.MustCompile(`(?:vine.co/u/)([0-9]+)`)
+			matches := regex.FindAllStringSubmatch(msg.Body.Text, 1)
+			if len(matches) > 0 {
+				client := urlfetch.Client(c)
+				url := fmt.Sprintf("http://%s/user?id=%s", appengine.DefaultVersionHostname(c), matches[0][1])
+				req, _ := http.NewRequest("POST", url, nil)
+				resp, err := client.Do(req)
+				if err != nil {
+					c.Errorf("got err: %v", err)
+				} else {
+					body, _ := ioutil.ReadAll(resp.Body)
+					var data map[string]bool
+					json.Unmarshal(body, &data)
+					if data["exists"] {
+						msg := email.New()
+						if data["stored"] {
+							msg.LoadTemplate(2, map[string]string{
+								"stored": strconv.FormatBool(data["stored"]),
+								"id":     matches[0][1],
+							})
+						} else {
+							msg.LoadTemplate(2, map[string]string{
+								"id": matches[0][1],
+							})
+						}
+						msg.Send(c)
+						c.Infof("got user: %v", matches[0][1])
+					}
+				}
+			}
+		}
+	}
+}
+
 func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	vineApi := VineRequest{c}
