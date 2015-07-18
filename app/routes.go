@@ -504,7 +504,7 @@ func EmailShareHandler(w http.ResponseWriter, r *http.Request) {
 							})
 						}
 						msg.Send(c)
-						c.Infof("got user: %v", matches[0][1])
+						PostCount(c, "shared via email", 1)
 					}
 				}
 			}
