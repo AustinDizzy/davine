@@ -1,0 +1,535 @@
+<html>
+    
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Your weekly Vine user report.</title>
+        <style type="text/css">
+            @import url(http://fonts.googleapis.com/css?family=Lily+Script+One);
+            a.header-text {
+                font-family:"Lily Script One", cursive;
+                font-size: 24px;
+                text-decoration: none;
+                color: #00bf8f;
+            }
+            .body-link {
+                font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
+                font-weight: bold;
+                color: #333;
+                text-decoration: none;
+            }
+            span.num {
+                font-weight: bold;
+            }
+            span.num[num^="-"] {
+                color: #B22222;
+            }
+            span.num[num^="+"] {
+                color: #228B22;
+            }
+            /* Client-specific Styles */
+            #outlook a {
+                padding: 0;
+            }
+            /* Force Outlook to provide a "view in browser" menu link. */
+            body {
+                width: 100% !important;
+                -webkit-text-size-adjust: 100%;
+                -ms-text-size-adjust: 100%;
+                margin: 0;
+                padding: 0;
+                background-color: #f0f0f0;
+                font-family: Helvetica, arial, sans-serif;
+            }
+            /* Prevent Webkit and Windows Mobile platforms from changing default font sizes, while not breaking desktop design. */
+            .ExternalClass {
+                width: 100%;
+            }
+            /* Force Hotmail to display emails at full width */
+            .ExternalClass, .ExternalClass p, .ExternalClass span, .ExternalClass font, .ExternalClass td, .ExternalClass div {
+                line-height: 100%;
+            }
+            /* Force Hotmail to display normal line spacing.*/
+            #backgroundTable {
+                margin: 0;
+                padding: 0;
+                width: 100% !important;
+                line-height: 100% !important;
+            }
+            img {
+                outline: none;
+                text-decoration: none;
+                border: none;
+                -ms-interpolation-mode: bicubic;
+            }
+            a img {
+                border: none;
+            }
+            .image_fix {
+                display: block;
+            }
+            p {
+                margin: 0px 0px !important;
+            }
+            table td {
+                border-collapse: collapse;
+            }
+            table {
+                border-collapse: collapse;
+                mso-table-lspace: 0pt;
+                mso-table-rspace: 0pt;
+            }
+            a {
+                color: #0a8cce;
+                text-decoration: none;
+                text-decoration: none !important;
+            }
+            /*STYLES*/
+            table[class=full] {
+                width: 100%;
+                clear: both;
+            }
+            /*IPAD STYLES*/
+            @media only screen and (max-width: 640px) {
+                a[href^="tel"], a[href^="sms"] {
+                    text-decoration: none;
+                    color: #0a8cce;
+                    pointer-events: none;
+                    cursor: default;
+                }
+                .mobile_link a[href^="tel"], .mobile_link a[href^="sms"] {
+                    text-decoration: default;
+                    color: #0a8cce !important;
+                    pointer-events: auto;
+                    cursor: default;
+                }
+                table[class=devicewidth] {
+                    width: 440px!important;
+                    text-align: center!important;
+                }
+                table[class=devicewidthinner] {
+                    width: 420px!important;
+                    text-align: center!important;
+                }
+                img[class=banner] {
+                    width: 440px!important;
+                    height: 220px!important;
+                }
+            }
+            /*IPHONE STYLES*/
+            @media only screen and (max-width: 480px) {
+                a[href^="tel"], a[href^="sms"] {
+                    text-decoration: none;
+                    color: #0a8cce;
+                    pointer-events: none;
+                    cursor: default;
+                }
+                .mobile_link a[href^="tel"], .mobile_link a[href^="sms"] {
+                    text-decoration: default;
+                    color: #0a8cce !important;
+                    pointer-events: auto;
+                    cursor: default;
+                }
+                table[class=devicewidth] {
+                    width: 280px!important;
+                    text-align: center!important;
+                }
+                table[class=devicewidthinner] {
+                    width: 260px!important;
+                    text-align: center!important;
+                }
+            }
+        </style>
+    </head>
+    
+    <body>
+        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+            <tbody>
+                <tr>
+                    <td>
+                        <div class="innerbg"></div>
+                        <table width="600" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+                            <tbody>
+                                <tr>
+                                    <td width="100%">
+                                        <table width="600" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <table width="100" align="left" border="0" cellpadding="0" cellspacing="0">
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td width="100%" height="15" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;"></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td align="left" valign="middle"> <a href="https://www.davine.co" class="header-text">Davine</a>
+
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+            <tbody>
+                <tr>
+                    <td>
+                        <div class="innerbg"></div>
+                        <table width="600" bgcolor="ffffff" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+                            <tbody>
+                                <tr>
+                                    <td width="100%">
+                                        <table width="600" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+                                            <tbody>
+                                                <tr>
+                                                    <td height="20" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <table width="560" align="center" cellpadding="0" cellspacing="0" border="0" class="devicewidthinner">
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td style="font-family: Helvetica, arial, sans-serif; font-size: 30px; color: #333333; text-align:center; line-height: 30px;">
+                                                                        <p>Hello, {{user.Username}}.</p>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td width="100%" height="20" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;"></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td style="font-family: Helvetica, arial, sans-serif; font-size: 16px; color: #666666; text-align:center; line-height: 30px;">
+                                                                        <p>New profile activity this week ({{dateStart}} through {{dateEnd}}) on Vine.</p>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table width="100%" bgcolor="#ffffff" cellpadding="0" cellspacing="0" border="0">
+            <tbody>
+                <tr>
+                    <td>
+                        <div class="innerbg"></div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+            <tbody>
+                <tr>
+                    <td>
+                        <div class="innerbg"></div>
+                        <table width="600" bgcolor="ffffff" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+                            <tbody>
+                                <tr>
+                                    <td width="100%">
+                                        <table width="600" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <table width="186" align="left" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td>
+                                                                        <table width="186" align="center" border="0" cellpadding="0" cellspacing="0" class="devicewidthinner">
+                                                                            <tbody>
+                                                                                <tr>
+                                                                                    <td width="100%" height="15" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;"></td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td style="font-family: Helvetica, arial, sans-serif; font-size: 18px; color: #666666; text-align:center; line-height: 24px;">
+                                                                                        <p>Loops</p>
+                                                                                    </td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td width="100%" height="15" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;"></td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td style="font-family: Helvetica, arial, sans-serif; font-size: 14px; color: #889098; text-align:center; line-height: 24px;"> <span class="num" num="{{{newLoops}}}">{{newLoops}}</span>
+
+                                                                                    </td>
+                                                                                </tr>
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                        <table width="20" align="left" border="0" cellpadding="0" cellspacing="0" class="removeMobile">
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td width="100%" height="15" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;"></td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                        <table width="186" align="left" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td>
+                                                                        <table width="186" align="center" border="0" cellpadding="0" cellspacing="0" class="devicewidthinner">
+                                                                            <tbody>
+                                                                                <tr>
+                                                                                    <td width="100%" height="15" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;"></td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td style="font-family: Helvetica, arial, sans-serif; font-size: 18px; color: #666666; text-align:center; line-height: 24px;">
+                                                                                        <p>Followers</p>
+                                                                                    </td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td width="100%" height="15" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;"></td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td style="font-family: Helvetica, arial, sans-serif; font-size: 14px; color: #889098; text-align:center; line-height: 24px;"> <span class="num" num="{{{newFollowers}}}">{{newFollowers}}</span>
+
+                                                                                    </td>
+                                                                                </tr>
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                        <table width="1" align="left" border="0" cellpadding="0" cellspacing="0" class="removeMobile">
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td width="100%" height="15" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;"></td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                        <table width="186" align="right" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td>
+                                                                        <table width="186" align="center" border="0" cellpadding="0" cellspacing="0" class="devicewidthinner">
+                                                                            <tbody>
+                                                                                <tr>
+                                                                                    <td width="100%" height="15" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;"></td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td style="font-family: Helvetica, arial, sans-serif; font-size: 18px; color: #666666; text-align:center; line-height: 24px;">
+                                                                                        <p>Posts</p>
+                                                                                    </td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td width="100%" height="15" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;"></td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td style="font-family: Helvetica, arial, sans-serif; font-size: 14px; color: #889098; text-align:center; line-height: 24px;"> <span class="num" num="{{{newPosts}}}">0</span>
+
+                                                                                    </td>
+                                                                                </tr>
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+            <tbody>
+                <tr>
+                    <div class="innerbg"></div>
+                    <table bgcolor="ffffff" width="600" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+                        <tbody>
+                            <tr>
+                                <td width="100%" height="20"></td>
+                            </tr>
+                            <tr>
+                                <td align="center">
+                                    <img width="500" border="0" height="250" alt="" style="display:block; border:none; outline:none; text-decoration:none;" src="data:image/png;base64,{{{chartData}}}" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="100%" height="20"></td>
+                            </tr>
+                            <tr>
+                                <td align="center"> <a href="https://www.davine.co/u/{{user.UserId}}" class="body-link">More stats on Davine &rarr;</a>
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center" height="30" style="font-size:1px; line-height:1px;"></td>
+                            </tr>
+                            <tr>
+                                <td width="550" align="center" height="1" bgcolor="#d1d1d1" style="font-size:1px; line-height:1px;"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </tr>
+            </tbody>
+        </table>
+        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+            <tbody>
+                <tr>
+                    <div class="innerbg"></div>
+                    <table width="600" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+                        <tbody>
+                            <tr>
+                                <td width="100%">
+                                    <table bgcolor="#ffffff" width="600" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <table width="290" align="left" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
+                                                        <tbody>
+                                                            <tr>
+                                                                <td width="100%" height="20"></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <table width="290" align="left" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
+                                                                        <tbody>
+                                                                            <tr>
+                                                                                <td>
+                                                                                    <table width="270" align="center" border="0" cellpadding="0" cellspacing="0" class="devicewidthinner">
+                                                                                        <tbody>
+                                                                                            <tr>
+                                                                                                <td width="100%" height="20"></td>
+                                                                                            </tr>
+                                                                                            <tr>
+                                                                                                <td style="font-family: Helvetica, arial, sans-serif; font-size: 18px; color: #333333; line-height:24px;"> <b>
+                                                    Profile as of {{dateEnd}}:
+                                                  </b>
+
+                                                                                                </td>
+                                                                                            </tr>
+                                                                                            <tr>
+                                                                                                <td width="100%" height="20"></td>
+                                                                                            </tr>
+                                                                                            <tr>
+                                                                                                <td style="font-size: 14px; line-height:24px;">
+                                                                                                    <ul>
+                                                                                                        <li><b>User ID:</b> {{user.UserId}}</li>{{#user.Vanity}}
+                                                                                                        <li><b>Vanity:</b> {{user.Vanity}}</li>{{/user.Vanity}}
+                                                                                                        <li><b>Username:</b> {{user.Username}}y</li>
+                                                                                                        <li><b>Description:</b> {{user.Description}}</li>
+                                                                                                        <li><b>Location:</b> {{user.Location}}</li>
+                                                                                                        <li><b>Loops:</b> {{loops}}</li>
+                                                                                                        <li><b>Followers:</b> {{followers}}</li>
+                                                                                                        <li><b>Following:</b> {{following}}</li>
+                                                                                                        <li><b>Posts:</b> {{posts}} (w/ {{revines}} revines)</li>
+                                                                                                    </ul>
+                                                                                                </td>
+                                                                                            </tr>
+                                                                                        </tbody>
+                                                                                    </table>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                    <table width="290" align="right" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
+                                                        <tbody>
+                                                            <tr>
+                                                                <td width="100%" height="20"></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <table width="" align="center" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
+                                                                        <tbody>
+                                                                            <tr>
+                                                                                <td width="100%" height="20"></td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td>
+                                                                                    <img src="{{user.AvatarUrl}}" alt="{{user.Username}}'s avatar'" width="150" style="-ms-interpolation-mode: bicubic; border: none; outline: none; text-decoration: none;" />
+                                                                                </td>
+                                                                            </tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td width="100%" height="10"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+            <tbody>
+                <tr>
+                    <td>
+                        <div class="innerbg"></div>
+                        <table width="600" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+                            <tbody>
+                                <tr>
+                                    <td width="100%" height="20"></td>
+                                </tr>
+                                <tr>
+                                    <td width="100%">
+                                        <table width="600" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+                                            <tbody>
+                                                <tr>
+                                                    <td align="left" valign="middle" style="border-collapse: collapse; color: #888888; font-size: 12px;">
+                                                        <p style="margin: 0px 0px;">Davine is not endorsed, affiliated with, or a part of Vine Labs, Inc.</p>
+                                                        <p style="margin: 0px 0px;">Davine is an independent, open source, open data, and ad-free project.</p>
+                                                        <br/>
+                                                        <p style="margin: 0px 0px;">You are receiving this email because you opted in on our website. <a href="https://www.davine.co/sign-up?op=Unsubscribe&id={{{key}}}" style="color: #0a8cce; text-decoration: none;">Click to Unsubscribe.</a>
+                                                        </p>
+                                                        <br/>
+                                                        <p style="margin: 0px 0px;"><b>Davine</b> - Plant your vines, we'll watch them grow.</p> <a href="https://www.davine.co" style="color: #0a8cce; text-decoration: none;">www.davine.co</a>
+
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td width="100%" height="20" style="border-collapse: collapse;"></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </body>
+
+</html>
