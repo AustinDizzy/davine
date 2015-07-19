@@ -5,3 +5,6 @@ queue:
 - name: explore
   rate: 5/s
   bucket_size: 5
+- name: reports
+  rate: 5/s
+  bucket_size: 5

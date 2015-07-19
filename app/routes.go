@@ -14,6 +14,7 @@ import (
 	"encoding/gob"
 	"encoding/json"
 	"fmt"
+	"github.com/dustin/go-humanize"
 	"github.com/gorilla/mux"
 	"github.com/hoisie/mustache"
 	"io/ioutil"
@@ -456,6 +457,74 @@ func CronFetchHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(200)
 }
 
+func CronReportHandler(w http.ResponseWriter, r *http.Request) {
+	var (
+		id, _   = strconv.ParseInt(r.FormValue("id"), 10, 64)
+		c       = appengine.NewContext(r)
+		msg     = email.New()
+		db      = DB{c}
+		u, err  = db.GetUser(id)
+		appUser = new(AppUser)
+		key     = datastore.NewKey(c, "AppUser", r.FormValue("email"), 0, nil)
+	)
+
+	c.Infof("generating email for %s at %s", r.FormValue("id"), r.FormValue("email"))
+
+	if err != nil {
+		c.Errorf("error sending user report for %s: %v", r.FormValue("id"), err)
+		return
+	}
+
+	if err = datastore.Get(c, key, &appUser); err != nil && !(err == datastore.ErrNoSuchEntity && user.IsAdmin(c)) {
+		c.Errorf("error reading appUser for %s: %v", r.FormValue("email"), err)
+		return
+	}
+
+	mon := []string{"Jan", "Feb", "Mar", "Apr", "May", "June", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"}
+	d := u.UserData[len(u.UserData)-7:]
+
+	chart, err := GenSummaryChart(c, u)
+	data := map[string]interface{}{
+		"dateStart":    fmt.Sprintf("%s. %d", mon[d[0].Recorded.Month()], d[0].Recorded.Day()),
+		"dateEnd":      fmt.Sprintf("%s. %d", mon[d[len(d)-1].Recorded.Month()], d[len(d)-1].Recorded.Day()),
+		"newPosts":     humanize.Comma(d[len(d)-1].Posts - d[0].Posts),
+		"newLoops":     humanize.Comma(d[len(d)-1].Loops - d[0].Loops),
+		"newFollowers": humanize.Comma(d[len(d)-1].Followers - d[0].Followers),
+		"loops":        humanize.Comma(u.LoopCount),
+		"followers":    humanize.Comma(u.FollowerCount),
+		"posts":        humanize.Comma(u.PostCount),
+		"following":    humanize.Comma(u.FollowingCount),
+		"revines":      humanize.Comma(u.RevineCount),
+		"chartData":    chart,
+		"user":         u,
+	}
+
+	if len(appUser.AuthKey) > 0 {
+		data["key"] = strings.Split(appUser.AuthKey, ";")[1]
+	}
+
+	for _, v := range []string{"newPosts", "newLoops", "newFollowers"} {
+		if !strings.Contains(data[v].(string), "-") {
+			data[v] = "+" + data[v].(string)
+		}
+	}
+
+	msg.LoadTemplate(1, data)
+	msg.To = []string{r.FormValue("email")}
+	msg.Send(c)
+
+	t := taskqueue.NewPOSTTask("/cron/report", map[string][]string{
+		"id":    []string{r.FormValue("id")},
+		"email": []string{r.FormValue("email")},
+	})
+
+	t.Delay = 7 * 24 * time.Hour
+
+	if _, err := taskqueue.Add(c, t, "reports"); err != nil {
+		c.Infof("error queuing email report for %s: %v", r.FormValue("email"), err)
+	}
+}
+
 func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
 	dir := path.Join(os.Getenv("PWD"), "templates")
 	notFound := path.Join(dir, "404.html")
@@ -529,13 +598,21 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 						c.Errorf("error saving activated user %s: %v", r.FormValue("email"), err)
 						return
 					} else {
-						fmt.Fprintf(w, "Your email subscription is now activated. You may close this page.")
-						return
+						t := taskqueue.NewPOSTTask("/cron/report", map[string][]string{
+							"id":    []string{appUser.UserIdStr},
+							"email": []string{r.FormValue("email")},
+						})
+
+						if _, err := taskqueue.Add(c, t, "reports"); err != nil {
+							c.Errorf("error tasking user %s report: %v", appUser.UserIdStr, err)
+							fmt.Fprintf(w, "There was a problem confirming your subscription. Please try again and contact us if this problem persists.")
+						} else {
+							fmt.Fprintf(w, "Your email subscription is now activated. You may close this page.")
+						}
 					}
 				} else {
 					c.Infof("authKey: %s\nsuppliedKey: %s", strings.Split(appUser.AuthKey, ";")[1], r.FormValue("key"))
 					http.Error(w, "The supplied key did not match with our records.", http.StatusBadRequest)
-					return
 				}
 			}
 		} else {
