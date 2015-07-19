@@ -29,7 +29,7 @@ func init() {
 
 	router.HandleFunc("/_ah/start", StartupHandler).Methods("GET")
 	router.HandleFunc("/_ah/warmup", StartupHandler).Methods("GET")
-	router.HandleFunc("/_ah/mail/{email}", EmailShareHandler).Methods("POST")
+	router.HandleFunc("/_ah/mail/{email}", EmailHandler).Methods("POST")
 
 	http.Handle("/", router)
 }

@@ -540,7 +540,7 @@ func StartupHandler(w http.ResponseWriter, r *http.Request) {
 	PostCount(c, "new instance", 1)
 }
 
-func EmailShareHandler(w http.ResponseWriter, r *http.Request) {
+func EmailHandler(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	if msg, err := email.Read(r.Body); err != nil {
 		c.Errorf("err reading email: %v", err)
