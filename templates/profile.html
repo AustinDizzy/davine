@@ -94,6 +94,7 @@
         background-color: #00bf8f;
     }
 </style>
+<div id="profile-msg" class="container"></div>
 <div class="container" id="profile-content">
     <div id="user-banner"></div>
     <div class="profile-content row">
@@ -260,6 +261,18 @@
         chartData.loops.push([Date.parse(userData[i].Recorded), userData[i].Loops]);
         chartData.likes.push([Date.parse(userData[i].Recorded), userData[i].Likes]);
     }
+
+    if(chartData.loops.length <= 1) {
+        showMessage("info", "<b>Heads Up!</b> We've only recently discovered this user. Davine fetches data once every 24 hours. Come back later and we promise this page will look better, with more data!");
+    }
+
+    function showMessage(type, msg) {
+      var elm = $('<p class="alert alert-dismissable"></p>');
+      elm.addClass('alert-' + type);
+      elm.html('<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + msg);
+      $('#profile-msg').append(elm);
+    }
+
     $(function(){
        $('#postsChartContainer').highcharts({
             chart: {

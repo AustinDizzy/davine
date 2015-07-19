@@ -171,14 +171,8 @@ $(function() {
         );
         if (match) {
             $.post("/user?id=" + match[1], function(data) {
-                if (data.stored) {
+                if (data.stored || data.queued) {
                     document.location = "/u/" + match[1];
-                } else if (data.queued) {
-                    $("#user-submit").fadeOut("slow", function(){
-                        $(".message").html("We haven't seen that user yet, please visit <a href='/u/"+match[1]+"'>this page</a> at a later time.");
-                        $(this).replaceWith($(".message"));
-                        $(".message").fadeIn();
-                    });
                 } else if (!data.exists) {
                     alert("Sorry, the user " + match[1] + " doesn't seem to exist on Vine. Please try again.");
                 } else if (!data.stored && data.exists) {
