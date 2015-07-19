@@ -121,10 +121,10 @@
                             </div>
                             <div class="modal-body">
                                 <div class="container-fluid">
-                                    <form class="text-center">
+                                    <form class="text-center no-ajax">
                                         <div class="form-group">
                                             <label>User ID</label>
-                                            <input type="text" class="form-control" name="user" placeholder="User ID (ex: 907787504051171328)">
+                                            <input type="text" class="form-control" name="id" placeholder="User ID (ex: 907787504051171328)">
                                         </div>
                                         <div class="form-group">
                                             <label>Email</label>
@@ -237,6 +237,16 @@
                contentType: false,
                processData: false
            });
+        });
+        $('#sendReport form').on('submit', function(e){
+            e.preventDefault();
+            var formData = {};
+            $.each($(this).serializeArray(), function(_, kv) {
+                formData[kv.name] = kv.value;
+            });
+            $.post("/cron/report", formData, function(d){
+                alert("Success. Check app logs for more details, if necessary.");
+            });
         });
     });
 </script>
