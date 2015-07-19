@@ -1,0 +1,69 @@
+{
+    chart: {
+        zoomType: 'xy'
+    },
+    title: {
+        text: false
+    },
+    xAxis: [{
+        categories: [{{{dates}}}],
+        crosshair: true
+    }],
+    yAxis: [{
+        title: {
+            text: 'new followers',
+            style: {
+                color: '#00bf8f'
+            }
+        },
+        labels: {
+            style: {
+                color: '#00bf8f'
+            }
+        },
+        opposite: true
+    }, {
+        title: {
+            text: 'new loops',
+            style: {
+                color: '#444'
+            }
+        },
+        labels: {
+            style: {
+                color: '#444'
+            }
+        }
+
+    }],
+    tooltip: {
+        shared: true
+    },
+    credits: {
+        text: "davine.co"  
+    },
+    series: [{
+        name: 'New Followers',
+        type: 'column',
+        yAxis: 0,
+        color: '#00bf8f',
+        data: [{{followers}}],
+        tooltip: {
+            valueSuffix: ' mm'
+        }
+
+    }, {
+        name: 'New Loops',
+        type: 'spline',
+        yAxis: 1,
+        color: '#444',
+        data: [{{loops}}],
+        marker: {
+            enabled: false
+        },
+        tooltip: {
+            valueSuffix: ' mb'
+        }
+
+    }]
+}
