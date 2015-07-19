@@ -19,6 +19,8 @@ install:
     - ./go_appengine/goapp get github.com/stathat/go
     - ./go_appengine/goapp get github.com/ronoaldo/aetools
     - ./go_appengine/goapp get github.com/jhillyerd/go.enmime
+    - ./go_appengine/goapp get github.com/dustin/go-humanize
+    - ./go_appengine/goapp get github.com/aymerick/douceur
 
 script:
     - ./go_appengine/goapp build ./davine/app/*
