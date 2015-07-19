@@ -121,15 +121,13 @@ $(function() {
     }
     doChunk();
     $('.formatInt').each(function(i) {
-        val = $('.formatInt')[i].innerText;
-        str = numeral(parseInt(val));
-        $('.formatInt')[i].innerText = str.format($(this).data(
-            "format"));
+        var elm = $($('.formatInt').get(i));
+        var val = elm.text();
+        var str = numeral(parseInt(val));
+        elm.text(str.format($(this).data("format")));
     });
     $('a[data-vanity][data-user]').each(function() {
-        var url = ($(this).attr('data-vanity') === '' ? $(this)
-            .attr('data-user') : $(this).attr('data-vanity')
-        );
+        var url = ($(this).attr('data-vanity') === '' ? $(this).attr('data-user') : $(this).attr('data-vanity'));
         $(this).attr('href', '/u/' + url);
     });
     if(!document.location.pathname.startsWith("/u/")) {
