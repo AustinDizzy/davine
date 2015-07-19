@@ -494,12 +494,12 @@ func EmailShareHandler(w http.ResponseWriter, r *http.Request) {
 					if data["exists"] {
 						msg := email.New()
 						if data["stored"] {
-							msg.LoadTemplate(2, map[string]string{
+							msg.LoadTemplate(2, map[string]interface{}{
 								"stored": strconv.FormatBool(data["stored"]),
 								"id":     matches[0][1],
 							})
 						} else {
-							msg.LoadTemplate(2, map[string]string{
+							msg.LoadTemplate(2, map[string]interface{}{
 								"id": matches[0][1],
 							})
 						}
@@ -595,7 +595,7 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 					authKey := strings.Split(appUser.AuthKey, ";")
 					if strings.Contains(u.Description, authKey[0]) {
 						data["success"] = true
-						emailData := map[string]string{
+						emailData := map[string]interface{}{
 							"username": u.Username,
 							"id":       u.UserIdStr,
 							"link":     fmt.Sprintf("https://%s/sign-up?type=activate&key=%s&email=%s", appengine.DefaultVersionHostname(c), authKey[1], r.FormValue("email")),

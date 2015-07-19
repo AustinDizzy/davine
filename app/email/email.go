@@ -4,6 +4,8 @@ import (
 	"app/config"
 	"appengine"
 	"appengine/mail"
+	"fmt"
+	"github.com/aymerick/douceur/inliner"
 	"github.com/hoisie/mustache"
 	"github.com/jhillyerd/go.enmime"
 	"io"
@@ -39,22 +41,31 @@ func New() *Email {
 	return new(Email)
 }
 
-func (e *Email) LoadTemplate(id int, data map[string]string) {
+func (e *Email) LoadTemplate(id int, data map[string]interface{}) {
 	var (
 		templates = map[int][]string{
 			0: []string{"confirm.email", "Email Confirmation"},
 			1: []string{"report.email", "Your weekly Vine user report."},
 			2: []string{"shareuser.email", "User Submission Confirmation"},
 		}
-		dir = path.Join(os.Getenv("PWD"), "templates")
+		dir  = path.Join(os.Getenv("PWD"), "templates")
+		body = mustache.RenderFile(path.Join(dir, templates[id][0]), data)
 	)
+
 	if id == 1 {
+		link := fmt.Sprintf("https://www.davine.co/sign-up?op=Unsubscribe&id=%s", data["key"])
 		e.Headers = map[string][]string{
-			"List-Unsubscribe": {data["unsubscribe"]},
+			"List-Unsubscribe": {link},
 		}
+		var err error
+		if e.HTMLBody, err = inliner.Inline(body); err != nil {
+			e.HTMLBody = body
+		}
+	} else {
+		e.HTMLBody = body
 	}
+
 	e.Subject = templates[id][1]
-	e.Body = mustache.RenderFile(path.Join(dir, templates[id][0]), data)
 }
 
 func (e Email) Send(c appengine.Context) error {
