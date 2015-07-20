@@ -180,3 +180,127 @@ $(function() {
         }
     });
 });
+
+$.fn.chartBG = function(opts){
+    return this.each(function(){
+        var elm = document.createElement("div"),
+            bgData = [],
+            defaultTypes = ["area", "areaspline", "line", "column", "spline", "scatter"],
+            chartType;
+        if(opts == null) opts = {};
+        if (Array.isArray(opts.type)) {
+            chartType = opts.type[Math.floor(Math.random() * opts.type.length)];
+        } else if(typeof opts.type == "string") {
+            chartType = opts.type;
+        } else if(opts.type == null) {
+            chartType = defaultTypes[Math.floor(Math.random() * defaultTypes.length)];
+        }
+
+        while (bgData.length != 2) {
+            var arr = [], n = (!isNaN(opts.n) ? opts.n : 7);
+            while (arr.length < n) {
+                var randomnumber = Math.ceil(Math.random() * (n*Math.E)), found = false;
+                for (var i = 0; i < arr.length; i++) {
+                    if (arr[i] == randomnumber) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) arr[arr.length] = randomnumber;
+            }
+            bgData.push(arr);
+        }
+        $(elm).highcharts({
+            chart: {
+                animation: false,
+                type: chartType,
+                backgroundColor: opts.bgColor || '#00bf8f',
+                events: {
+                    load: function() {
+                        this.yAxis[0].update({
+                            labels: {
+                                enabled: false
+                            },
+                            title: {
+                                text: null
+                            }
+                        });
+                    }
+                },
+                margin: [0,0,0,0],
+                spacing: [0, 0, 0, 0],
+                plotBorderWidth: 0
+            },
+            exporting: {
+                enabled: false
+            },
+            colors: opts.colors || ['#00E7AD', '#168E70'],
+            title: {
+                text: false
+            },
+            legend: {
+                enabled: false
+            },
+            xAxis: {
+                type: 'datetime',
+                gridLineWidth: 0,
+                labels: {
+                    enabled: false
+                },
+                tickLength: 0,
+                minPadding: 0,
+                maxPadding: 0
+            },
+            yAxis: {
+                lineWidth: 0,
+                minorGridLineWidth: 0,
+                lineColor: 'transparent',
+                gridLineColor: 'transparent',
+
+                labels: {
+                    enabled: false
+                },
+                minorTickLength: 0,
+                tickLength: 0
+            },
+            tooltip: {
+                enabled: false
+            },
+
+            credits: {
+                enabled: false
+            },
+            plotOptions: {
+                areaspline: {
+                    enableMouseTracking: false,
+                    fillOpacity: 0.5
+                }
+            },
+            series: [{
+                data: bgData[0]
+            }, {
+                data: bgData[1]
+            }]
+        });
+
+        var data = $(elm).highcharts().getSVG({
+            exporting: {
+                sourceWidth: opts.width || this.clientWidth,
+                sourceHeight: opts.height || this.clientHeight
+            }
+        }),
+        DOMURL = window.URL || window.webkitURL || window,
+        svg = new Blob([data], {
+            type: 'image/svg+xml;charset=utf-8'
+        }),
+        url = DOMURL.createObjectURL(svg);
+
+        if(this.tagName === 'IMG') {
+            $(this).attr('src', url);
+        } else {
+            $(this).css({
+                'background-image': 'url(' + url + ')'
+            });
+        }
+    });
+}
