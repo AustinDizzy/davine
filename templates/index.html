@@ -1,8 +1,45 @@
 <div class="container">
-    <div class="content">
-        <div class="text-center" style="font-family:'Roboto'">
-             <h3>Blog: <a href="http://blog.davine.co">What is Davine?</a></h3>
+    <div id="carousel-banner" class="carousel slide" data-ride="carousel" data-interval="15000">
+      <ol class="carousel-indicators">
+        <li data-target="#carousel-banner" data-slide-to="0" class="active"></li>
+        <li data-target="#carousel-banner" data-slide-to="1"></li>
+      </ol>
+      <div class="carousel-inner" role="listbox">
+        <div class="item active jumbotron chart-hero">
+          <div class="container">
+            <h3>Sign up for a free weekly digest of your Vine profile's growth.</h3>
+            <h5>Stay up to date on your profile's growth.</h5>
+            <a href="/sign-up" class="btn btn-default">Learn More</a>
+          </div>
         </div>
+        <div class="item text-center jumbotron chart-hero">
+          <div class="container">
+            <h3>Interested in custom reports, more detailed information, post-by-post analytics, and more?</h2>
+            <h5>Sign up to stay up to date and get access first.</h5>
+            <form id="email-submit">
+                <div class="input-group" style="max-width: 300px;margin: 0 auto;">
+                  <input type="email" name="email" class="form-control" placeholder="you@domain.com">
+                  <input type="hidden" name="type" value="enterprise">
+                  <span class="input-group-btn">
+                    <button class="btn btn-default" type="button" style="border-left:0;background-color:#fff !important;">
+                        <i class="fa fa-angle-double-right"></i>
+                    </button>
+                  </span>
+                </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <a class="left carousel-control" href="#carousel-banner" role="button" data-slide="prev">
+        <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+        <span class="sr-only">Previous</span>
+      </a>
+      <a class="right carousel-control" href="#carousel-banner" role="button" data-slide="next">
+        <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+        <span class="sr-only">Next</span>
+      </a>
+    </div>
+    <div class="content">
         <div class="row">
             <div class="col-md-8 col-sm-8">
                 <div class="page-header">
@@ -144,119 +181,38 @@
                     </table>
                 </div>
             </div>
-            <div class="col-md-4 col-sm-6" id="report-block">
-                <div class="well text-center" style="color:#000bf8f">
-                    <div class="hidden" id="graphbg-cont"></div>
-                        <a href="/sign-up">
-                            <h2>Sign up for a free weekly digest of your Vine profile's growth.</h2>
-                            Learn More
-                        </a>
+            <div class="col-md-4 col-sm-6">
+               <div class="page-header">
+                     <h2>At a Glance</h2>
                 </div>
+                <ul>
+                    <li><b>Users Discovered:</b></li>
+                    <li><b>Verified Viners:</b></li>
+                    <li><b>New Users (in 24/hrs):</b></li>
+                 </ul>
             </div>
         </div>
     </div>
 </div>
 <script defer type="text/javascript">
-    var bgData = [];
-    while (bgData.length != 2) {
-        var arr = []
-        while (arr.length < 7) {
-            var randomnumber = Math.ceil(Math.random() * 15),
-                found = false;
-            for (var i = 0; i < arr.length; i++) {
-                if (arr[i] == randomnumber) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) arr[arr.length] = randomnumber;
-        }
-        bgData.push(arr);
-    }
     $(function() {
-        $('#graphbg-cont').highcharts({
-            chart: {
-                animation: false,
-                type: 'areaspline',
-                backgroundColor: '#00bf8f',
-                events: {
-                    load: function() {
-                        this.yAxis[0].update({
-                            labels: {
-                                enabled: false
-                            },
-                            title: {
-                                text: null
-                            }
-                        });
-                    }
-                },
-                margin: 0,
-                spacing: [0, 0, 0, 0]
-            },
-            exporting: {
-                enabled: false
-            },
-            colors: ['#00E7AD', '#168E70'],
-            title: {
-                text: false
-            },
-            legend: {
-                enabled: false
-            },
-            xAxis: {
-                labels: {
-                    enabled: false
-                },
-                tickLength: 0
-            },
-            yAxis: {
-                lineWidth: 0,
-                minorGridLineWidth: 0,
-                lineColor: 'transparent',
-                gridLineColor: 'transparent',
+        $('.chart-hero').chartBG({
+            width: $('.chart-hero:nth(0)').get(0).clientWidth,
+            height: 250,
+            n: 15,
+            type: ["area", "areaspline", "line", "spline"]
+        }).css({'border-radius': '6px 6px 0px 0px'});
 
-                labels: {
-                    enabled: false
-                },
-                minorTickLength: 0,
-                tickLength: 0
-            },
-            tooltip: {
-                enabled: false
-            },
+        $("#email-submit").submit(function(e){
+            e.preventDefault();
+            var formData = {};
+            $.each($(this).serializeArray(), function(_, kv) {
+                formData[kv.name] = kv.value;
+            });
 
-            credits: {
-                enabled: false
-            },
-            plotOptions: {
-                areaspline: {
-                    enableMouseTracking: false,
-                    fillOpacity: 0.5
-                }
-            },
-            series: [{
-                data: bgData[0]
-            }, {
-                data: bgData[1]
-            }]
-        })
-        var data = $("#graphbg-cont").highcharts().getSVG({
-            exporting: {
-                sourceWidth: $('#report-block .well').get(0).clientWidth,
-                sourceHeight: $('#report-block .well').get(0).clientHeight
-            }
-        });
-        $("#graphbg-cont").remove();
-        var DOMURL = window.URL || window.webkitURL || window;
-
-        var svg = new Blob([data], {
-            type: 'image/svg+xml;charset=utf-8'
-        });
-        var url = DOMURL.createObjectURL(svg);
-
-        $('#report-block .well').css({
-            'background-image': 'url(' + url + ')'
+            $.post("/sign-up", formData, function(data){
+                $("#email-submit").html("<span>Thanks! We'll be in touch.</span>");
+            });
         });
     });
 </script>
