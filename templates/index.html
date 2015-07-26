@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container" id="page-container">
     <div id="carousel-banner" class="carousel slide" data-ride="carousel" data-interval="15000">
       <ol class="carousel-indicators">
         <li data-target="#carousel-banner" data-slide-to="0" class="active"></li>
@@ -201,7 +201,7 @@
             height: 250,
             n: 15,
             type: ["area", "areaspline", "line", "spline"]
-        }).css({'border-radius': '6px 6px 0px 0px'});
+        });
 
         $("#email-submit").submit(function(e){
             e.preventDefault();
