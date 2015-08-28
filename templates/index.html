@@ -41,45 +41,37 @@
     </div>
     <div class="content">
         <div class="row">
-            <div class="col-md-8 col-sm-8">
-                <div class="page-header">
-                     <h2>Popular Now</h2>
-                </div>
-                <!--CARD START-->
-                {{#popusers}}
-                <div class="col-sm-6 col-md-4">
-                    <div class="panel panel-default panel-card">
-                        <div class="panel-heading" data-color="{{ProfileBackground}}" data-name="{{Username}}">
-                            <a class="btn btn-default btn-sm fa fa-vine" href="https://vine.co/u/{{UserIdStr}}" style="color: #{{ProfileBackground}}"></a>
-                        </div>
-                        <div class="panel-figure">
-                            <img class="img-responsive img-circle" src="{{AvatarUrl}}">
-                        </div>
-                        <div class="panel-body text-center">
-                             <h4 class="panel-header">
-                                <a href="/u/{{UserIdStr}}">{{Username}}</a>
-                            </h4>
-                            <small>{{Description}}</small>
-                        </div>
-                        <div class="panel-thumbnails">
-                            <div class="row">
-                                <div class="col-xs-6 text-center">
-                                    <span class="formatInt" data-format="0.0a">{{FollowerCount}}</span> 
-                                    <i class="fa fa-users"></i>
-                                </div>
-                                <div class="col-xs-6 text-center">
-                                    <span class="formatInt" data-format="0.0a">{{LoopCount}}</span>  
-                                    <i class="fa fa-eye"></i>
-                                </div>
-                            </div>
-                        </div>
+            <div class="col-sm-8">
+                <section>
+                    <div class="page-header">
+                        <h2>At a Glance</h2>
                     </div>
-                </div>
-                {{/popusers}}
+                    <div class="col-sm-12 col-md-4 text-center">
+                        <div><b>Loops</b></div>
+                        <div style="font-size:150%">1.13b</div>
+                    </div>
+                    <div class="col-sm-12 col-md-4 text-center">
+                        <div><b>Users in 24/h</b></div>
+                        <div style="font-size:150%">42k</div>
+                    </div>
+                    <div class="col-sm-12 col-md-4 text-center">
+                        <div><b>Vines in 12h</b></div>
+                        <div style="font-size:150%">117k</div>
+                    </div>
+                </section>
+                <section>
+                    <div class="page-header">
+                        <h2>Popular Now</h2>
+                    </div>
+                    {{#popusers}}
+                    <div class="col-sm-6 col-md-4">
+                        {{ > userCard.html }}
+                    </div>
+                    {{/popusers}}
+                </section>
             </div>
-            <!--CARD END-->
             <!--Featured Profile START-->
-            <div class="col-md-4 col-sm-4">
+            <div class="col-sm-4">
                 <div class="page-header">
                     <h2>Featured <span class="hidden-sm">Profile</span>
                         <small>
@@ -91,32 +83,7 @@
                 </div>
                 {{#featuredUser}}
                 <div class="col-sm-12 col-md-9">
-                    <div class="panel panel-default panel-card">
-                        <div class="panel-heading" data-color="{{ProfileBackground}}" data-name="{{Username}}">
-                            <a class="btn btn-default btn-sm fa fa-vine" href="https://vine.co/u/{{UserIdStr}}" style="color: #{{ProfileBackground}}; font-style: italic"></a>
-                        </div>
-                        <div class="panel-figure">
-                            <img class="img-responsive img-circle" src="{{AvatarUrl}}">
-                        </div>
-                        <div class="panel-body text-center">
-                             <h4 class="panel-header">
-                                <a href="/u/{{UserIdStr}}">{{Username}}</a>
-                            </h4>
-                            <small>{{Description}}</small>
-                        </div>
-                        <div class="panel-thumbnails">
-                            <div class="row">
-                                <div class="col-xs-6 text-center">
-                                    <span class="formatInt" data-format="0.0a">{{FollowerCount}}</span> 
-                                    <i class="fa fa-users"></i>
-                                </div>
-                                <div class="col-xs-6 text-center">
-                                    <span class="formatInt" data-format="0.0a">{{LoopCount}}</span>  
-                                    <i class="fa fa-eye"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    {{ > userCard.html }}
                 </div>
                 <iframe class="clearfix" frameborder="0" height="250" src="https://vine.co/v/{{featuredPost}}/embed/simple" width="250"></iframe>
                 {{/featuredUser}}
@@ -124,74 +91,6 @@
             <!--Featured Profile END-->
         </div>
         <div class="clearfix"></div>
-        <div class="row">
-            <div class="col-md-8 col-sm-10">
-                <div class="page-header">
-                     <h2>Trending</h2>
-                </div>
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <caption>Updated once every hour. Will have ~25 users when live.</caption>
-                        <thead>
-                            <tr>
-                                <th>User</th>
-                                <th>Verified</th>
-                                <th>Loops</th>
-                                <th>Followers</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <th scope="row">
-                                    <a href="http://davine.co/u/robbyayala">Robby Ayala</a>
-                                </th>
-                                <td>&check;</td>
-                                <td>
-                                    725m <span data-sparkline="24, 26, 27, 26, 34, 38, 39"></span>
-                                </td>
-                                <td>
-                                    3.3m <span data-sparkline="3325547, 3345987, 3425657, 3301247, 3485789, 3541259, 3514781"></span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row">
-                                    <a href="http://davine.co/u.SarahHopkins">Sarah Hopkins</a>
-                                </th>
-                                <td>&times;</td>
-                                <td>
-                                    300m <span data-sparkline="290963625, 291875589, 292755157, 295534718, 297228814, 299433623, 300378838"></span>
-                                </td>
-                                <td>
-                                    619k <span data-sparkline="611605, 612128, 613155, 616588, 617941, 618820, 619408"></span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row">
-                                    <a href="http://davine.co/u/942914934646415360">Ruth B</a>
-                                </th>
-                                <td>&times;</td>
-                                <td>
-                                    201m <span data-sparkline="190178298, 191996379, 193367450, 195153402, 196942545, 198854529, 200102609, 201171326"></span>
-                                </td>
-                                <td>
-                                    720k <span data-sparkline="684351, 690258, 695169, 700760, 706446, 711770, 716064, 719525"></span>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="col-md-4 col-sm-6">
-               <div class="page-header">
-                     <h2>At a Glance</h2>
-                </div>
-                <ul>
-                    <li><b>Users Discovered:</b></li>
-                    <li><b>Verified Viners:</b></li>
-                    <li><b>New Users (in 24/hrs):</b></li>
-                 </ul>
-            </div>
-        </div>
     </div>
 </div>
 <script defer type="text/javascript">

@@ -3,6 +3,9 @@ body, html {
     width: 100%;
     background-color: #f6f5f6;
 }
+section {
+    padding-bottom: 50px;
+}
 .navbar-main {
     background-color: transparent;
     border: 0;
@@ -18,7 +21,7 @@ body, html {
 }
 .jumbotron {
     margin-top: 0;
-    padding-top: 50px;
+    padding-top: 75px;
     background-color: #00bf8f;
 }
 #head-link {
@@ -28,6 +31,10 @@ body, html {
     font-size: 7em;
     padding-bottom: 0;
     margin-bottom: 0;
+}
+#head-link a, #head-link a:visited {
+    color: inherit;
+    text-decoration: none;
 }
 .stylish-input-group .input-group-addon {
     background: white !important;
@@ -50,7 +57,7 @@ body, html {
 .panel.panel-card .panel-heading {
     position: relative;
     z-index: 2;
-    height: 120px;
+    height: 100px;
     border-bottom-color: #fff;
     overflow: hidden;
     -webkit-transition: height 600ms ease-in-out;
@@ -88,14 +95,17 @@ body, html {
     -webkit-transition: opacity 400ms ease-in-out;
     transition: opacity 400ms ease-in-out;
 }
-.panel.panel-card .panel-body {
+.panel.panel-card .panel-body:nth-of-type(odd) {
     padding-top: 40px;
-    padding-bottom: 20px;
+    padding-bottom: 5px;
     -webkit-transition: padding 400ms ease-in-out;
     transition: padding 400ms ease-in-out;
 }
+.panel.panel-card .panel-body:nth-of-type(even) {
+    padding-top: 10px;
+}
 .panel.panel-card .panel-thumbnails {
-    padding: 0 15px 20px;
+    padding: 0 15px;
 }
 .panel-thumbnails .thumbnail {
     width: 60px;
@@ -290,4 +300,11 @@ span[data-sparkline] {
     .content {
         border: 1px solid rgb(231, 231, 231);
     }
+}
+
+.number-block {
+    color: white;
+    background-color: #00bf8f;
+    padding: 5px;
+    text-align: center;
 }

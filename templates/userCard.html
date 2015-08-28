@@ -1,0 +1,28 @@
+<div class="panel panel-default panel-card">
+    <div class="panel-heading" data-color="{{ProfileBackground}}" data-name="{{Username}}">
+        <a class="btn btn-default btn-sm fa fa-vine" href="https://vine.co/u/{{UserIdStr}}" style="color: #{{ProfileBackground}}"></a>
+    </div>
+    <div class="panel-figure">
+        <img class="img-responsive img-circle" src="{{AvatarUrl}}">
+    </div>
+    <div class="panel-body text-center">
+         <h4 class="panel-header">
+            <a href="/u/{{UserIdStr}}">{{Username}}</a>
+        </h4>
+    </div>
+    <div class="panel-thumbnails">
+        <div class="row">
+            <div class="col-xs-6 text-center">
+                <span class="formatInt" data-format="0.0a">{{FollowerCount}}</span> 
+                <i class="fa fa-users"></i>
+            </div>
+            <div class="col-xs-6 text-center">
+                <span class="formatInt" data-format="0.0a">{{LoopCount}}</span>  
+                <i class="fa fa-eye"></i>
+            </div>
+        </div>
+    </div>
+    <div class="panel-body text-center">
+        <small>{{Description}}</small>
+    </div>
+</div>
