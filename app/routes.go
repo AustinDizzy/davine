@@ -527,6 +527,15 @@ func CronReportHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func CronFlushHandler(w http.ResponseWriter, r *http.Request) {
+    c := appengine.NewContext(r)
+    for _, k := range []string{"24hLoops", "24hPosts"} {
+        if err := counter.Delete(c, k); err != nil {
+            c.Errorf("got err flushing %s: %v", k, err)
+        }
+    }
+}
+
 func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
 	dir := path.Join(os.Getenv("PWD"), "templates")
 	notFound := path.Join(dir, "404.html")
