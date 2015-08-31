@@ -339,19 +339,11 @@ func ExportHandler(w http.ResponseWriter, r *http.Request) {
 		page := mustache.RenderFileInLayout(export, layout, data)
 		fmt.Fprint(w, page)
 	} else if r.Method == "POST" {
-		client := urlfetch.Client(c)
-		url := "https://www.google.com/recaptcha/api/siteverify?secret=" + cnfg["captchaPrivate"]
-		url += "&response=" + r.FormValue("g-recaptcha-response") + "&remoteip=" + r.RemoteAddr
-		req, _ := http.NewRequest("GET", url, nil)
-		resp, err := client.Do(req)
-		if err != nil {
-			c.Errorf("got err: %v", err)
-			return
-		}
-		body, _ := ioutil.ReadAll(resp.Body)
-		var data map[string]interface{}
-		json.Unmarshal(body, &data)
-		if data["success"].(bool) {
+		captcha := verifyCaptcha(c, map[string]string{
+            "response": r.FormValue("g-recaptcha-response"),
+            "remoteip": r.RemoteAddr,
+		})
+		if captcha {
 			export := Export{c}
 			export.User(vars["user"], w)
 		} else {
