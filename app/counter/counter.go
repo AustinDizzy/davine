@@ -55,7 +55,7 @@ func Count(c appengine.Context, name string) (int64, error) {
 }
 
 func Delete(c appengine.Context, name string) error {
-	if err := memcache.Delete(c, memcacheKey(name)); err != nil {
+	if err := memcache.Delete(c, memcacheKey(name)); err != nil && err != memcache.ErrCacheMiss {
 		return err
 	}
 	q := datastore.NewQuery(shardKind).Filter("Name =", name).KeysOnly()
