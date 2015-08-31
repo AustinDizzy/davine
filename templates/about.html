@@ -1,67 +1,33 @@
 <div class="container" id="page-container">
     <div class="content">
-            <div>
-                <h2>What is this?</h2>
-
-                <p>Daine is a social analytics service
-                built for Vine. In English speak, we can track how much your
-                vines are growing by and show them to you in a few pretty
-                graphs and tables. In tech speak, we're an Open Data
-                service that crawls Vine for users to track daily metrics for.
-                We're fully <a href="https://github.com/austindizzy/davine"
-                target="_blank">open source</a>, open data, and <a href=
-                "/donate">ad-free</a>.</p>
-                <h2>Who is this?</h2>
-        
-                <p>I'll tell you one legal entity we
-                aren't, Vine. We are in no way affiliad with, endorsed by, or
-                sponsored by Vine Labs, Inc or Twitter Inc. We're just <a href=
-                "https://austindizzy.me" target="_blank">one college kid</a>
-                and <a href="https://mattbettiol.com" target="_blank">a noble
-                investor</a>, both trying to make something useful out of our
-                time and skills.</p>
-            </div>
-            <div>
-                <h2 id="FAQ">F.A.Q.</h2>
-                <p><b>What statistics do you track?</b> - As of
-                writing, we track the following for each Vine member: number of
-                followers; number of people user is following; total number of
-                loops; number of revines; number of original posts; changes
-                (including modification date) of username, profile location,
-                profile background color, profile description; if and when a
-                user becomes verified; and the deltas of all numeric
-                values.</p>
-        
-                <p><b>What profiles do you track analytics
-                for?</b> - Any profiles queried through our <a href=
-                "/">homepage search</a> are auomatically added to our queue and
-                their metrics will be fetch each day at 12AM Eastern Standard
-                Time. Additionally, any users who reach the front two pages of
-                the popular page or editors pick will automatically be added to
-                the queue.</p>
-        
-                <p><b>You say you're open source and open
-                data. Where can I access the source and all data?</b> - The
-                Davine project is FOSS licensed under the MIT Open Source
-                License. You can access the source, and report any issues, on
-                its <a href="https://github.com/austindizzy/davine" target=
-                "_blank">Github page</a>. You can download the data for an
-                individual user on their profile page here on Davine. Simply
-                click the "<i class="fa fa-download"></i> Download" button when on a 
-                <a href="/random/user">user's page</a>.</p>
-        
-                <p><b>I do not want Davine to track my
-                profile's metrics. How can I prevent Davine from doing so?</b>
-                - In order to prevent Davine, and any other third-party
-                service, from scraping your publicly available Vine
-                information, your profile and posts must be set to Private.
-                Read the <a href=
-                "https://support.twitter.com/articles/20171749-account-settings-on-vine"
-                target="_blank">Vine FAQ</a> page to learn how to do this.</p>
-                
-                <p><b>I want to bulk/batch export specific users'
-                data or bulk/batch export users' data from a search query.</b> - Please,
-                contact us at <a href="mailto:data@davine.co">data@davine.co</a>.</p>  
+            <div class="row">
+                <div class="col-md-8">
+                    <h2 id="FAQ">F.A.Q.</h2>
+                    <dl>
+                        <dt>What is this?</dt>
+                        <dd>Davine is a social analytics service built for Vine. In English, we can track how much and where your profile is growing by and show it all to you in a few pretty graphs and tables. In tech speak, we're an Open Data service that crawls Vine for users to track daily metrics for. We're fully <a href="https://github.com/AustinDizzy/davine" target="_blank">open source</a>, open data, and ad-free.</dd>
+                        <dt>How are profiles added to Davine?</dt>
+                        <dd>Davine tries to discover users all on its own by monitoring the feeds of all Vine channels and playlists.
+                        If we can't find your profile or a profile you're looking for, you can submit the profile manually by submitting the
+                            direct link to the Vine profile on our homepage. For example, if I wanted to submit SpaceX's profile, I would submit <samp>https://vine.co/SpaceX</samp>.
+                            If you are unsure what the direct link to your profile is, it would be best to login to https://vine.co to find your URL.
+                            <br>
+                            If you are still having trouble, you can submit your profile to Davine by opening the Vine app, going to your profile tab, tap "Settings", select "Invite via email", and send the invitation to "share@davine.co". You should receive an email response if your submission was successful.
+                        </dd>
+                        <dt>Who is this?</dt>
+                        <dd>I'll tell you one legal entity we aren't, Vine. We are in no way affiliad with, endorsed by, or sponsored by Vine Labs, Inc or Twitter Inc. We're just <a href="https://austindizzy.me" target="_blank">one college kid</a> and <a href="https://mattbettiol.com" target="_blank">a noble investor</a>, both trying to make something useful out of our time and skills.</dd>
+                        <dt>I do not want Davine to track my profile's metrics. How can I prevent Davine from doing so?</dt>
+                        <dd>In order to prevent Davine, and any other third-party service, from scraping your publicly available Vine information, your profile and posts must be set to Private. Read the <a href="https://support.twitter.com/articles/20171749-account-settings-on-vine" target="_blank">Vine FAQ</a> page to learn how to do this.</dd>
+                        <dt>You say you're open source and open data. Where can I access the source and all data?</dt>
+                        <dd>The Davine project is FOSS licensed under the MIT Open Source License. You can access the source, and report any issues, on its <a href="https://github.com/austindizzy/davine" target="_blank">Github page</a>. You can download the data for an individual user on their profile page here on Davine. Simply click the "<i class="fa fa-download"></i> Download" button when on a <a href="/random/user">user's page</a>.<br>
+                            If you are looking for direct access to the entire Vine dataset, <a href="/top#dataset-hero">please sign up</a> to be notified when we launch access.
+                        </dd>
+                        <dt id="featured">How does the Featured Profile work?</dt>
+                        <dd>Once a week, Davine picks a random user that is receiving email reports and displays that person's profile and latest Vine on our homepage. Think of this as free publicity. If you are interested in purchasing priority as a featured profile for a week, please contact us</dd>
+                        <dt>I have a question that isn't listed here.</dt>
+                        <dd>Feel free to contact us using the methods listed below, using the address that best fits your question.</dd>
+                    </dl>
+                </div>
             </div>
             <div class="row">
             <div class="col-md-6">

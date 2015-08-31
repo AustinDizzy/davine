@@ -6,6 +6,9 @@ body, html {
 section {
     padding-bottom: 50px;
 }
+dd {
+    margin-bottom: 1em;
+}
 .navbar-main {
     background-color: transparent;
     border: 0;
