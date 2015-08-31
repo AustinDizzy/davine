@@ -3,6 +3,7 @@ package main
 import (
 	"app/admin"
 	"app/config"
+	"app/counter"
 	"app/email"
 	"appengine"
 	"appengine/datastore"
@@ -30,12 +31,21 @@ import (
 )
 
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
-	dir := path.Join(os.Getenv("PWD"), "templates")
-	index := path.Join(dir, "index.html")
-	layout := path.Join(dir, "layout.html")
-	c := appengine.NewContext(r)
-	data := map[string]interface{}{
-		"title": PageTitle,
+	var (
+	    dir = path.Join(os.Getenv("PWD"), "templates")
+	    index = path.Join(dir, "index.html")
+	    layout = path.Join(dir, "layout.html")
+	    c = appengine.NewContext(r)
+	    data = map[string]interface{}{
+	        "title": PageTitle,
+	    }
+	    err error
+	)
+
+	for _, k := range []string{"TotalLoops", "TotalPosts", "TotalVerified", "24hLoops", "24hPosts"} {
+	    if data[k], err = counter.Count(c, k); err != nil {
+	        c.Errorf("Error getting %s: %v", k, err)
+	    }
 	}
 
 	if popusers, err := memcache.Get(c, "popusers"); err == nil {

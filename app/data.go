@@ -1,6 +1,7 @@
 package main
 
 import (
+    "app/counter"
 	"appengine"
 	"appengine/datastore"
 	"appengine/search"
@@ -55,6 +56,8 @@ func (db *DB) FetchUser(userId string) {
 		index.Put(db.Context, vineUser.UserIdStr, userIndex)
 	}
 
+    var newLoops, newPosts int64
+
 	//Step 3. Write records (user {meta, record, data}).
 	if userRecord, err := db.GetUserRecord(vineUser.UserId); err == nil {
 		var userMeta []*UserMeta
@@ -75,6 +78,9 @@ func (db *DB) FetchUser(userId string) {
 			userMeta = append(userMeta, &UserMeta{vineUser.UserId, "verified", strconv.FormatBool(userRecord.Verified), time.Now()})
 		}
 
+        newLoops = vineUser.LoopCount - userRecord.LoopCount
+        newPosts = vineUser.AuthoredPostCount - userRecord.PostCount
+
 		var metaKey *datastore.Key
 		for _, m := range userMeta {
 			metaKey = datastore.NewIncompleteKey(db.Context, "UserMeta", recordKey)
@@ -82,7 +88,23 @@ func (db *DB) FetchUser(userId string) {
 				db.Context.Errorf("got error storing user meta %s - %v: %v", userId, key, err)
 			}
 		}
+	} else {
+	    if vineUser.Verified == 1 {
+	        counter.IncrementBy(db.Context, "TotalVerified", 1)
+	    }
+	    newLoops = vineUser.LoopCount
+	    newPosts = vineUser.AuthoredPostCount
 	}
+
+    if newLoops > 0 {
+        counter.IncrementBy(db.Context, "TotalLoops",  newLoops)
+        counter.IncrementBy(db.Context, "24hLoops",  newLoops)
+    }
+
+    if newPosts > 0 {
+        counter.IncrementBy(db.Context, "TotalPosts",  newPosts)
+        counter.IncrementBy(db.Context, "24hPosts",  newPosts)
+    }
 
 	userRecord := UserRecord{
 		UserId:            vineUser.UserIdStr,

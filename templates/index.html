@@ -46,17 +46,29 @@
                     <div class="page-header">
                         <h2>At a Glance</h2>
                     </div>
-                    <div class="col-sm-12 col-md-4 text-center">
-                        <div><b>Loops</b></div>
-                        <div style="font-size:150%">1.13b</div>
+                    <div class="row">
+                        <div class="col-sm-12 col-md-4 text-center">
+                            <div><b>Total Loops</b></div>
+                            <div style="font-size:150%"><span class="formatInt" data-format="0,0">{{TotalLoops}}</span></div>
+                        </div>
+                        <div class="col-sm-12 col-md-4 text-center">
+                            <div><b>Total Posts</b></div>
+                            <div style="font-size:150%"><span class="formatInt" data-format="0,0">{{TotalPosts}}</span></div>
+                        </div>
+                        <div class="col-sm-12 col-md-4 text-center">
+                            <div><b>Verified Users</b></div>
+                            <div style="font-size:150%">{{TotalVerified}}</div>
+                        </div>
                     </div>
-                    <div class="col-sm-12 col-md-4 text-center">
-                        <div><b>Users in 24/h</b></div>
-                        <div style="font-size:150%">42k</div>
-                    </div>
-                    <div class="col-sm-12 col-md-4 text-center">
-                        <div><b>Vines in 12h</b></div>
-                        <div style="font-size:150%">117k</div>
+                    <div class="row">
+                        <div class="col-sm-12 col-md-4 text-center">
+                            <div><b>Loops in 24h</b></div>
+                            <div style="font-size:150%"><span class="formatInt" data-format="0,0">{{24hLoops}}</span></div>
+                        </div>
+                        <div class="col-sm-12 col-md-4 text-center">
+                            <div><b>Posts in 24h</b></div>
+                            <div style="font-size:150%"><span class="formatInt" data-format="0,0">{{24hPosts}}</span></div>
+                        </div>
                     </div>
                 </section>
                 <section>
