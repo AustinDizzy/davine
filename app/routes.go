@@ -530,6 +530,11 @@ func CronReportHandler(w http.ResponseWriter, r *http.Request) {
 func CronFlushHandler(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	for _, k := range []string{"24hLoops", "24hPosts"} {
+		if n, err := counter.Count(c, k); err != nil {
+			c.Errorf("got err sending stat %s: %v", k, n)
+		} else {
+			PostCount(c, k, int(n))
+		}
 		if err := counter.Delete(c, k); err != nil {
 			c.Errorf("got err flushing %s: %v", k, err)
 		}
