@@ -32,20 +32,20 @@ import (
 
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	var (
-	    dir = path.Join(os.Getenv("PWD"), "templates")
-	    index = path.Join(dir, "index.html")
-	    layout = path.Join(dir, "layout.html")
-	    c = appengine.NewContext(r)
-	    data = map[string]interface{}{
-	        "title": PageTitle,
-	    }
-	    err error
+		dir    = path.Join(os.Getenv("PWD"), "templates")
+		index  = path.Join(dir, "index.html")
+		layout = path.Join(dir, "layout.html")
+		c      = appengine.NewContext(r)
+		data   = map[string]interface{}{
+			"title": PageTitle,
+		}
+		err error
 	)
 
 	for _, k := range []string{"TotalLoops", "TotalPosts", "TotalVerified", "24hLoops", "24hPosts"} {
-	    if data[k], err = counter.Count(c, k); err != nil {
-	        c.Errorf("Error getting %s: %v", k, err)
-	    }
+		if data[k], err = counter.Count(c, k); err != nil {
+			c.Errorf("Error getting %s: %v", k, err)
+		}
 	}
 
 	if popusers, err := memcache.Get(c, "popusers"); err == nil {
@@ -340,8 +340,8 @@ func ExportHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, page)
 	} else if r.Method == "POST" {
 		captcha := verifyCaptcha(c, map[string]string{
-            "response": r.FormValue("g-recaptcha-response"),
-            "remoteip": r.RemoteAddr,
+			"response": r.FormValue("g-recaptcha-response"),
+			"remoteip": r.RemoteAddr,
 		})
 		if captcha {
 			export := Export{c}
@@ -528,12 +528,12 @@ func CronReportHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func CronFlushHandler(w http.ResponseWriter, r *http.Request) {
-    c := appengine.NewContext(r)
-    for _, k := range []string{"24hLoops", "24hPosts"} {
-        if err := counter.Delete(c, k); err != nil {
-            c.Errorf("got err flushing %s: %v", k, err)
-        }
-    }
+	c := appengine.NewContext(r)
+	for _, k := range []string{"24hLoops", "24hPosts"} {
+		if err := counter.Delete(c, k); err != nil {
+			c.Errorf("got err flushing %s: %v", k, err)
+		}
+	}
 }
 
 func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
