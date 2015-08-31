@@ -36,8 +36,10 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 		index  = path.Join(dir, "index.html")
 		layout = path.Join(dir, "layout.html")
 		c      = appengine.NewContext(r)
+		cnfg   = config.Load(c)
 		data   = map[string]interface{}{
-			"title": PageTitle,
+			"title":   PageTitle,
+			"captcha": cnfg["captchaPublic"],
 		}
 		err error
 	)
@@ -225,15 +227,20 @@ func DiscoverHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func TopHandler(w http.ResponseWriter, r *http.Request) {
-	c := appengine.NewContext(r)
-	db := DB{c}
+	var (
+		c      = appengine.NewContext(r)
+		db     = DB{c}
+		cnfg   = config.Load(c)
+		dir    = path.Join(os.Getenv("PWD"), "templates")
+		top    = path.Join(dir, "top.html")
+		layout = path.Join(dir, "layout.html")
+		data   = db.GetTop()
+	)
 
-	dir := path.Join(os.Getenv("PWD"), "templates")
-	top := path.Join(dir, "top.html")
-	layout := path.Join(dir, "layout.html")
-	data := db.GetTop()
 	data["title"] = "Top - " + PageTitle
+	data["captcha"] = cnfg["captchaPublic"]
 	page := mustache.RenderFileInLayout(top, layout, data)
+
 	fmt.Fprint(w, page)
 }
 
@@ -635,27 +642,43 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 			dir := path.Join(os.Getenv("PWD"), "templates")
 			admin := path.Join(dir, "signup.html")
 			layout := path.Join(dir, "layout.html")
-			page := mustache.RenderFileInLayout(admin, layout)
+			cnfg := config.Load(c)
+			data := map[string]interface{}{
+				"captcha": cnfg["captchaPublic"],
+			}
+			page := mustache.RenderFileInLayout(admin, layout, data)
 			fmt.Fprint(w, page)
 		}
 	} else if r.Method == "POST" {
+		captcha := verifyCaptcha(c, map[string]string{
+			"response": r.FormValue("g-recaptcha-response"),
+			"remoteip": r.RemoteAddr,
+		})
 		key := datastore.NewKey(c, "AppUser", r.FormValue("email"), 0, nil)
-		if r.FormValue("type") == "enterprise" {
+		if r.FormValue("type") == "enterprise" && len(r.FormValue("email")) > 0 {
 			appUser = &AppUser{
 				Email:      r.FormValue("email"),
 				Type:       "enterprise",
 				Active:     true,
 				Discovered: time.Now(),
 			}
-			if _, err := datastore.Put(c, key, appUser); err != nil {
-				data["success"] = false
-				data["error"] = err.Error()
+			if captcha {
+				if _, err := datastore.Put(c, key, appUser); err != nil {
+					data["success"] = false
+					data["error"] = err.Error()
+				} else {
+					data["success"] = true
+				}
 			} else {
-				data["success"] = true
+				data["success"] = false
+				data["error"] = "Captcha challenge failed."
 			}
-		} else if r.FormValue("type") == "email-report" {
+		} else if r.FormValue("type") == "email-report" && len(r.FormValue("email")) > 0 {
 			vineUser, err := vineApi.GetUser(r.FormValue("user"))
-			if err != nil {
+			if !captcha {
+				data["success"] = false
+				data["error"] = "Captcha challenge failed."
+			} else if err != nil {
 				data["success"] = false
 				data["error"] = err.Error()
 			} else if !UserQueueExist(vineUser.UserId, c) {

@@ -1,7 +1,4 @@
 <div class="container" id="page-container">
-    <!--<div class="text-right text-muted">-->
-    <!--    Last Updated: <script type="text/javascript" charset="utf-8">document.write(new Date("{{lastUpdated}}").toLocaleString())</script>-->
-    <!--</div>-->
     <div class="col-md-12">
         <h1>Top Overall Users  - <small>Most followers, most loops, and least following.</small></h1>
         <table class="table table-hover">
@@ -32,7 +29,7 @@
 <div class="jumbotron text-center" id="dataset-hero">
     <h2>Want more detailed information?</h2>
     <h4>Contact us to run custom queries against the Vine user dataset.</h4>
-    <form id="email-submit">
+    <form id="email-submit-1">
         <div class="input-group" style="max-width: 300px;margin: 0 auto;">
           <input type="email" name="email" class="form-control" placeholder="you@domain.com">
           <input type="hidden" name="type" value="enterprise">
@@ -43,6 +40,39 @@
           </span>
         </div> 
     </form>
+
+    <div class="modal fade" role="dialog" id="formSubmit">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-body">
+            <div class="container-fluid">
+            <form class="form-horizontal" id="email-submit-2">
+              <div class="form-group">
+                <label for="inputEmail" style="color:#333;" class="col-sm-2 control-label">Email</label>
+                <div class="col-sm-10">
+                  <input type="email" name="email" class="form-control" id="inputEmail" readonly>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                  <div class="g-recaptcha" data-sitekey="{{captcha}}"></div>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-5">
+                  <input type="hidden" name="type" value="enterprise">
+                  <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+                <div class="col-sm-5">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 </div>
 <div class="container">
     <div class="col-md-6">
@@ -104,15 +134,28 @@
             n: 25
         });
 
-        $("#email-submit").submit(function(e){
+        $("#email-submit-1").submit(function(e){
             e.preventDefault();
+            $.getScript('https://www.google.com/recaptcha/api.js', function(){
+                $("#formSubmit").modal("toggle");
+                $("#email-submit-2 input[name='email']").val($("input[name='email']:first").val());
+            });
+        });
+
+        $("#email-submit-2").submit(function(e){
+            e.preventDefault();
+            $("#formSubmit").modal("toggle");
             var formData = {};
             $.each($(this).serializeArray(), function(_, kv) {
                 formData[kv.name] = kv.value;
             });
-
             $.post("/sign-up", formData, function(data){
-                $("#email-submit").html("<span>Thanks! We'll be in touch.</span>");
+                r = JSON.parse(data);
+                if (r.success) {
+                    $("#email-submit-1").html("<span>Thanks! We'll be in touch.</span>");
+                } else {
+                    $("#email-submit-1").html("<span>Error: " + r.error + " Please refresh the page and try again.</span>");
+                }
             });
         });
     });

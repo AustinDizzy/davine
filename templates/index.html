@@ -16,7 +16,7 @@
           <div class="container">
             <h3>Interested in custom reports, more detailed information, post-by-post analytics, and more?</h2>
             <h5>Sign up to stay up to date and get access first.</h5>
-            <form id="email-submit">
+            <form id="email-submit-1">
                 <div class="input-group" style="max-width: 300px;margin: 0 auto;">
                   <input type="email" name="email" class="form-control" placeholder="you@domain.com">
                   <input type="hidden" name="type" value="enterprise">
@@ -105,6 +105,38 @@
         <div class="clearfix"></div>
     </div>
 </div>
+<div class="modal fade" role="dialog" id="formSubmit">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-body">
+            <div class="container-fluid">
+            <form class="form-horizontal" id="email-submit-2">
+              <div class="form-group">
+                <label for="inputEmail" style="color:#333;" class="col-sm-2 control-label">Email</label>
+                <div class="col-sm-10">
+                  <input type="email" name="email" class="form-control" id="inputEmail" readonly>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                  <div class="g-recaptcha" data-sitekey="{{captcha}}"></div>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-5">
+                  <input type="hidden" name="type" value="enterprise">
+                  <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+                <div class="col-sm-5">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 <script defer type="text/javascript">
     $(function() {
         $('.chart-hero').chartBG({
@@ -114,15 +146,28 @@
             type: ["area", "areaspline", "line", "spline"]
         });
 
-        $("#email-submit").submit(function(e){
+        $("#email-submit-1").submit(function(e){
             e.preventDefault();
+            $.getScript('https://www.google.com/recaptcha/api.js', function(){
+                $("#formSubmit").modal("toggle");
+                $("#email-submit-2 input[name='email']").val($("input[name='email']:first").val());
+            });
+        });
+
+        $("#email-submit-2").submit(function(e){
+            e.preventDefault();
+            $("#formSubmit").modal("toggle");
             var formData = {};
             $.each($(this).serializeArray(), function(_, kv) {
                 formData[kv.name] = kv.value;
             });
-
             $.post("/sign-up", formData, function(data){
-                $("#email-submit").html("<span>Thanks! We'll be in touch.</span>");
+                r = JSON.parse(data);
+                if (r.success) {
+                    $("#email-submit-1").html("<span>Thanks! We'll be in touch.</span>");
+                } else {
+                    $("#email-submit-1").html("<span>Error: " + r.error + " Please refresh the page and try again.</span>");
+                }
             });
         });
     });
