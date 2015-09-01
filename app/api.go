@@ -23,8 +23,11 @@ func ApiRouter(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	switch path[0] {
 	case "statistics":
-		data["loops"], err = counter.Count(c, "TotalLoops")
-		data["posts"], err = counter.Count(c, "TotalPosts")
+		data["totalLoops"], err = counter.Count(c, "TotalLoops")
+		data["totalPosts"], err = counter.Count(c, "TotalPosts")
+		data["totalVerified"], err = counter.Count(c, "TotalVerified")
+		data["24hLoops"], err = counter.Count(c, "24hLoops")
+		data["24hPosts"], err = counter.Count(c, "24hPosts")
 		if err != nil {
 			data["error"] = err.Error()
 		} else {

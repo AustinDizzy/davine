@@ -49,25 +49,35 @@
                     <div class="row">
                         <div class="col-sm-12 col-md-4 text-center">
                             <div><b>Total Loops</b></div>
-                            <div style="font-size:150%"><span class="formatInt" data-format="0,0">{{TotalLoops}}</span></div>
+                            <div style="font-size:150%" id="totalLoops">
+                              <span class="formatInt" data-format="0,0">{{TotalLoops}}</span>
+                            </div>
                         </div>
                         <div class="col-sm-12 col-md-4 text-center">
                             <div><b>Total Posts</b></div>
-                            <div style="font-size:150%"><span class="formatInt" data-format="0,0">{{TotalPosts}}</span></div>
+                            <div style="font-size:150%" id="totalPosts">
+                              <span class="formatInt" data-format="0,0">{{TotalPosts}}</span>
+                            </div>
                         </div>
                         <div class="col-sm-12 col-md-4 text-center">
                             <div><b>Verified Users</b></div>
-                            <div style="font-size:150%">{{TotalVerified}}</div>
+                            <div style="font-size:150%" id="totalVerified">
+                              <span class="formatInt" data-format="0,0">{{TotalVerified}}</span>
+                            </div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-sm-12 col-md-4 text-center">
                             <div><b>Loops in 24h</b></div>
-                            <div style="font-size:150%"><span class="formatInt" data-format="0,0">{{24hLoops}}</span></div>
+                            <div style="font-size:150%" id="24hLoops">
+                              <span class="formatInt" data-format="0,0">{{24hLoops}}</span>
+                            </div>
                         </div>
                         <div class="col-sm-12 col-md-4 text-center">
                             <div><b>Posts in 24h</b></div>
-                            <div style="font-size:150%"><span class="formatInt" data-format="0,0">{{24hPosts}}</span></div>
+                            <div style="font-size:150%" id="24hPosts">
+                              <span class="formatInt" data-format="0,0">{{24hPosts}}</span>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -170,5 +180,27 @@
                 }
             });
         });
+
+        var counts = {};
+        setInterval(function(){
+            $.getJSON("/api/statistics?" + new Date().getTime(), function(data){
+               if(!data.success) {
+                   console.log(data);
+                   return;
+               }
+               $.each(Object.keys(data), function(i, k){
+                  if(k != "success") {
+                    var elem = $("#" + k);
+                    var current = counts[k] || 0;
+                    $({count: current}).animate({count: data[k]}, {
+                      duration: 500,
+                      step: function() {
+                        elem.text(numeral(parseInt(this.count)).format("0,0"));
+                      }});
+                      counts[k] = data[k];
+                  }
+               });
+            });
+        }, 30 * 1000);
     });
 </script>
