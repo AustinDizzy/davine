@@ -311,3 +311,11 @@ span[data-sparkline] {
     padding: 5px;
     text-align: center;
 }
+
+.label-nsfw {
+    color: #d9534f;
+    background-color: #333;
+}
+.label-verified {
+    background-color: #00bf8f;
+}

@@ -207,18 +207,14 @@ func AboutHandler(w http.ResponseWriter, r *http.Request) {
 
 func DiscoverHandler(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
-	var recentUsers []UserRecord
-	var recentVerified []UserRecord
 
-	recent := datastore.NewQuery("UserRecord").Order("-Discovered").Limit(5)
-	recent.GetAll(c, &recentUsers)
-	verified := datastore.NewQuery("UserRecord").Filter("Verified =", true).Order("-Discovered").Limit(5)
-	verified.GetAll(c, &recentVerified)
 	data := map[string]interface{}{
-		"recentUsers":    recentUsers,
-		"recentVerified": recentVerified,
-		"title":          "Discover - " + PageTitle,
+		"title": "Discover - " + PageTitle,
 	}
+	data["totalUsers"], _ = counter.Count(c, "TotalUsers")
+	data["totalVerified"], _ = counter.Count(c, "TotalVerified")
+	data["totalExplicit"], _ = counter.Count(c, "TotalExplicit")
+
 	dir := path.Join(os.Getenv("PWD"), "templates")
 	discover := path.Join(dir, "discover.html")
 	layout := path.Join(dir, "layout.html")
