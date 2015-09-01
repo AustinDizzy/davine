@@ -88,9 +88,15 @@ func (db *DB) FetchUser(userId string) {
 				db.Context.Errorf("got error storing user meta %s - %v: %v", userId, key, err)
 			}
 		}
-	} else {
+	} else if err == datastore.ErrNoSuchEntity {
+
+		counter.IncrementBy(db.Context, "TotalUsers", 1)
+
 		if vineUser.Verified == 1 {
 			counter.IncrementBy(db.Context, "TotalVerified", 1)
+		}
+		if vineUser.ExplicitContent == 1 {
+			counter.IncrementBy(db.Context, "TotalExplicit", 1)
 		}
 		newLoops = vineUser.LoopCount
 		newPosts = vineUser.AuthoredPostCount
