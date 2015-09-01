@@ -191,13 +191,16 @@
                $.each(Object.keys(data), function(i, k){
                   if(k != "success") {
                     var elem = $("#" + k);
-                    var current = counts[k] || 0;
-                    $({count: current}).animate({count: data[k]}, {
-                      duration: 500,
-                      step: function() {
-                        elem.text(numeral(parseInt(this.count)).format("0,0"));
-                      }});
-                      counts[k] = data[k];
+                    if(elem.length) {
+                        var current = counts[k] || 0;
+                        $({count: current}).animate({count: data[k]}, {
+                          duration: 500,
+                          step: function() {
+                            elem.text(numeral(parseInt(this.count)).format("0,0"));
+                          }
+                        });
+                        counts[k] = data[k];
+                    }
                   }
                });
             });
