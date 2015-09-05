@@ -37,6 +37,13 @@
         <div class="page-header">
             <h2>Recently Discovered Users</h2>
         </div>
+        <div class="row">
+            {{#recentUsers}}
+            <div class="col-sm-4 col-md-3">
+                {{ > userCard.html }}
+            </div>
+            {{/recentUsers}}
+        </div>
         <h2 class="text-center">
             <span id="24hUsers">
                 <span class="formatInt" data-format="0,0">{{24hUsers}}</span>
@@ -46,7 +53,7 @@
 </div>
 <script type="text/javascript" defer>
     $(function(){
-        $("#discover-head).geopattern(document.title, {
+        $("#discover-head").geopattern(document.title, {
             color: "#627371",
             generator: "chevrons"
         });

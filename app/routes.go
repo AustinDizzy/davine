@@ -207,6 +207,7 @@ func AboutHandler(w http.ResponseWriter, r *http.Request) {
 
 func DiscoverHandler(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
+	db := DB{c}
 
 	data := map[string]interface{}{
 		"title": "Discover - " + PageTitle,
@@ -215,6 +216,7 @@ func DiscoverHandler(w http.ResponseWriter, r *http.Request) {
 	data["24hUsers"], _ = counter.Count(c, "24hUsers")
 	data["totalVerified"], _ = counter.Count(c, "TotalVerified")
 	data["totalExplicit"], _ = counter.Count(c, "TotalExplicit")
+	data["recentUsers"], _ = db.GetRecentUsers(12)
 
 	dir := path.Join(os.Getenv("PWD"), "templates")
 	discover := path.Join(dir, "discover.html")
