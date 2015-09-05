@@ -29,6 +29,7 @@ type VineUser struct {
 	Verified          int      `json:"verified"`
 	VanityUrls        []string `json:"vanityUrls"`
 	LoopCount         int64    `json:"loopCount"`
+	LoopVelocity      float64  `json:"loopVelocity"`
 	AvatarUrl         string   `json:"avatarUrl"`
 	AuthoredPostCount int64    `json:"authoredPostCount"`
 	UserId            int64    `json:"userId"`
@@ -55,6 +56,7 @@ type UserRecord struct {
 	FollowerCount     int64
 	FollowingCount    int64
 	LoopCount         int64
+	LoopVelocity      float64
 	PostCount         int64
 	RevineCount       int64
 	LikeCount         int64
@@ -73,6 +75,7 @@ type UserData struct {
 	Followers int64
 	Following int64
 	Loops     int64
+	Velocity  float64
 	Posts     int64
 	Revines   int64
 	Likes     int64
