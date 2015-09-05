@@ -144,8 +144,8 @@ $(function() {
         html: true
     });
     $('.panel-heading').each(function() {
-        var color = ($(this).data("color") === "" ? "00bf8f" :
-            $(this).data("color"));
+        var color = $(this).data("color") || "00bf8f";
+        if(color.startsWith("0x")) color = color.substring(2)
         $(this).parent().find(".panel-header a, .fa-vine").css({
             "color": "#" + color
         });

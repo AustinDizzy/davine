@@ -371,7 +371,6 @@ func PopularFetchHandler(w http.ResponseWriter, r *http.Request) {
 		var d bytes.Buffer
 		if user, err := vineApi.GetUser(u.UserIdStr); err == nil {
 			enc := gob.NewEncoder(&d)
-			user.ProfileBackground = strings.TrimPrefix(user.ProfileBackground, "0x")
 			enc.Encode(user)
 
 			userFeed = append(userFeed, u.UserIdStr)
