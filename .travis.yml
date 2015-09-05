@@ -1,45 +1,33 @@
+sudo: false
 language: go
 go:
 - 1.3
 
 install:
     - export FILE=$(curl https://storage.googleapis.com/appengine-sdks/ | grep -Po '(?<=featured/)go_appengine_sdk_linux_amd64-[0-9\.]*.zip' | tail -1)
-    - cd ../
-    - curl -O https://storage.googleapis.com/appengine-sdks/featured/$FILE
-    - unzip -q $FILE
-    - export GOPATH=`pwd`/go_appengine/gopath
-    - export GOROOT=`pwd`/go_appengine/goroot
-    - ./go_appengine/goapp get github.com/hoisie/mustache
-    - ./go_appengine/goapp get github.com/gorilla/mux
-    - ./go_appengine/goapp get gopkg.in/yaml.v2
-    - ./go_appengine/goapp get golang.org/x/oauth2
-    - ./go_appengine/goapp get golang.org/x/oauth2/google
-    - ./go_appengine/goapp get google.golang.org/cloud
-    - ./go_appengine/goapp get google.golang.org/cloud/storage
-    - ./go_appengine/goapp get github.com/stathat/go
-    - ./go_appengine/goapp get github.com/ronoaldo/aetools
-    - ./go_appengine/goapp get github.com/jhillyerd/go.enmime
-    - ./go_appengine/goapp get github.com/dustin/go-humanize
-    - ./go_appengine/goapp get github.com/aymerick/douceur
+    - curl -o ../$FILE https://storage.googleapis.com/appengine-sdks/featured/$FILE
+    - unzip -q ../$FILE
+    - export GOPATH=`pwd`/../go_appengine/gopath
+    - go get -t -v ./...
 
 script:
-    - ./go_appengine/goapp build ./davine/app/*
+    - go build ./app/*
 
-after_success:
-    - echo "PR# $TRAVIS_PULL_REQUEST"
-    - if [[ $TRAVIS_PULL_REQUEST == 'false' ]]; then
-    - head -n 6 ./davine/app.yaml
-    - set -e
-    - python ./go_appengine/appcfg.py --oauth2_refresh_token=$GAE_OAUTH update ./davine
-    - set +e
-    - STATUS=$?
-    - echo $STATUS
-    - if [[ $STATUS == 0 ]]; then 
-    - echo "Version $API_VERSION deployed IN $ENV"
-    - else 
-    - echo "Deployment of version $API_VERSION *failed*"
-    - fi
-    - python $BUILD_DIR/setup/notify.py $STATUS deploy.log
-    - else
-    - echo "Pull Request $TRAVIS_PULL_REQUEST testing run: No deployement performed"
-    - fi
+#after_success:
+#    - echo "PR# $TRAVIS_PULL_REQUEST"
+#    - if [[ $TRAVIS_PULL_REQUEST == 'false' ]]; then
+#    - head -n 6 ./davine/app.yaml
+#    - set -e
+#    - python ./go_appengine/appcfg.py --oauth2_refresh_token=$GAE_OAUTH update ./davine
+#    - set +e
+#    - STATUS=$?
+#    - echo $STATUS
+#    - if [[ $STATUS == 0 ]]; then
+#    - echo "Version $API_VERSION deployed IN $ENV"
+#    - else
+#    - echo "Deployment of version $API_VERSION *failed*"
+#    - fi
+#    - python $BUILD_DIR/setup/notify.py $STATUS deploy.log
+#    - else
+#    - echo "Pull Request $TRAVIS_PULL_REQUEST testing run: No deployement performed"
+#    - fi
