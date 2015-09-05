@@ -91,6 +91,7 @@ func (db *DB) FetchUser(userId string) {
 	} else if err == datastore.ErrNoSuchEntity {
 
 		counter.IncrementBy(db.Context, "TotalUsers", 1)
+		counter.IncrementBy(db.Context, "24hUsers", 1)
 
 		if vineUser.Verified == 1 {
 			counter.IncrementBy(db.Context, "TotalVerified", 1)

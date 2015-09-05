@@ -30,6 +30,7 @@ func ApiRouter(w http.ResponseWriter, r *http.Request) {
 		data["totalExpliicit"], err = counter.Count(c, "TotalExplicit")
 		data["24hLoops"], err = counter.Count(c, "24hLoops")
 		data["24hPosts"], err = counter.Count(c, "24hPosts")
+		data["24hUsers"], err = counter.Count(c, "24hUsers")
 		if err != nil {
 			data["error"] = err.Error()
 		} else {

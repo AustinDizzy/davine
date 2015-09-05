@@ -31,16 +31,22 @@
                     <span class="formatInt" data-format="0,0">{{totalExplicit}}</span>
                 </span> <small>are marked <span class="label label-nsfw">NSFW</span></small>
             </a>
+        </h3>
     </div>
     <div class="content">
         <div class="page-header">
             <h2>Recently Discovered Users</h2>
         </div>
+        <h2 class="text-center">
+            <span id="24hUsers">
+                <span class="formatInt" data-format="0,0">{{24hUsers}}</span>
+            </span> <small>users discovered today</small>
+        </h2>
     </div>
 </div>
 <script type="text/javascript" defer>
     $(function(){
-        $("#discover-head").geopattern("discover", {
+        $("#discover-head).geopattern(document.title, {
             color: "#627371",
             generator: "chevrons"
         });

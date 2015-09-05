@@ -44,7 +44,7 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 		err error
 	)
 
-	for _, k := range []string{"TotalLoops", "TotalPosts", "TotalVerified", "24hLoops", "24hPosts"} {
+	for _, k := range []string{"TotalLoops", "TotalPosts", "TotalVerified", "24hLoops", "24hPosts", "24hUsers"} {
 		if data[k], err = counter.Count(c, k); err != nil {
 			c.Errorf("Error getting %s: %v", k, err)
 		}
@@ -212,6 +212,7 @@ func DiscoverHandler(w http.ResponseWriter, r *http.Request) {
 		"title": "Discover - " + PageTitle,
 	}
 	data["totalUsers"], _ = counter.Count(c, "TotalUsers")
+	data["24hUsers"], _ = counter.Count(c, "24hUsers")
 	data["totalVerified"], _ = counter.Count(c, "TotalVerified")
 	data["totalExplicit"], _ = counter.Count(c, "TotalExplicit")
 
@@ -532,7 +533,7 @@ func CronReportHandler(w http.ResponseWriter, r *http.Request) {
 
 func CronFlushHandler(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
-	for _, k := range []string{"24hLoops", "24hPosts"} {
+	for _, k := range []string{"24hLoops", "24hPosts", "24hUsers"} {
 		if n, err := counter.Count(c, k); err != nil {
 			c.Errorf("got err sending stat %s: %v", k, n)
 		} else {
