@@ -1,0 +1,29 @@
+<tr>
+    <td style="vertical-align:middle;text-align:left;">
+        <a data-user="{{UserId}}" data-vanity="{{Vanity}}" class="pull-left">
+            <img src="{{AvatarUrl}}" alt="{{Username}}'s avatar" width="75px" class="user-avatar" />
+        </a>
+        <div style="margin-top: 25px;text-indent: 5px;">
+            <a data-user="{{UserId}}" data-vanity="{{Vanity}}" class="searchable">{{Username}}</a>
+            <div>
+                {{#Explicit}}
+                <span class="label label-nsfw">NSFW</span>&nbsp;
+                {{/Explicit}}
+                {{#Verified}}
+                <span class="label label-verified">&check; Verified</span>
+                {{/Verified}}
+            </div>
+        </div>
+    </td>
+    <td style="vertical-align:middle" class="searchable">
+        {{Description}}
+    </td>
+    <td style="vertical-align:middle" class="searchable">
+        {{Location}}
+    </td>
+    <td style="vertical-align:middle">
+        <span class="formatInt" data-format="0,0">{{FollowerCount}}</span> followers <br>
+        following <span class="formatInt" data-format="0,0">{{FollowingCount}}</span> <br>
+        <span class="formatInt" data-format="0,0">{{LoopCount}}</span> loops
+    </td>
+</tr>

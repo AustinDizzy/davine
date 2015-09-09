@@ -32,6 +32,12 @@ indexes:
 
 - kind: UserRecord
   properties:
+  - name: Explicit
+  - name: Discovered
+    direction: desc
+
+- kind: UserRecord
+  properties:
   - name: Verified
   - name: Discovered
     direction: desc

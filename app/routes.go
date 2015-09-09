@@ -217,6 +217,8 @@ func DiscoverHandler(w http.ResponseWriter, r *http.Request) {
 	data["totalVerified"], _ = counter.Count(c, "TotalVerified")
 	data["totalExplicit"], _ = counter.Count(c, "TotalExplicit")
 	data["recentUsers"], _ = db.GetRecentUsers(12)
+	data["recentExplicit"], _ = db.GetRecentUsers(4, "Explicit =", true)
+	data["recentVerified"], _ = db.GetRecentUsers(4, "Verified =", true)
 
 	dir := path.Join(os.Getenv("PWD"), "templates")
 	discover := path.Join(dir, "discover.html")

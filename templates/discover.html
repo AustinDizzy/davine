@@ -19,36 +19,47 @@
         </h1>
         of whom
         <h2>
-            <a href="/discover/verified">
-                <span id="totalVerified">
-                    <span class="formatInt" data-format="0,0">{{totalVerified}}</span>
-                </span> <small>are <span class="label label-verified">&check; Verified</span></small>
-            </a>
+            <span id="totalVerified">
+                <span class="formatInt" data-format="0,0">{{totalVerified}}</span>
+            </span> <small>are <span class="label label-verified">&check; Verified</span></small>
         </h2>
         <h3>
-            <a href="/discover/nsfw">
-                <span id="totalExplicit">
-                    <span class="formatInt" data-format="0,0">{{totalExplicit}}</span>
-                </span> <small>are marked <span class="label label-nsfw">NSFW</span></small>
-            </a>
+            <span id="totalExplicit">
+                <span class="formatInt" data-format="0,0">{{totalExplicit}}</span>
+            </span> <small>are marked <span class="label label-nsfw">NSFW</span></small>
         </h3>
     </div>
     <div class="content">
         <div class="page-header">
-            <h2>Recently Discovered Users</h2>
+            <h2>Recently Discovered Users<small>(<span id="24hUsers">
+                <span class="formatInt" data-format="0,0">{{24hUsers}}</span>
+            </span> <small>users discovered today</small>)</small></h2>
         </div>
-        <div class="row">
+        <table class="table table-hover" style="table-layout:fixed;word-wrap:break-word;margin-top:20px;">
             {{#recentUsers}}
-            <div class="col-sm-4 col-md-3">
+                {{ > userList.html }}
+            {{/recentUsers}}
+        </table>
+        <div class="col-md-6">
+            <div class="page-header">
+                <h3>Recently Discovered Verified</h3>
+            </div>
+            {{#recentVerified}}
+            <div class="col-md-6">
                 {{ > userCard.html }}
             </div>
-            {{/recentUsers}}
+            {{/recentVerified}}
         </div>
-        <h2 class="text-center">
-            <span id="24hUsers">
-                <span class="formatInt" data-format="0,0">{{24hUsers}}</span>
-            </span> <small>users discovered today</small>
-        </h2>
+        <div class="col-md-6">
+            <div class="page-header">
+                <h3>Recently Discovered Explicit</h3>
+            </div>
+            {{#recentExplicit}}
+            <div class="col-md-6">
+                {{ > userCard.html }}
+            </div>
+            {{/recentExplicit}}
+        </div>
     </div>
 </div>
 <script type="text/javascript" defer>
