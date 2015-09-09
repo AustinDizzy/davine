@@ -155,11 +155,11 @@ func (db *DB) FetchUser(userId string) {
 	}
 }
 
-func (db *DB) GetRecentUsers(n int, filter ...string) (records []UserRecord, err error) {
+func (db *DB) GetRecentUsers(n int, filter ...interface{}) (records []UserRecord, err error) {
 	q := datastore.NewQuery("UserRecord").Order("-Discovered")
 	if len(filter) > 0 && len(filter)%2 == 0 {
 		for i := 0; i < len(filter)/2; i += 2 {
-			q = q.Filter(filter[i], filter[i+1])
+			q = q.Filter(filter[i].(string), filter[i+1])
 		}
 	}
 	q = q.Limit(n)
