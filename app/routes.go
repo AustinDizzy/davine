@@ -5,19 +5,10 @@ import (
 	"app/config"
 	"app/counter"
 	"app/email"
-	"appengine"
-	"appengine/datastore"
-	"appengine/memcache"
-	"appengine/taskqueue"
-	"appengine/urlfetch"
-	"appengine/user"
 	"bytes"
 	"encoding/gob"
 	"encoding/json"
 	"fmt"
-	"github.com/dustin/go-humanize"
-	"github.com/gorilla/mux"
-	"github.com/hoisie/mustache"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
@@ -28,6 +19,17 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/dustin/go-humanize"
+	"github.com/gorilla/mux"
+	"github.com/hoisie/mustache"
+
+	"appengine"
+	"appengine/datastore"
+	"appengine/memcache"
+	"appengine/taskqueue"
+	"appengine/urlfetch"
+	"appengine/user"
 )
 
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
@@ -247,22 +249,21 @@ func TopHandler(w http.ResponseWriter, r *http.Request) {
 
 func RandomHandler(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
-	q := datastore.NewQuery("UserMeta").KeysOnly()
+	q := datastore.NewQuery("UserRecord").KeysOnly()
 	keys, err := q.GetAll(c, nil)
 	if err != nil {
 		c.Errorf("got err %v", err)
 		return
 	}
 	randomKey := RandomKey(keys)
-	var user QueuedUser
-	key := datastore.NewKey(c, "Queue", "", randomKey.IntID(), nil)
-	err = datastore.Get(c, key, &user)
+	var user UserRecord
+	err = datastore.Get(c, randomKey, &user)
 	if err != nil {
 		c.Errorf("got err %v", err)
 	} else {
 		c.Infof("got user %v", user)
 	}
-	http.Redirect(w, r, "/u/"+user.UserID, 301)
+	http.Redirect(w, r, "/u/"+user.UserId, 301)
 }
 
 func SearchHandler(w http.ResponseWriter, r *http.Request) {
