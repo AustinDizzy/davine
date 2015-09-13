@@ -1,23 +1,29 @@
 package config
 
 import (
-	"appengine"
-	"appengine/file"
-	"appengine/urlfetch"
+	"io/ioutil"
+	"net/http"
+	"os"
+	"path"
+
+	"golang.org/x/net/context"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/cloud"
 	"google.golang.org/cloud/storage"
 	"gopkg.in/yaml.v2"
-	"io/ioutil"
-	"net/http"
-	"os"
-	"path"
+
+	"appengine"
+	"appengine/file"
+	"appengine/urlfetch"
 )
 
 var Config ConfigData
 
-type ConfigData map[string]string
+type (
+	ConfigData       map[string]string
+	appengineContext struct{}
+)
 
 func Load(c ...appengine.Context) ConfigData {
 	if Config != nil {
@@ -27,9 +33,11 @@ func Load(c ...appengine.Context) ConfigData {
 	if appengine.IsDevAppServer() {
 		configFile, _ = ioutil.ReadFile(path.Join(os.Getenv("PWD"), "config.yaml"))
 	} else {
+		var context context.Context
+		context = getContext(context, c[0])
 		client := &http.Client{
 			Transport: &oauth2.Transport{
-				Source: google.AppEngineTokenSource(c[0], storage.ScopeReadOnly),
+				Source: google.AppEngineTokenSource(context, storage.ScopeReadOnly),
 				Base: &urlfetch.Transport{
 					Context: c[0],
 				},
@@ -49,4 +57,8 @@ func Load(c ...appengine.Context) ConfigData {
 	}
 	yaml.Unmarshal(configFile, &Config)
 	return Config
+}
+
+func getContext(p context.Context, c appengine.Context) context.Context {
+	return context.WithValue(p, appengineContext{}, c)
 }
