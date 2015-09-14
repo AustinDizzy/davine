@@ -195,16 +195,24 @@ func UserStoreHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func AboutHandler(w http.ResponseWriter, r *http.Request) {
-	dir := path.Join(os.Getenv("PWD"), "templates")
-	aboutPage := path.Join(dir, "about.html")
-	layout := path.Join(dir, "layout.html")
-
-	db := DB{appengine.NewContext(r)}
-	totalUsers, _ := db.GetTotalUsers()
-	stats := map[string]interface{}{"users": totalUsers}
-	data := mustache.RenderFileInLayout(aboutPage, layout, stats)
-
-	fmt.Fprint(w, data)
+	var (
+		dir       = path.Join(os.Getenv("PWD"), "templates")
+		aboutPage = path.Join(dir, "about.html")
+		layout    = path.Join(dir, "layout.html")
+		data      = map[string]interface{}{
+			"title": "About - " + PageTitle,
+		}
+		c   = appengine.NewContext(r)
+		err error
+	)
+	for _, k := range []string{"TotalUsers", "TotalLoops", "TotalPosts"} {
+		data[k], err = counter.Count(c, k)
+		if err != nil {
+			c.Errorf("got counter err: %v", err)
+		}
+	}
+	page := mustache.RenderFileInLayout(aboutPage, layout, data)
+	fmt.Fprint(w, page)
 }
 
 func DiscoverHandler(w http.ResponseWriter, r *http.Request) {
