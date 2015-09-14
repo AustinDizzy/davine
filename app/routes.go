@@ -549,6 +549,15 @@ func CronFlushHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func CronImportHandler(w http.ResponseWriter, r *http.Request) {
+	c := appengine.NewContext(r)
+	if err := admin.NewTask(c).LoadGSData(r.FormValue("file")); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	} else {
+		w.WriteHeader(http.StatusOK)
+	}
+}
+
 func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
 	dir := path.Join(os.Getenv("PWD"), "templates")
 	notFound := path.Join(dir, "404.html")
@@ -768,6 +777,19 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 		switch r.FormValue("op") {
 		case "TaskUsers":
 			admin.NewTask(c).BatchTaskUsers(strings.Split(r.FormValue("v"), "\n")...)
+		case "TaskImport":
+			c.Infof("Tasking %s for import", r.FormValue("v"))
+			var tasks []*taskqueue.Task
+			for k, v := range strings.Split(r.FormValue("v"), "\n") {
+				t := taskqueue.NewPOSTTask("/cron/import", map[string][]string{
+					"file": {v},
+				})
+				t.Delay = time.Minute * k * 10
+				tasks = append(tasks, t)
+			}
+			if _, err := taskqueue.AddMulti(c, tasks); err != nil {
+				c.Errorf("error adding import tasks: %v", err)
+			}
 		case "UnqueueUser":
 			c.Infof("unqueuing %v", r.FormValue("v"))
 			db.UnqueueUser(r.FormValue("v"))
