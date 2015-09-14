@@ -792,10 +792,10 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 				t := taskqueue.NewPOSTTask("/cron/import", map[string][]string{
 					"file": {v},
 				})
-				t.Delay = time.Minute * k * 10
+				t.Delay = time.Minute * time.Duration(k) * 10
 				tasks = append(tasks, t)
 			}
-			if _, err := taskqueue.AddMulti(c, tasks); err != nil {
+			if _, err := taskqueue.AddMulti(c, tasks, ""); err != nil {
 				c.Errorf("error adding import tasks: %v", err)
 			}
 		case "UnqueueUser":
