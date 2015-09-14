@@ -24,6 +24,8 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/hoisie/mustache"
 
+	newappengine "google.golang.org/appengine"
+
 	"appengine"
 	"appengine/datastore"
 	"appengine/memcache"
@@ -559,7 +561,13 @@ func CronFlushHandler(w http.ResponseWriter, r *http.Request) {
 
 func CronImportHandler(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
-	if err := admin.NewTask(c).LoadGSData(r.FormValue("file")); err != nil {
+	t := admin.NewTask(c)
+	t.LoadCtx(newappengine.NewContext(r))
+
+	c.Infof("starting import of %s", r.FormValue("file"))
+	err := t.LoadGSData(r.FormValue("file"))
+	if err != nil {
+		c.Errorf("error importing %s: %v", r.FormValue("file"), err)
 		w.WriteHeader(http.StatusInternalServerError)
 	} else {
 		w.WriteHeader(http.StatusOK)
@@ -793,6 +801,7 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 					"file": {v},
 				})
 				t.Delay = time.Minute * time.Duration(k) * 10
+				t.RetryOptions = &taskqueue.RetryOptions{RetryLimit: 0, AgeLimit: t.Delay + (2 * time.Second)}
 				tasks = append(tasks, t)
 			}
 			if _, err := taskqueue.AddMulti(c, tasks, ""); err != nil {

@@ -1,8 +1,9 @@
 package main
 
 import (
-	"github.com/gorilla/mux"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 func init() {
@@ -28,6 +29,7 @@ func init() {
 	router.HandleFunc("/cron/explore", CronExploreHandler).Methods("GET", "POST")
 	router.HandleFunc("/cron/report", CronReportHandler).Methods("POST")
 	router.HandleFunc("/cron/flush", CronFlushHandler).Methods("GET")
+	router.HandleFunc("/cron/import", CronImportHandler).Methods("POST")
 
 	router.HandleFunc("/_ah/start", StartupHandler).Methods("GET")
 	router.HandleFunc("/_ah/warmup", StartupHandler).Methods("GET")

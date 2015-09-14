@@ -1,17 +1,24 @@
 package admin
 
 import (
+	"errors"
 	"io"
+	"io/ioutil"
 	"net/http"
+	"os"
+	"path"
 	"strings"
 	"time"
 
 	"golang.org/x/net/context"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
+	newurlfetch "google.golang.org/appengine/urlfetch"
+	"google.golang.org/cloud"
 	"google.golang.org/cloud/storage"
 	"ronoaldo.gopkg.net/aetools"
 
 	"appengine"
-	"appengine/file"
 	"appengine/taskqueue"
 )
 
@@ -20,12 +27,12 @@ type AdminTask struct {
 	ctx context.Context
 }
 
-type appengineContext struct{}
-
 func NewTask(c appengine.Context) *AdminTask {
-	t := &AdminTask{c: c}
-	t.ctx = getContext(t.ctx, c)
-	return t
+	return &AdminTask{c: c}
+}
+
+func (a *AdminTask) LoadCtx(c context.Context) {
+	a.ctx = c
 }
 
 func (a *AdminTask) BatchTaskUsers(usersRow ...string) {
@@ -63,16 +70,38 @@ func (a *AdminTask) LoadData(kind string, file io.Reader) error {
 }
 
 func (a *AdminTask) LoadGSData(name string) error {
-	bucket, _ := file.DefaultBucketName(a.c)
-	rc, err := storage.NewReader(a.ctx, bucket, name)
+	if a.ctx == nil {
+		return errors.New("context is nil")
+	}
+	var client *http.Client
+	if appengine.IsDevAppServer() {
+		authFile, err := ioutil.ReadFile(path.Join(os.Getenv("PWD"), "client_secret.json"))
+		if err != nil {
+			return err
+		}
+		tokenSource, err := google.DefaultTokenSource(a.ctx, storage.ScopeReadOnly)
+		cfg, err := google.ConfigFromJSON(authFile, storage.ScopeReadOnly)
+		if err != nil {
+			return err
+		}
+		t, _ := tokenSource.Token()
+		client = cfg.Client(a.ctx, t)
+	} else {
+		client = &http.Client{
+			Transport: &oauth2.Transport{
+				Source: google.AppEngineTokenSource(a.ctx, storage.ScopeReadOnly),
+				Base: &newurlfetch.Transport{
+					Context: a.ctx,
+				},
+			},
+		}
+	}
+	ctx := cloud.NewContext("davine-web", client)
+	rc, err := storage.NewReader(ctx, "davine-web.appspot.com", name)
 	if err != nil {
-		a.c.Errorf("Error reading %s in %s: %v", name, bucket, err)
+		a.c.Errorf("Error reading %s in %s: %v", name, "davine-web.appspot.com", err)
 		return err
 	}
 	defer rc.Close()
 	return aetools.Load(a.c, rc, aetools.LoadSync)
-}
-
-func getContext(p context.Context, c appengine.Context) context.Context {
-	return context.WithValue(p, appengineContext{}, c)
 }

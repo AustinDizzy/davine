@@ -30,6 +30,7 @@
                 <button class="btn btn-default" data-toggle="modal" data-target="#sendReport">Send User Report</button>
                 <button class="btn btn-default" data-toggle="modal" data-target="#loadData">Load Data</button>
                 <button class="btn btn-default" data-toggle="modal" data-target="#batchQueue">Batch Queue Users</button>
+                <button class="btn btn-default" data-toggle="modal" data-target="#taskLoadData">Task Import Data</button>
                 <div class="modal fade" id="batchTask" tabindex="-1" role="dialog">
                     <div class="modal-dialog">
                         <div class="modal-content">
@@ -46,6 +47,28 @@
                                     <form class="text-center">
                                         <textarea name="v" class="form-control form-group" rows="8"></textarea>
                                         <input type="hidden" name="op" value="TaskUsers">
+                                        <input type="submit" class="btn btn-lg btn-primary" value="Submit">
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="taskLoadData" tabindex="-1" role="dialog">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="gridSystemModalLabel">Task Data Import(s)</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="container-fluid">
+                                    <span class="text-muted">
+                                        One valid Google Cloud Storage file filename per line.
+                                    </span>
+                                    <form class="text-center">
+                                        <textarea name="v" class="form-control form-group" rows="8"></textarea>
+                                        <input type="hidden" name="op" value="TaskImport">
                                         <input type="submit" class="btn btn-lg btn-primary" value="Submit">
                                     </form>
                                 </div>
@@ -223,7 +246,7 @@
             });
         });
         $('#loadData form').on('submit', function(e){
-           e.preventDefault(); 
+           e.preventDefault();
            var formData = new FormData(this);
            $.ajax({
                url: window.location,

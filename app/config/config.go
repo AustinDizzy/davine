@@ -33,11 +33,9 @@ func Load(c ...appengine.Context) ConfigData {
 	if appengine.IsDevAppServer() {
 		configFile, _ = ioutil.ReadFile(path.Join(os.Getenv("PWD"), "config.yaml"))
 	} else {
-		var context context.Context
-		context = getContext(context, c[0])
 		client := &http.Client{
 			Transport: &oauth2.Transport{
-				Source: google.AppEngineTokenSource(context, storage.ScopeReadOnly),
+				Source: google.AppEngineTokenSource(getContext(context.Background(), c[0]), storage.ScopeReadOnly),
 				Base: &urlfetch.Transport{
 					Context: c[0],
 				},
