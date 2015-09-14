@@ -1,21 +1,31 @@
 package admin
 
 import (
-	"appengine"
-	"appengine/taskqueue"
-	"github.com/ronoaldo/aetools"
 	"io"
 	"net/http"
 	"strings"
 	"time"
+
+	"golang.org/x/net/context"
+	"google.golang.org/cloud/storage"
+	"ronoaldo.gopkg.net/aetools"
+
+	"appengine"
+	"appengine/file"
+	"appengine/taskqueue"
 )
 
 type AdminTask struct {
-	c appengine.Context
+	c   appengine.Context
+	ctx context.Context
 }
 
+type appengineContext struct{}
+
 func NewTask(c appengine.Context) *AdminTask {
-	return &AdminTask{c}
+	t := &AdminTask{c: c}
+	t.ctx = getContext(t.ctx, c)
+	return t
 }
 
 func (a *AdminTask) BatchTaskUsers(usersRow ...string) {
@@ -50,4 +60,19 @@ func (a *AdminTask) DumpData(kind string, w http.ResponseWriter) error {
 func (a *AdminTask) LoadData(kind string, file io.Reader) error {
 	opts := &aetools.Options{GetAfterPut: true, Kind: kind}
 	return aetools.Load(a.c, file, opts)
+}
+
+func (a *AdminTask) LoadGSData(name string) error {
+	bucket, _ := file.DefaultBucketName(a.c)
+	rc, err := storage.NewReader(a.ctx, bucket, name)
+	if err != nil {
+		a.c.Errorf("Error reading %s in %s: %v", name, bucket, err)
+		return err
+	}
+	defer rc.Close()
+	return aetools.Load(a.c, rc, aetools.LoadSync)
+}
+
+func getContext(p context.Context, c appengine.Context) context.Context {
+	return context.WithValue(p, appengineContext{}, c)
 }
