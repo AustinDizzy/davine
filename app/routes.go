@@ -402,7 +402,7 @@ func PopularFetchHandler(w http.ResponseWriter, r *http.Request) {
 		Value: []byte(strings.Join(userFeed, ",")),
 	})
 
-	memcache.AddMulti(c, popfeedUsers)
+	memcache.SetMulti(c, popfeedUsers)
 	finish := time.Since(start)
 	fmt.Fprint(w, "queuing popular users: %v w/ err %v", users, err)
 	log.Infof(c, "queueing popular users: %v w/ err %v. Took %s", users, err, finish)
