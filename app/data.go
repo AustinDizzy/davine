@@ -131,6 +131,7 @@ func (db *DB) FetchUser(userId string) {
 		Private:           (vineUser.Private != 0),
 		Verified:          (vineUser.Verified != 0),
 		Explicit:          (vineUser.ExplicitContent != 0),
+		Discovered:        time.Now(),
 	}
 	if len(vineUser.VanityUrls) != 0 {
 		userRecord.Vanity = strings.ToLower(vineUser.VanityUrls[0])
