@@ -170,7 +170,9 @@ $(function() {
         if (match) {
             $.post("/user?id=" + match[1], function(data) {
                 if (data.stored || data.queued) {
-                    document.location = "/u/" + match[1];
+                    setTimeout(function(){
+                      document.location = "/u/" + match[1];
+                    }, 750)
                 } else if (!data.exists) {
                     alert("Sorry, the user " + match[1] + " doesn't seem to exist on Vine. Please try again.");
                 } else if (!data.stored && data.exists) {
