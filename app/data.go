@@ -2,18 +2,20 @@ package main
 
 import (
 	"app/counter"
-	"appengine"
-	"appengine/datastore"
-	"appengine/search"
 	"math/rand"
 	"sort"
 	"strconv"
 	"strings"
 	"time"
+
+	"golang.org/x/net/context"
+	"google.golang.org/appengine/datastore"
+	"google.golang.org/appengine/log"
+	"google.golang.org/appengine/search"
 )
 
 type DB struct {
-	Context appengine.Context
+	Context context.Context
 }
 
 func (db *DB) FetchUser(userId string) {
@@ -25,14 +27,13 @@ func (db *DB) FetchUser(userId string) {
 		if err.Error() == ErrUserDoesntExist {
 			db.UnqueueUser(userId)
 		} else {
-			db.Context.Errorf("got error getting user %s from vine: %v", userId, err)
+			log.Errorf(db.Context, "got error getting user %s from vine: %v", userId, err)
 		}
 		return
 	} else if vineUser == nil {
-		db.Context.Errorf("failed fetch on user %v. got err %v", userId, err)
+		log.Errorf(db.Context, "failed fetch on user %v. got err %v", userId, err)
 		return
 	} else if vineUser.Private == 1 {
-		db.Context.Infof("user %s is private", userId)
 		return
 	}
 
@@ -51,7 +52,7 @@ func (db *DB) FetchUser(userId string) {
 
 	index, err := search.Open("users")
 	if err != nil {
-		db.Context.Errorf(err.Error())
+		log.Errorf(db.Context, "error opening users search index: %v", err)
 	} else {
 		index.Put(db.Context, vineUser.UserIdStr, userIndex)
 	}
@@ -85,7 +86,7 @@ func (db *DB) FetchUser(userId string) {
 		for _, m := range userMeta {
 			metaKey = datastore.NewIncompleteKey(db.Context, "UserMeta", recordKey)
 			if key, err := datastore.Put(db.Context, metaKey, m); err != nil {
-				db.Context.Errorf("got error storing user meta %s - %v: %v", userId, key, err)
+				log.Errorf(db.Context, "got error storing user meta %s - %v: %v", userId, key, err)
 			}
 		}
 	} else if err == datastore.ErrNoSuchEntity {
@@ -135,7 +136,7 @@ func (db *DB) FetchUser(userId string) {
 		userRecord.Vanity = strings.ToLower(vineUser.VanityUrls[0])
 	}
 	if _, err := datastore.Put(db.Context, recordKey, &userRecord); err != nil {
-		db.Context.Errorf("got error storing user record %s: %v", userId, err)
+		log.Errorf(db.Context, "got error storing user record %s: %v", userId, err)
 	}
 
 	dataKey := datastore.NewIncompleteKey(db.Context, "UserData", recordKey)
@@ -151,7 +152,7 @@ func (db *DB) FetchUser(userId string) {
 		Likes:     vineUser.LikeCount,
 	}
 	if key, err := datastore.Put(db.Context, dataKey, &userData); err != nil {
-		db.Context.Errorf("got error storing user data %s - %v: %v", userId, key, err)
+		log.Errorf(db.Context, "got error storing user data %s - %v: %v", userId, key, err)
 	}
 }
 
@@ -170,18 +171,18 @@ func (db *DB) GetRecentUsers(n int, filter ...interface{}) (records []UserRecord
 func (db *DB) GetUser(userId int64) (user *UserRecord, err error) {
 	user, err = db.GetUserRecord(userId)
 	if err != nil {
-		db.Context.Infof("error with userRecord")
+		log.Infof(db.Context, "error with userRecord")
 		return
 	}
 	user.UserData, err = db.GetUserData(userId)
 	if err != nil {
-		db.Context.Infof("error with userData")
+		log.Infof(db.Context, "error with userData")
 		return
 	}
 
 	user.UserMeta, err = db.GetUserMeta(userId)
 	if err != nil {
-		db.Context.Infof("error with userMeta")
+		log.Infof(db.Context, "error with userMeta")
 	}
 	return
 }
@@ -301,7 +302,7 @@ func (db *DB) UnqueueUser(user string) {
 		if err == nil {
 			key = keys[0]
 		} else {
-			db.Context.Errorf("error removing %v from queue: %v", user, err)
+			log.Errorf(db.Context, "error removing %v from queue: %v", user, err)
 		}
 	} else {
 		userId, _ := strconv.ParseInt(user, 10, 64)
@@ -309,7 +310,7 @@ func (db *DB) UnqueueUser(user string) {
 	}
 
 	datastore.Delete(db.Context, key)
-	db.Context.Infof("%v removed from queue.", user)
+	log.Infof(db.Context, "%v removed from queue.", user)
 }
 
 func RandomKey(a []*datastore.Key) *datastore.Key {

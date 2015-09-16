@@ -19,13 +19,17 @@ handlers:
   login: admin
   secure: always
 
+- url: /_ah/remote_api
+  script: _go_app
+  login: admin
+
 - url: /(.+\.(css|js|png|ico|txt))
   static_files: public/\1
   upload: public/(.*)
 
 - url: /.*
   script: _go_app
-  
+
 inbound_services:
 - warmup
 - mail

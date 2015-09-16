@@ -1,18 +1,20 @@
 package main
 
 import (
-	"appengine"
-	"appengine/urlfetch"
 	"encoding/json"
 	"errors"
 	"io/ioutil"
 	"net/http"
 	"regexp"
 	"strconv"
+
+	"golang.org/x/net/context"
+	"google.golang.org/appengine/log"
+	"google.golang.org/appengine/urlfetch"
 )
 
 type VineRequest struct {
-	Context appengine.Context
+	Context context.Context
 }
 
 var (
@@ -84,7 +86,7 @@ func (v *VineRequest) IsVanity(user string) bool {
 }
 
 func (v *VineRequest) ScrapeUserIDs(feed string) ([]string, error) {
-	v.Context.Infof("scraping %s", feed)
+	log.Infof(v.Context, "scraping %s", feed)
 	resp, err := v.get(feed)
 	if err != nil {
 		return nil, err

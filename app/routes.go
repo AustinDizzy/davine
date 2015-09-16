@@ -24,14 +24,15 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/hoisie/mustache"
 
-	newappengine "google.golang.org/appengine"
+	"google.golang.org/appengine/log"
 
-	"appengine"
-	"appengine/datastore"
-	"appengine/memcache"
-	"appengine/taskqueue"
-	"appengine/urlfetch"
-	"appengine/user"
+	"google.golang.org/appengine/memcache"
+
+	"google.golang.org/appengine"
+	"google.golang.org/appengine/datastore"
+	"google.golang.org/appengine/taskqueue"
+	"google.golang.org/appengine/urlfetch"
+	"google.golang.org/appengine/user"
 )
 
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
@@ -50,7 +51,7 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 
 	for _, k := range []string{"TotalLoops", "TotalPosts", "TotalVerified", "24hLoops", "24hPosts", "24hUsers"} {
 		if data[k], err = counter.Count(c, k); err != nil {
-			c.Errorf("Error getting %s: %v", k, err)
+			log.Errorf(c, "Error getting %s: %v", k, err)
 		}
 	}
 
@@ -74,7 +75,7 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		data["popusers"] = users
 	} else {
-		c.Errorf("popusers memcache err: %v", err)
+		log.Errorf(c, "popusers memcache err: %v", err)
 	}
 
 	if featuredUser, err := memcache.Get(c, "featuredUser"); err == nil {
@@ -127,7 +128,7 @@ func UserFetchHandler(w http.ResponseWriter, r *http.Request) {
 		data = mustache.RenderFileInLayout(user404, layout, userData)
 		w.WriteHeader(http.StatusNotFound)
 	} else if err != nil {
-		c.Errorf("got error on fetching user %s: %v", vars["user"], err)
+		log.Errorf(c, "got error on fetching user %s: %v", vars["user"], err)
 		fmt.Fprint(w, err.Error())
 	} else if userRecord != nil {
 
@@ -163,14 +164,14 @@ func UserStoreHandler(w http.ResponseWriter, r *http.Request) {
 	data := make(map[string]bool)
 
 	if err != datastore.ErrNoSuchEntity && err != nil {
-		c.Errorf("got UserStore err: %v", err)
+		log.Errorf(c, "got UserStore err: %v", err)
 	}
 
 	user, apiErr := vineApi.GetUser(r.FormValue("id"))
 
 	if err == datastore.ErrNoSuchEntity || u == nil {
 		if apiErr != nil {
-			c.Infof("Got apiErr: %v", apiErr)
+			log.Infof(c, "Got apiErr: %v", apiErr)
 			data["exists"] = false
 			data["queued"] = false
 		} else {
@@ -210,7 +211,7 @@ func AboutHandler(w http.ResponseWriter, r *http.Request) {
 	for _, k := range []string{"TotalUsers", "TotalLoops", "TotalPosts"} {
 		data[k], err = counter.Count(c, k)
 		if err != nil {
-			c.Errorf("got counter err: %v", err)
+			log.Errorf(c, "got counter err: %v", err)
 		}
 	}
 	page := mustache.RenderFileInLayout(aboutPage, layout, data)
@@ -262,16 +263,16 @@ func RandomHandler(w http.ResponseWriter, r *http.Request) {
 	q := datastore.NewQuery("UserRecord").KeysOnly()
 	keys, err := q.GetAll(c, nil)
 	if err != nil {
-		c.Errorf("got err %v", err)
+		log.Errorf(c, "got err %v", err)
 		return
 	}
 	randomKey := RandomKey(keys)
 	var user UserRecord
 	err = datastore.Get(c, randomKey, &user)
 	if err != nil {
-		c.Errorf("got err %v", err)
+		log.Errorf(c, "got err %v", err)
 	} else {
-		c.Infof("got user %v", user)
+		log.Infof(c, "got user %v", user)
 	}
 	http.Redirect(w, r, "/u/"+user.UserId, 301)
 }
@@ -289,7 +290,7 @@ func SearchHandler(w http.ResponseWriter, r *http.Request) {
 	if len(r.FormValue("q")) > 0 {
 		results, err := SearchUsers(c, r.FormValue("q"))
 		if err != nil {
-			c.Errorf("got err on search: %v", err)
+			log.Errorf(c, "got err on search: %v", err)
 		}
 
 		switch r.FormValue("s") {
@@ -342,7 +343,7 @@ func ExportHandler(w http.ResponseWriter, r *http.Request) {
 		StartupHandler(w, r)
 		userId, err := strconv.ParseInt(vars["user"], 10, 64)
 		if err != nil {
-			c.Errorf("got err: %v", err)
+			log.Errorf(c, "got err: %v", err)
 			http.Redirect(w, r, "/404", 301)
 			return
 		}
@@ -404,7 +405,7 @@ func PopularFetchHandler(w http.ResponseWriter, r *http.Request) {
 	memcache.AddMulti(c, popfeedUsers)
 	finish := time.Since(start)
 	fmt.Fprint(w, "queuing popular users: %v w/ err %v", users, err)
-	c.Infof("queueing popular users: %v w/ err %v. Took %s", users, err, finish)
+	log.Infof(c, "queueing popular users: %v w/ err %v. Took %s", users, err, finish)
 }
 
 func CronExploreHandler(w http.ResponseWriter, r *http.Request) {
@@ -429,15 +430,15 @@ func CronExploreHandler(w http.ResponseWriter, r *http.Request) {
 			}...)
 		}
 		if _, err := taskqueue.AddMulti(c, feeds, "explore"); err != nil {
-			c.Errorf("error tasking explore: %v", err)
+			log.Errorf(c, "error tasking explore: %v", err)
 		}
 	} else if r.Method == "POST" {
 		vineApi := VineRequest{c}
 		userIDs, err := vineApi.ScrapeUserIDs(r.FormValue("feed"))
 		if err != nil {
-			c.Errorf("Error scraping %s: %v", r.FormValue("feed"), err)
+			log.Errorf(c, "Error scraping %s: %v", r.FormValue("feed"), err)
 		} else {
-			c.Infof("%d users", len(userIDs))
+			log.Infof(c, "%d users", len(userIDs))
 			for _, u := range userIDs {
 				if _, err := GetQueuedUser(u, c); err == datastore.ErrNoSuchEntity {
 					QueueUser(u, c)
@@ -457,7 +458,7 @@ func CronFetchHandler(w http.ResponseWriter, r *http.Request) {
 		"id": {r.FormValue("id")},
 		"n":  {strconv.Itoa(n + 1)},
 	})
-	t.Name = r.FormValue("id") + "-" + strconv.Itoa(n+1)
+	t.Name = fmt.Sprintf("%s-%d-%s", r.FormValue("id"), n+1, GenSlug())
 
 	db.FetchUser(r.FormValue("id"))
 
@@ -471,7 +472,7 @@ func CronFetchHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if _, err := taskqueue.Add(c, t, ""); err != nil {
-		c.Errorf("Error adding user %s to taskqueue: %v", r.FormValue("id"), err)
+		log.Errorf(c, "Error adding user %s to taskqueue: %v", r.FormValue("id"), err)
 	}
 
 	w.WriteHeader(200)
@@ -488,15 +489,15 @@ func CronReportHandler(w http.ResponseWriter, r *http.Request) {
 		key     = datastore.NewKey(c, "AppUser", r.FormValue("email"), 0, nil)
 	)
 
-	c.Infof("generating email for %s at %s", r.FormValue("id"), r.FormValue("email"))
+	log.Infof(c, "generating email for %s at %s", r.FormValue("id"), r.FormValue("email"))
 
 	if err != nil {
-		c.Errorf("error sending user report for %s: %v", r.FormValue("id"), err)
+		log.Errorf(c, "error sending user report for %s: %v", r.FormValue("id"), err)
 		return
 	}
 
 	if err = datastore.Get(c, key, &appUser); err != nil && !(err == datastore.ErrNoSuchEntity && user.IsAdmin(c)) {
-		c.Errorf("error reading appUser for %s: %v", r.FormValue("email"), err)
+		log.Errorf(c, "error reading appUser for %s: %v", r.FormValue("email"), err)
 		return
 	}
 
@@ -541,7 +542,7 @@ func CronReportHandler(w http.ResponseWriter, r *http.Request) {
 	t.Delay = 7 * 24 * time.Hour
 
 	if _, err := taskqueue.Add(c, t, "reports"); err != nil {
-		c.Infof("error queuing email report for %s: %v", r.FormValue("email"), err)
+		log.Infof(c, "error queuing email report for %s: %v", r.FormValue("email"), err)
 	}
 }
 
@@ -549,12 +550,12 @@ func CronFlushHandler(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	for _, k := range []string{"24hLoops", "24hPosts", "24hUsers"} {
 		if n, err := counter.Count(c, k); err != nil {
-			c.Errorf("got err sending stat %s: %v", k, n)
+			log.Errorf(c, "got err sending stat %s: %v", k, n)
 		} else {
 			PostCount(c, k, int(n))
 		}
 		if err := counter.Delete(c, k); err != nil {
-			c.Errorf("got err flushing %s: %v", k, err)
+			log.Errorf(c, "got err flushing %s: %v", k, err)
 		}
 	}
 }
@@ -562,16 +563,46 @@ func CronFlushHandler(w http.ResponseWriter, r *http.Request) {
 func CronImportHandler(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	t := admin.NewTask(c)
-	t.LoadCtx(newappengine.NewContext(r))
+	t.LoadCtx(r)
 
-	c.Infof("starting import of %s", r.FormValue("file"))
+	log.Infof(c, "starting import of %s", r.FormValue("file"))
 	err := t.LoadGSData(r.FormValue("file"))
 	if err != nil {
-		c.Errorf("error importing %s: %v", r.FormValue("file"), err)
+		log.Errorf(c, "error importing %s: %v", r.FormValue("file"), err)
 		w.WriteHeader(http.StatusInternalServerError)
 	} else {
 		w.WriteHeader(http.StatusOK)
 	}
+}
+
+func CronPurgeHandler(w http.ResponseWriter, r *http.Request) {
+	c := appengine.NewContext(r)
+	q := datastore.NewQuery(r.FormValue("v")).KeysOnly()
+	log.Infof(c, "purging %s", r.FormValue("v"))
+	t := q.Run(c)
+	n, g := 0, false
+	var a []*datastore.Key
+	for !g {
+		k, err := t.Next(nil)
+		if len(a) < 500 && k != nil {
+			a = append(a, k)
+		}
+
+		if len(a) == 500 || err == datastore.Done {
+			if err == datastore.Done {
+				g = true
+			}
+			err := datastore.DeleteMulti(c, a)
+			if err != nil {
+				log.Errorf(c, "Error deleting %d keys from %s: %v", len(a), r.FormValue("v"), err)
+			} else {
+				log.Infof(c, "%d deleted", len(a))
+				n += len(a)
+				a = nil
+			}
+		}
+	}
+	log.Infof(c, "%d %s entities deleted successfully.", n, r.FormValue("v"))
 }
 
 func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
@@ -592,7 +623,7 @@ func StartupHandler(w http.ResponseWriter, r *http.Request) {
 func EmailHandler(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	if msg, err := email.Read(r.Body); err != nil {
-		c.Errorf("err reading email: %v", err)
+		log.Errorf(c, "err reading email: %v", err)
 	} else {
 		switch strings.Split(msg.Header.Get("To"), "@")[0] {
 		case "share":
@@ -604,7 +635,7 @@ func EmailHandler(w http.ResponseWriter, r *http.Request) {
 				req, _ := http.NewRequest("POST", url, nil)
 				resp, err := client.Do(req)
 				if err != nil {
-					c.Errorf("got err: %v", err)
+					log.Errorf(c, "got err: %v", err)
 				} else {
 					body, _ := ioutil.ReadAll(resp.Body)
 					var data map[string]bool
@@ -639,12 +670,12 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 		if r.FormValue("type") == "activate" && len(r.FormValue("key")) > 0 && len(r.FormValue("email")) > 0 {
 			key := datastore.NewKey(c, "AppUser", r.FormValue("email"), 0, nil)
 			if err := datastore.Get(c, key, appUser); err != nil {
-				c.Infof("error activating user %s: %v\ndata: %v", r.FormValue("email"), err, r.Form)
+				log.Infof(c, "error activating user %s: %v\ndata: %v", r.FormValue("email"), err, r.Form)
 			} else {
 				if strings.Split(appUser.AuthKey, ";")[1] == r.FormValue("key") {
 					appUser.Active = true
 					if _, err := datastore.Put(c, key, appUser); err != nil {
-						c.Errorf("error saving activated user %s: %v", r.FormValue("email"), err)
+						log.Errorf(c, "error saving activated user %s: %v", r.FormValue("email"), err)
 						return
 					} else {
 						t := taskqueue.NewPOSTTask("/cron/report", map[string][]string{
@@ -653,14 +684,14 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 						})
 
 						if _, err := taskqueue.Add(c, t, "reports"); err != nil {
-							c.Errorf("error tasking user %s report: %v", appUser.UserIdStr, err)
+							log.Errorf(c, "error tasking user %s report: %v", appUser.UserIdStr, err)
 							fmt.Fprintf(w, "There was a problem confirming your subscription. Please try again and contact us if this problem persists.")
 						} else {
 							fmt.Fprintf(w, "Your email subscription is now activated. You may close this page.")
 						}
 					}
 				} else {
-					c.Infof("authKey: %s\nsuppliedKey: %s", strings.Split(appUser.AuthKey, ";")[1], r.FormValue("key"))
+					log.Infof(c, "authKey: %s\nsuppliedKey: %s", strings.Split(appUser.AuthKey, ";")[1], r.FormValue("key"))
 					http.Error(w, "The supplied key did not match with our records.", http.StatusBadRequest)
 				}
 			}
@@ -724,7 +755,7 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 					data["success"] = true
 					data["code"] = slug
 				} else {
-					c.Errorf("got appUser store err: %v", err)
+					log.Errorf(c, "got appUser store err: %v", err)
 				}
 			}
 		} else if r.FormValue("type") == "email-ping" {
@@ -746,7 +777,7 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 						msg.LoadTemplate(0, emailData)
 						msg.To = []string{r.FormValue("email")}
 						if err := msg.Send(c); err != nil {
-							c.Errorf("error sending %s email to %s: %v", u.UserIdStr, msg.To[0], err)
+							log.Errorf(c, "error sending %s email to %s: %v", u.UserIdStr, msg.To[0], err)
 							data["success"] = false
 							data["error"] = err.Error()
 						}
@@ -792,27 +823,30 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 	} else if r.Method == "POST" {
 		switch r.FormValue("op") {
 		case "TaskUsers":
-			admin.NewTask(c).BatchTaskUsers(strings.Split(r.FormValue("v"), "\n")...)
+			t := admin.NewTask(c)
+			t.LoadCtx(r)
+			t.BatchTaskUsers(strings.Split(r.FormValue("v"), "\n")...)
 		case "TaskImport":
-			c.Infof("Tasking %s for import", r.FormValue("v"))
+			log.Infof(c, "Tasking %s for import", r.FormValue("v"))
 			var tasks []*taskqueue.Task
 			for k, v := range strings.Split(r.FormValue("v"), "\n") {
 				t := taskqueue.NewPOSTTask("/cron/import", map[string][]string{
-					"file": {v},
+					"file": {strings.TrimSpace(v)},
 				})
-				t.Delay = time.Minute * time.Duration(k) * 10
+				t.Name = fmt.Sprintf("%s-%s", strings.Split(v, ".")[0], GenSlug())
+				t.Delay = time.Minute * time.Duration(k) * 4
 				t.RetryOptions = &taskqueue.RetryOptions{RetryLimit: 0, AgeLimit: t.Delay + (2 * time.Second)}
 				tasks = append(tasks, t)
 			}
 			if _, err := taskqueue.AddMulti(c, tasks, ""); err != nil {
-				c.Errorf("error adding import tasks: %v", err)
+				log.Errorf(c, "error adding import tasks: %v", err)
 			}
 		case "UnqueueUser":
-			c.Infof("unqueuing %v", r.FormValue("v"))
+			log.Infof(c, "unqueuing %v", r.FormValue("v"))
 			db.UnqueueUser(r.FormValue("v"))
 		case "BatchUsers":
 			users := strings.Split(r.FormValue("v"), ",")
-			c.Infof("queueing users: %v", users)
+			log.Infof(c, "queueing users: %v", users)
 			for _, v := range users {
 				QueueUser(strings.TrimSpace(v), c)
 			}
@@ -839,20 +873,33 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 					memcache.AddMulti(c, items)
 				}
 			} else {
-				http.Error(w, err.Error(), 500)
+				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
 		case "DumpKind":
-			admin.NewTask(c).DumpData(r.FormValue("v"), w)
+			t := admin.NewTask(c)
+			t.LoadCtx(r)
+			t.DumpData(r.FormValue("v"), w)
 			return
+		case "PurgeData":
+			t := taskqueue.NewPOSTTask("/cron/purge", map[string][]string{
+				"v": {strings.TrimSpace(r.FormValue("v"))},
+			})
+			t.Delay = 45 * time.Second
+			t.Name = "purge-" + r.FormValue("v") + "-" + GenSlug()
+			if _, err := taskqueue.Add(c, t, ""); err != nil {
+				log.Errorf(c, "error adding purge task: %v", err)
+			}
 		case "LoadData":
 			file, _, err := r.FormFile("file")
 			if err != nil {
-				c.Errorf("error loading file: %v", err)
+				log.Errorf(c, "error loading file: %v", err)
 				return
 			}
-			if err := admin.NewTask(c).LoadData(r.FormValue("v"), file); err != nil {
-				c.Errorf("Error loading data: %v", err)
+			t := admin.NewTask(c)
+			t.LoadCtx(r)
+			if err := t.LoadData(r.FormValue("v"), file); err != nil {
+				log.Errorf(c, "Error loading data: %v", err)
 			}
 		}
 		fmt.Fprintf(w, "{\"op\":\"%v\",\"success\":true}", r.FormValue("op"))

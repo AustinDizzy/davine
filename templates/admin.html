@@ -31,6 +31,34 @@
                 <button class="btn btn-default" data-toggle="modal" data-target="#loadData">Load Data</button>
                 <button class="btn btn-default" data-toggle="modal" data-target="#batchQueue">Batch Queue Users</button>
                 <button class="btn btn-default" data-toggle="modal" data-target="#taskLoadData">Task Import Data</button>
+                <button class="btn btn-default" data-toggle="modal" data-target="#purgeData">Purge Data</button>
+                <div class="modal fade" id="purgeData" tabindex="-1" role="dialog">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="gridSystemModalLabel">Purge Datastore Entities</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="container-fluid">
+                                    <div class="alert alert-danger" role="alert">
+                                        <b>WARNING:</b> This will PERMANENTLY DELETE records from the datastore.
+                                    </div>
+                                    <form class="form-horizontal">
+                                      <div class="form-group">
+                                        <label class="col-sm-2 control-label">Entity Kind</label>
+                                        <div class="col-sm-10">
+                                          <input type="text" class="form-control" name="v">
+                                          <input type="hidden" name="op" value="PurgeData">
+                                        </div>
+                                      </div>
+                                      <input type="submit" class="btn btn-lg btn-primary" value="Submit">
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="modal fade" id="batchTask" tabindex="-1" role="dialog">
                     <div class="modal-dialog">
                         <div class="modal-content">

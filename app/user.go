@@ -1,20 +1,22 @@
 package main
 
 import (
-	"appengine"
-	"appengine/datastore"
-	"appengine/search"
-	"appengine/taskqueue"
 	"archive/zip"
 	"encoding/json"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
+
+	"golang.org/x/net/context"
+	"google.golang.org/appengine/datastore"
+	"google.golang.org/appengine/log"
+	"google.golang.org/appengine/search"
+	"google.golang.org/appengine/taskqueue"
 )
 
 type Export struct {
-	Context appengine.Context
+	Context context.Context
 }
 
 func (x *Export) User(userIdStr string, w http.ResponseWriter) {
@@ -23,7 +25,7 @@ func (x *Export) User(userIdStr string, w http.ResponseWriter) {
 
 	user, err := db.GetUser(userId)
 	if err != nil {
-		x.Context.Errorf("got err on export: %v", err)
+		log.Errorf(x.Context, "got err on export: %v", err)
 		return
 	}
 
@@ -45,21 +47,21 @@ func (x *Export) User(userIdStr string, w http.ResponseWriter) {
 	for _, file := range files {
 		f, err := zipWriter.Create(file.Name)
 		if err != nil {
-			x.Context.Errorf(err.Error())
+			log.Errorf(x.Context, err.Error())
 		}
 		_, err = f.Write([]byte(file.Data))
 		if err != nil {
-			x.Context.Errorf(err.Error())
+			log.Errorf(x.Context, err.Error())
 		}
 	}
 
 	err = zipWriter.Close()
 	if err != nil {
-		x.Context.Errorf(err.Error())
+		log.Errorf(x.Context, err.Error())
 	}
 }
 
-func QueueUser(userId string, c appengine.Context) {
+func QueueUser(userId string, c context.Context) {
 	vineApi := VineRequest{c}
 	user, err := vineApi.GetUser(userId)
 	if err == nil {
@@ -77,21 +79,21 @@ func QueueUser(userId string, c appengine.Context) {
 			"id": {user.UserIdStr},
 			"n":  {"0"},
 		})
-		t.Name = user.UserIdStr + "-0"
+		t.Name = user.UserIdStr + "-0-" + GenSlug()
 
 		if _, err = taskqueue.Add(c, t, ""); err != nil {
-			c.Errorf("Error adding user %s to taskqueue: %v", user.UserIdStr, err)
+			log.Errorf(c, "Error adding user %s to taskqueue: %v", user.UserIdStr, err)
 		}
 
 		if _, err = datastore.Put(c, key, &data); err != nil {
-			c.Errorf("got datastore err on QueueUser: %v", err)
+			log.Errorf(c, "got datastore err on QueueUser: %v", err)
 		}
 	} else {
-		c.Errorf("got QueueUser err: %v", err)
+		log.Errorf(c, "got QueueUser err: %v", err)
 	}
 }
 
-func GetQueuedUser(userId string, c appengine.Context) (user *QueuedUser, err error) {
+func GetQueuedUser(userId string, c context.Context) (user *QueuedUser, err error) {
 	vineApi := VineRequest{c}
 	if vineApi.IsVanity(userId) {
 		var temp []*QueuedUser
@@ -109,14 +111,14 @@ func GetQueuedUser(userId string, c appengine.Context) (user *QueuedUser, err er
 	return
 }
 
-func UserQueueExist(userId int64, c appengine.Context) bool {
+func UserQueueExist(userId int64, c context.Context) bool {
 	k := datastore.NewKey(c, "Queue", "", userId, nil)
 	q := datastore.NewQuery("Queue").Filter("__key__ =", k).Limit(1).KeysOnly()
 	keys, _ := q.GetAll(c, nil)
 	return len(keys) > 0
 }
 
-func SearchUsers(c appengine.Context, query string) ([]UserRecord, error) {
+func SearchUsers(c context.Context, query string) ([]UserRecord, error) {
 	db := DB{c}
 	index, err := search.Open("users")
 	if err != nil {
@@ -148,7 +150,7 @@ func SearchUsers(c appengine.Context, query string) ([]UserRecord, error) {
 	return users, nil
 }
 
-func GetAppUsers(c appengine.Context) ([]*AppUser, []*AppUser, error) {
+func GetAppUsers(c context.Context) ([]*AppUser, []*AppUser, error) {
 	var enterpriseUsers []*AppUser
 	var emailReportUsers []*AppUser
 	q := datastore.NewQuery("AppUser").KeysOnly()
@@ -163,7 +165,7 @@ func GetAppUsers(c appengine.Context) ([]*AppUser, []*AppUser, error) {
 				emailReportUsers = append(emailReportUsers, u)
 			}
 		} else {
-			c.Errorf("got err: %v", err)
+			log.Errorf(c, "got err: %v", err)
 			return enterpriseUsers, emailReportUsers, err
 		}
 	}

@@ -4,6 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+
+	_ "google.golang.org/appengine/remote_api"
 )
 
 func init() {
@@ -30,6 +32,7 @@ func init() {
 	router.HandleFunc("/cron/report", CronReportHandler).Methods("POST")
 	router.HandleFunc("/cron/flush", CronFlushHandler).Methods("GET")
 	router.HandleFunc("/cron/import", CronImportHandler).Methods("POST")
+	router.HandleFunc("/cron/purge", CronPurgeHandler).Methods("POST")
 
 	router.HandleFunc("/_ah/start", StartupHandler).Methods("GET")
 	router.HandleFunc("/_ah/warmup", StartupHandler).Methods("GET")

@@ -2,16 +2,18 @@ package email
 
 import (
 	"app/config"
-	"appengine"
-	"appengine/mail"
 	"fmt"
-	"github.com/aymerick/douceur/inliner"
-	"github.com/hoisie/mustache"
-	"github.com/jhillyerd/go.enmime"
 	"io"
 	netmail "net/mail"
 	"os"
 	"path"
+
+	"github.com/aymerick/douceur/inliner"
+	"github.com/hoisie/mustache"
+	"github.com/jhillyerd/go.enmime"
+	"golang.org/x/net/context"
+
+	"google.golang.org/appengine/mail"
 )
 
 type Email mail.Message
@@ -68,7 +70,7 @@ func (e *Email) LoadTemplate(id int, data map[string]interface{}) {
 	e.Subject = templates[id][1]
 }
 
-func (e Email) Send(c appengine.Context) error {
+func (e Email) Send(c context.Context) error {
 	e.Sender = config.Load(c)["emailSendAs"]
 	msg := mail.Message(e)
 	return mail.Send(c, &msg)

@@ -13,29 +13,31 @@ import (
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
-	newurlfetch "google.golang.org/appengine/urlfetch"
+	"google.golang.org/appengine/log"
 	"google.golang.org/cloud"
 	"google.golang.org/cloud/storage"
 	"ronoaldo.gopkg.net/aetools"
 
+	"google.golang.org/appengine/taskqueue"
+
 	"appengine"
-	"appengine/taskqueue"
+	"appengine/urlfetch"
 )
 
-type AdminTask struct {
-	c   appengine.Context
-	ctx context.Context
+type task struct {
+	c   context.Context
+	ctx appengine.Context
 }
 
-func NewTask(c appengine.Context) *AdminTask {
-	return &AdminTask{c: c}
+func NewTask(c context.Context) *task {
+	return &task{c: c}
 }
 
-func (a *AdminTask) LoadCtx(c context.Context) {
-	a.ctx = c
+func (a *task) LoadCtx(r *http.Request) {
+	a.ctx = appengine.NewContext(r)
 }
 
-func (a *AdminTask) BatchTaskUsers(usersRow ...string) {
+func (a *task) BatchTaskUsers(usersRow ...string) {
 	var err error
 	for _, user := range usersRow {
 		u := strings.Split(user, ",")
@@ -47,50 +49,50 @@ func (a *AdminTask) BatchTaskUsers(usersRow ...string) {
 		t.Delay, err = time.ParseDuration(strings.TrimSpace(u[2]))
 
 		if err != nil {
-			a.c.Errorf("Error parsing task delay %v: %v", u, err)
+			log.Errorf(a.c, "Error parsing task delay %v: %v", u, err)
 			continue
 		}
 
 		if _, err = taskqueue.Add(a.c, t, ""); err != nil {
-			a.c.Errorf("Error adding user %s to taskqueue: %v", u[0], err)
+			log.Errorf(a.c, "Error adding user %s to taskqueue: %v", u[0], err)
 		}
 	}
 }
 
-func (a *AdminTask) DumpData(kind string, w http.ResponseWriter) error {
+func (a *task) DumpData(kind string, w http.ResponseWriter) error {
 	opts := &aetools.Options{Kind: kind, PrettyPrint: true}
 	w.Header().Set("Content-Disposition", "attachment; filename=\""+kind+".json\"")
-	err := aetools.Dump(a.c, w, opts)
+	err := aetools.Dump(a.ctx, w, opts)
 	return err
 }
 
-func (a *AdminTask) LoadData(kind string, file io.Reader) error {
+func (a *task) LoadData(kind string, file io.Reader) error {
 	opts := &aetools.Options{GetAfterPut: true, Kind: kind}
-	return aetools.Load(a.c, file, opts)
+	return aetools.Load(a.ctx, file, opts)
 }
 
-func (a *AdminTask) LoadGSData(name string) error {
+func (a *task) LoadGSData(name string) error {
 	if a.ctx == nil {
 		return errors.New("context is nil")
 	}
 	var client *http.Client
+	tokenSource, err := google.DefaultTokenSource(a.c, storage.ScopeReadOnly)
 	if appengine.IsDevAppServer() {
 		authFile, err := ioutil.ReadFile(path.Join(os.Getenv("PWD"), "client_secret.json"))
 		if err != nil {
 			return err
 		}
-		tokenSource, err := google.DefaultTokenSource(a.ctx, storage.ScopeReadOnly)
 		cfg, err := google.ConfigFromJSON(authFile, storage.ScopeReadOnly)
 		if err != nil {
 			return err
 		}
 		t, _ := tokenSource.Token()
-		client = cfg.Client(a.ctx, t)
+		client = cfg.Client(a.c, t)
 	} else {
 		client = &http.Client{
 			Transport: &oauth2.Transport{
-				Source: google.AppEngineTokenSource(a.ctx, storage.ScopeReadOnly),
-				Base: &newurlfetch.Transport{
+				Source: tokenSource,
+				Base: &urlfetch.Transport{
 					Context: a.ctx,
 				},
 			},
@@ -99,9 +101,10 @@ func (a *AdminTask) LoadGSData(name string) error {
 	ctx := cloud.NewContext("davine-web", client)
 	rc, err := storage.NewReader(ctx, "davine-web.appspot.com", name)
 	if err != nil {
-		a.c.Errorf("Error reading %s in %s: %v", name, "davine-web.appspot.com", err)
+		log.Errorf(a.c, "Error reading %s in %s: %v", name, "davine-web.appspot.com", err)
 		return err
 	}
-	defer rc.Close()
-	return aetools.Load(a.c, rc, aetools.LoadSync)
+	err = aetools.Load(a.ctx, rc, aetools.LoadSync)
+	rc.Close()
+	return err
 }

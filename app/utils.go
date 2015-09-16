@@ -2,17 +2,22 @@ package main
 
 import (
 	"app/config"
-	"appengine"
-	"appengine/urlfetch"
 	"crypto/rand"
 	"encoding/base64"
 	"fmt"
-	"github.com/hoisie/mustache"
-	"github.com/stathat/go"
 	"io/ioutil"
 	"net/url"
 	"os"
 	"path"
+
+	"github.com/hoisie/mustache"
+	"github.com/stathat/go"
+	"golang.org/x/net/context"
+
+	"google.golang.org/appengine/log"
+	"google.golang.org/appengine/urlfetch"
+
+	"appengine"
 )
 
 func genRand(dict string, n int) string {
@@ -39,7 +44,7 @@ func GenSlug() string {
 	return genRand(dict, 6)
 }
 
-func PostValue(c appengine.Context, key string, value float64) {
+func PostValue(c context.Context, key string, value float64) {
 	rt := urlfetch.Client(c).Transport
 	cnfg := config.Load(c)
 	stathat.DefaultReporter = stathat.NewReporter(100000, 10, rt)
@@ -48,11 +53,11 @@ func PostValue(c appengine.Context, key string, value float64) {
 		key = key + " [DEV]"
 	}
 	if err := stathat.PostEZValue(key, cnfg["stathatKey"], value); err != nil {
-		c.Errorf("Error posting %v value %v to stathat: %v", key, value, err)
+		log.Errorf(c, "Error posting %v value %v to stathat: %v", key, value, err)
 	}
 }
 
-func PostCount(c appengine.Context, key string, count int) {
+func PostCount(c context.Context, key string, count int) {
 	rt := urlfetch.Client(c).Transport
 	cnfg := config.Load(c)
 	stathat.DefaultReporter = stathat.NewReporter(100000, 10, rt)
@@ -61,11 +66,11 @@ func PostCount(c appengine.Context, key string, count int) {
 		key = key + " [DEV]"
 	}
 	if err := stathat.PostEZCount(key, cnfg["stathatKey"], count); err != nil {
-		c.Errorf("Error posting %v value %v to stathat: %v", key, count, err)
+		log.Errorf(c, "Error posting %v value %v to stathat: %v", key, count, err)
 	}
 }
 
-func GenSummaryChart(c appengine.Context, user *UserRecord) (string, error) {
+func GenSummaryChart(c context.Context, user *UserRecord) (string, error) {
 	dir := path.Join(os.Getenv("PWD"), "templates")
 	template := path.Join(dir, "weeklyreport.chart")
 	var loops, followers, dates string
@@ -89,7 +94,7 @@ func GenSummaryChart(c appengine.Context, user *UserRecord) (string, error) {
 		"dates":     dates,
 	}
 
-	c.Infof("opts: %#v", data)
+	log.Infof(c, "opts: %#v", data)
 
 	opts := &url.Values{}
 	opts.Add("options", mustache.RenderFile(template, data))
@@ -100,7 +105,7 @@ func GenSummaryChart(c appengine.Context, user *UserRecord) (string, error) {
 	resp, err := client.Get(fmt.Sprintf("http://export.highcharts.com/?%s", opts.Encode()))
 	b, _ := ioutil.ReadAll(resp.Body)
 	if resp.StatusCode != 200 {
-		c.Infof("got highcharts error: %v", string(b[:]))
+		log.Infof(c, "got highcharts error: %v", string(b[:]))
 	}
 
 	return base64.StdEncoding.EncodeToString(b), err
