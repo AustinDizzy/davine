@@ -64,13 +64,14 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 			r := rand.Intn(len(userIDs))
 
 			key, err := memcache.Get(c, userIDs[r])
-			dec = gob.NewDecoder(bytes.NewReader(key.Value))
-			var u *VineUser
-			err = dec.Decode(&u)
 			if err == nil {
-				users = append(users, u)
-				userIDs = append(userIDs[:r], userIDs[r+1:]...)
-				//above removes already chosen user from userID array
+				dec = gob.NewDecoder(bytes.NewReader(key.Value))
+				var u *VineUser
+				err = dec.Decode(&u)
+				if err == nil {
+					users = append(users, u)
+					userIDs = append(userIDs[:r], userIDs[r+1:]...)
+				}
 			}
 		}
 		data["popusers"] = users
