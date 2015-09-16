@@ -64,7 +64,7 @@ func (e *Email) LoadTemplate(id int, data map[string]interface{}) {
 			e.HTMLBody = body
 		}
 	} else {
-		e.HTMLBody = body
+		e.Body = body
 	}
 
 	e.Subject = templates[id][1]
