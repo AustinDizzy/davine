@@ -485,7 +485,7 @@ func CronReportHandler(w http.ResponseWriter, r *http.Request) {
 		msg     = email.New()
 		db      = DB{c}
 		u, err  = db.GetUser(id)
-		appUser = new(AppUser)
+		appUser = AppUser{}
 		key     = datastore.NewKey(c, "AppUser", r.FormValue("email"), 0, nil)
 	)
 
@@ -496,8 +496,27 @@ func CronReportHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err = datastore.Get(c, key, &appUser); err != nil && !(err == datastore.ErrNoSuchEntity && user.IsAdmin(c)) {
+	err = datastore.Get(c, key, &appUser)
+	if err != nil && !(err == datastore.ErrNoSuchEntity && user.IsAdmin(c)) {
 		log.Errorf(c, "error reading appUser for %s: %v", r.FormValue("email"), err)
+		return
+	}
+
+	if len(u.UserData) < 7 {
+		log.Infof(c, "user %s has only %d data entries", u.Username, len(u.UserData))
+		t := taskqueue.NewPOSTTask("/cron/report", map[string][]string{
+			"id":    []string{r.FormValue("id")},
+			"email": []string{r.FormValue("email")},
+		})
+
+		t.Delay = 7 * 24 * time.Hour
+
+		tk, err := taskqueue.Add(c, t, "reports")
+		if err != nil {
+			log.Infof(c, "error queuing email report for %s: %v", r.FormValue("email"), err)
+		} else if user.IsAdmin(c) {
+			log.Infof(c, "task created: %s", tk.Name)
+		}
 		return
 	}
 
