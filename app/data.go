@@ -58,10 +58,13 @@ func (db *DB) FetchUser(userId string) {
 	}
 
 	var newLoops, newPosts int64
+	var discoveredTime time.Time
 
 	//Step 3. Write records (user {meta, record, data}).
 	if userRecord, err := db.GetUserRecord(vineUser.UserId); err == nil {
 		var userMeta []*UserMeta
+
+		discoveredTime = userRecord.Discovered
 
 		if vineUser.Username != userRecord.Username {
 			userMeta = append(userMeta, &UserMeta{vineUser.UserId, "username", userRecord.Username, time.Now()})
@@ -90,6 +93,8 @@ func (db *DB) FetchUser(userId string) {
 			}
 		}
 	} else if err == datastore.ErrNoSuchEntity {
+
+		discoveredTime = time.Now()
 
 		counter.IncrementBy(db.Context, "TotalUsers", 1)
 		counter.IncrementBy(db.Context, "24hUsers", 1)
@@ -131,7 +136,7 @@ func (db *DB) FetchUser(userId string) {
 		Private:           (vineUser.Private != 0),
 		Verified:          (vineUser.Verified != 0),
 		Explicit:          (vineUser.ExplicitContent != 0),
-		Discovered:        time.Now(),
+		Discovered:        discoveredTime,
 	}
 	if len(vineUser.VanityUrls) != 0 {
 		userRecord.Vanity = strings.ToLower(vineUser.VanityUrls[0])
