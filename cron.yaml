@@ -5,7 +5,7 @@ cron:
   timezone: US/Eastern
 - description: tri-hourly vine explore
   url: /cron/explore
-  schedule: every 3 hours synchronized
+  schedule: every 6 hours synchronized
   timezone: US/Eastern
 - description: daily flush counters
   url: /cron/flush

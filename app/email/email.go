@@ -71,7 +71,8 @@ func (e *Email) LoadTemplate(id int, data map[string]interface{}) {
 }
 
 func (e Email) Send(c context.Context) error {
-	e.Sender = config.Load(c)["emailSendAs"]
+	cfg := config.Load(c)
+	e.Sender = fmt.Sprintf("%s <%s>", cfg["nameSendAs"], cfg["emailSendAs"])
 	msg := mail.Message(e)
 	return mail.Send(c, &msg)
 }

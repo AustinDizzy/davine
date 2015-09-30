@@ -20,13 +20,16 @@ import (
 	"google.golang.org/appengine/urlfetch"
 )
 
-var Config ConfigData
+//Config is the in-memory store for the loaded configuration.
+var Config map[string]string
 
-type (
-	ConfigData map[string]string
-)
-
-func Load(c context.Context) ConfigData {
+//Load uses the suppplies context to load configuration data - a map - based on
+//the environement. If the environment is the appengine development server,
+//it loads the configuration from the local config.yaml file. If the
+//environment is the production appengine server, it loads config.yaml from
+//the default Google Cloud Storage bucket.
+//Once loaded, the config is stored in memory for quicker access.
+func Load(c context.Context) map[string]string {
 	if len(Config) != 0 {
 		return Config
 	}

@@ -55,6 +55,7 @@ func Count(c context.Context, name string) (int64, error) {
 	return total, nil
 }
 
+//Delete purges the named counter.
 func Delete(c context.Context, name string) error {
 	if err := memcache.Delete(c, memcacheKey(name)); err != nil && err != memcache.ErrCacheMiss {
 		return err

@@ -1,4 +1,4 @@
-package main
+package data
 
 import (
 	"app/counter"
@@ -8,33 +8,41 @@ import (
 	"strings"
 	"time"
 
+	"github.com/austindizzy/vine-go"
+	"github.com/qedus/nds"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/datastore"
 	"google.golang.org/appengine/log"
 	"google.golang.org/appengine/search"
+	"google.golang.org/appengine/urlfetch"
 )
 
 type DB struct {
 	Context context.Context
 }
 
-func (db *DB) FetchUser(userId string) {
+func NewRequest(c context.Context) *DB {
+	return &DB{c}
+}
+
+func (db *DB) FetchUser(userId string) error {
 	//Step 1. Get Vine user's data from the Vine API
-	vineApi := VineRequest{db.Context}
+	vineApi := vine.NewRequest(urlfetch.Client(db.Context))
 	vineUser, err := vineApi.GetUser(userId)
 
 	if err != nil {
-		if err.Error() == ErrUserDoesntExist {
+		if err.Error() == vine.ErrUserDoesntExist {
 			db.UnqueueUser(userId)
+			return nil
 		} else {
 			log.Errorf(db.Context, "got error getting user %s from vine: %v", userId, err)
+			return err
 		}
-		return
 	} else if vineUser == nil {
 		log.Errorf(db.Context, "failed fetch on user %v. got err %v", userId, err)
-		return
+		return err
 	} else if vineUser.Private == 1 {
-		return
+		return nil
 	}
 
 	recordKey := datastore.NewKey(db.Context, "UserRecord", "", vineUser.UserId, nil)
@@ -141,7 +149,7 @@ func (db *DB) FetchUser(userId string) {
 	if len(vineUser.VanityUrls) != 0 {
 		userRecord.Vanity = strings.ToLower(vineUser.VanityUrls[0])
 	}
-	if _, err := datastore.Put(db.Context, recordKey, &userRecord); err != nil {
+	if _, err := nds.Put(db.Context, recordKey, &userRecord); err != nil {
 		log.Errorf(db.Context, "got error storing user record %s: %v", userId, err)
 	}
 
@@ -159,7 +167,9 @@ func (db *DB) FetchUser(userId string) {
 	}
 	if key, err := datastore.Put(db.Context, dataKey, &userData); err != nil {
 		log.Errorf(db.Context, "got error storing user data %s - %v: %v", userId, key, err)
+		return err
 	}
+	return nil
 }
 
 func (db *DB) GetRecentUsers(n int, filter ...interface{}) (records []UserRecord, err error) {
@@ -198,7 +208,7 @@ func (db *DB) GetUserRecord(userId int64) (*UserRecord, error) {
 	user := UserRecord{}
 
 	recordKey := datastore.NewKey(db.Context, "UserRecord", "", userId, nil)
-	err := datastore.Get(db.Context, recordKey, &user)
+	err := nds.Get(db.Context, recordKey, &user)
 
 	if err != nil {
 		return nil, err
@@ -301,8 +311,7 @@ func (a ByRevines) Less(i, j int) bool {
 
 func (db *DB) UnqueueUser(user string) {
 	var key *datastore.Key
-	vineApi := VineRequest{db.Context}
-	if vineApi.IsVanity(user) {
+	if vine.IsVanity(user) {
 		q := datastore.NewQuery("Queue").Filter("UserID =", user).KeysOnly()
 		keys, err := q.GetAll(db.Context, nil)
 		if err == nil {
@@ -322,17 +331,4 @@ func (db *DB) UnqueueUser(user string) {
 func RandomKey(a []*datastore.Key) *datastore.Key {
 	rand.Seed(time.Now().UTC().UnixNano())
 	return a[rand.Intn(len(a))]
-}
-
-func RemoveDuplicates(a []string) []string {
-	found := make(map[string]bool)
-	j := 0
-	for i, x := range a {
-		if !found[x] {
-			found[x] = true
-			a[j] = a[i]
-			j++
-		}
-	}
-	return a[:j]
 }

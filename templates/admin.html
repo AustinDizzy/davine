@@ -284,6 +284,10 @@
                   console.log(d);
                   alert("Success. Please check app log for error(s).");
                },
+               error: function(d,e,t){
+                 console.log(d);
+                 alert("Error!\n" + t);
+               },
                cache: false,
                contentType: false,
                processData: false

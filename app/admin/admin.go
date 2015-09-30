@@ -29,14 +29,23 @@ type task struct {
 	ctx appengine.Context
 }
 
+//NewTask initiats a new admin-spepcific task.
 func NewTask(c context.Context) *task {
 	return &task{c: c}
 }
 
+//LoadCtx loads a classic appengine.Context into the admin
+//task given a http.Request.
 func (a *task) LoadCtx(r *http.Request) {
 	a.ctx = appengine.NewContext(r)
 }
 
+//BatchTaskUsers adds new user fetch tasks given an array of
+//comma delimited rows, where the row is in the following format:
+//	userID,n,delay (Ex: 9012415478910456,1,15m)
+//		userID - the user's user ID.
+//		n - the nth fetch task for this user
+//		delay - the delay in which to execute the task, in time.Duration format
 func (a *task) BatchTaskUsers(usersRow ...string) {
 	var err error
 	for _, user := range usersRow {
@@ -59,6 +68,8 @@ func (a *task) BatchTaskUsers(usersRow ...string) {
 	}
 }
 
+//DumpData dumps an entire datastore kind to JSON format
+//and writes the file to the given http.ResponseWriter.
 func (a *task) DumpData(kind string, w http.ResponseWriter) error {
 	opts := &aetools.Options{Kind: kind, PrettyPrint: true}
 	w.Header().Set("Content-Disposition", "attachment; filename=\""+kind+".json\"")
@@ -66,6 +77,8 @@ func (a *task) DumpData(kind string, w http.ResponseWriter) error {
 	return err
 }
 
+//LoadData loads a specific datastore kind, in raw datastore
+//record format, into the datastore.
 func (a *task) LoadData(kind string, file io.Reader) error {
 	opts := &aetools.Options{GetAfterPut: true, Kind: kind}
 	return aetools.Load(a.ctx, file, opts)

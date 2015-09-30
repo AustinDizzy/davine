@@ -1,23 +1,19 @@
-package main
+package utils
 
 import (
-	"app/config"
 	"crypto/rand"
-	"encoding/base64"
-	"fmt"
+	"encoding/json"
 	"io/ioutil"
+	"net/http"
 	"net/url"
-	"os"
-	"path"
 
-	"github.com/hoisie/mustache"
+	"app/config"
+
 	"github.com/stathat/go"
 	"golang.org/x/net/context"
-
+	"google.golang.org/appengine"
 	"google.golang.org/appengine/log"
 	"google.golang.org/appengine/urlfetch"
-
-	"appengine"
 )
 
 func genRand(dict string, n int) string {
@@ -30,6 +26,8 @@ func genRand(dict string, n int) string {
 	return string(bytes)
 }
 
+//GenKey returns a randomly generated 64 character string, using only
+//alphanumeric characters and a small selection of special characters.
 func GenKey() string {
 	dict := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	dict += "abcdefghijklmnopqrstuvwxyz"
@@ -37,6 +35,7 @@ func GenKey() string {
 	return genRand(dict, 64)
 }
 
+//GenSlug returns a randomly generated 6 character alphanumeric string.
 func GenSlug() string {
 	dict := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	dict += "1234567890"
@@ -44,6 +43,7 @@ func GenSlug() string {
 	return genRand(dict, 6)
 }
 
+//PostValue sends a value stat to the configured StatHat account.
 func PostValue(c context.Context, key string, value float64) {
 	rt := urlfetch.Client(c).Transport
 	cnfg := config.Load(c)
@@ -57,6 +57,7 @@ func PostValue(c context.Context, key string, value float64) {
 	}
 }
 
+//PostCount sends a count stat to the configured StatHat account.
 func PostCount(c context.Context, key string, count int) {
 	rt := urlfetch.Client(c).Transport
 	cnfg := config.Load(c)
@@ -70,43 +71,27 @@ func PostCount(c context.Context, key string, count int) {
 	}
 }
 
-func GenSummaryChart(c context.Context, user *UserRecord) (string, error) {
-	dir := path.Join(os.Getenv("PWD"), "templates")
-	template := path.Join(dir, "weeklyreport.chart")
-	var loops, followers, dates string
-
-	for i := 1; (len(user.UserData)-i-1 > -1) && (i <= 7); i++ {
-		if i > 1 {
-			loops += ","
-			followers += ","
-			dates += ","
-		}
-		u := user.UserData[len(user.UserData)-i]
-		v := user.UserData[len(user.UserData)-i-1]
-		loops += fmt.Sprintf("%d", u.Loops-v.Loops)
-		followers += fmt.Sprintf("%d", u.Followers-v.Followers)
-		dates += fmt.Sprintf("\"%d/%d\"", u.Recorded.Month(), u.Recorded.Day())
-	}
-
-	data := map[string]string{
-		"loops":     loops,
-		"followers": followers,
-		"dates":     dates,
-	}
-
-	log.Infof(c, "opts: %#v", data)
-
-	opts := &url.Values{}
-	opts.Add("options", mustache.RenderFile(template, data))
-	opts.Add("width", "500")
-	opts.Add("scale", "0.5")
-
+//VerifyCaptcha verifies the supplied values are a valid solved captcha.
+//Read the required parameters in the reCAPTCHA documentation, found
+//here: https://developers.google.com/recaptcha/docs/verify
+func VerifyCaptcha(c context.Context, vals map[string]string) bool {
+	cnfg := config.Load(c)
 	client := urlfetch.Client(c)
-	resp, err := client.Get(fmt.Sprintf("http://export.highcharts.com/?%s", opts.Encode()))
-	b, _ := ioutil.ReadAll(resp.Body)
-	if resp.StatusCode != 200 {
-		log.Infof(c, "got highcharts error: %v", string(b[:]))
+	uri, _ := url.Parse("https://www.google.com/recaptcha/api/siteverify")
+	q := url.Values{}
+	q.Add("secret", cnfg["captchaPrivate"])
+	for k := range vals {
+		q.Add(k, vals[k])
 	}
-
-	return base64.StdEncoding.EncodeToString(b), err
+	uri.RawQuery = q.Encode()
+	req, _ := http.NewRequest("GET", uri.String(), nil)
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Errorf(c, "got err: %v", err)
+		return false
+	}
+	body, _ := ioutil.ReadAll(resp.Body)
+	var data map[string]interface{}
+	json.Unmarshal(body, &data)
+	return data["success"].(bool)
 }
