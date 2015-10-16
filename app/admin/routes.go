@@ -24,16 +24,15 @@ import (
 //Handler is the request handler for /admin/dashboard.
 func Handler(w http.ResponseWriter, r *http.Request) {
 	var (
-		c         = appengine.NewContext(r)
-		db        = data.NewRequest(c)
-		vineAPI   = vine.NewRequest(urlfetch.Client(c))
-		adminUser = user.Current(c)
+		c       = appengine.NewContext(r)
+		db      = data.NewRequest(c)
+		vineAPI = vine.NewRequest(urlfetch.Client(c))
 	)
-	if adminUser == nil {
+	if user.Current(c) == nil {
 		url, _ := user.LoginURL(c, "/admin/dashboard")
 		http.Redirect(w, r, url, 301)
 		return
-	} else if !adminUser.Admin {
+	} else if !user.IsAdmin(c) {
 		w.WriteHeader(401)
 		return
 	}
@@ -84,7 +83,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		case "FeaturedUser":
 			if user, err := vineAPI.GetUser(r.FormValue("user")); err == nil {
 				key := datastore.NewKey(c, "_featuredUser_", "featuredUser", 0, nil)
-				featuredUser := &FeaturedUser{UserID: user.UserIdStr, PostID: r.FormValue("vine")}
+				featuredUser := &featuredUser{UserID: user.UserIdStr, PostID: r.FormValue("vine")}
 				if _, err := nds.Put(c, key, featuredUser); err != nil {
 					log.Errorf(c, "error setting featured user: %v", err)
 					http.Error(w, err.Error(), 500)

@@ -1,7 +1,6 @@
 package admin
 
 import (
-	"errors"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -85,9 +84,6 @@ func (a *task) LoadData(kind string, file io.Reader) error {
 }
 
 func (a *task) LoadGSData(name string) error {
-	if a.ctx == nil {
-		return errors.New("context is nil")
-	}
 	var client *http.Client
 	tokenSource, err := google.DefaultTokenSource(a.c, storage.ScopeReadOnly)
 	if appengine.IsDevAppServer() {

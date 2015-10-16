@@ -8,7 +8,7 @@ import (
 	"google.golang.org/appengine/log"
 )
 
-type FeaturedUser struct {
+type featuredUser struct {
 	UserID, PostID string
 }
 

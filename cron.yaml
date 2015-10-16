@@ -1,12 +1,13 @@
 cron:
 - description: hourly popular user fetch
   url: /cron/popular
-  schedule: every 1 hours synchronized
+  schedule: every 3 hours synchronized
   timezone: US/Eastern
-- description: tri-hourly vine explore
-  url: /cron/explore
-  schedule: every 6 hours synchronized
-  timezone: US/Eastern
+# disabled temporarily because increased costs
+# - description: tri-hourly vine explore
+#   url: /cron/explore
+#   schedule: every 24 hours synchronized
+#   timezone: US/Eastern
 - description: daily flush counters
   url: /cron/flush
   schedule: every day 00:00
